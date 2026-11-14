@@ -1,0 +1,3 @@
+Loan ID,Customer ID,SEGMENT,Reporting Date,First Payment Date,Maturity Date,Stage,Outstanding Amount,EIR
+LN-000184,CU-22817,Retail,2026-09-30,2024-03-15,2029-02-15,1,25412.10,0.125
+LN-003311,CU-10442,SME,2026-09-30,2023-06-01,2028-05-31,2,88120.00,0.142
