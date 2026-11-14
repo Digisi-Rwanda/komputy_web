@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
+    authInterrupts: true, // forbidden() / unauthorized() from the DAL
     agentFeedback: true,
   },
   cacheComponents: true,
