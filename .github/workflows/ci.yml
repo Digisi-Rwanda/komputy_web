@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: "Naming and punctuation guard: no em/en dashes, no pre-rebrand names"
         run: |
-          if git grep -nI -e $'\u2014' -e $'\u2013' -e 'Ledgerline' -e 'ECL Platform' -- . ':!*.lock' ':!package-lock.json' ':!uv.lock' ':!design/**'; then
+          if git grep -nI -e $'\u2014' -e $'\u2013' -e 'Ledgerline' -e 'ECL Platform' -- . ':!*.lock' ':!package-lock.json' ':!uv.lock' ':!design/**' ':!.github/**'; then
             echo "Found em/en dashes or old product names (see docs/REBRAND_PLAN.md in komputy_server)"; exit 1
           fi
       - name: "Surface guard: no glass, blur or see-through panels (docs/POLISH_PLAN.md)"
