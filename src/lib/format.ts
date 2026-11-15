@@ -43,7 +43,9 @@ export const days = (n: number) => `${n} day${n === 1 ? "" : "s"}`;
 
 /** "2026-09-30" -> "30 Sep 2026" (fixed names: en-GB renders "Sept") */
 export function date(iso: string) {
-  const d = new Date(iso.length === 10 ? iso + "T00:00:00Z" : iso);
+  // Day precision: "2025-03-31", "2025-03-31T00:00:00" and "2025-03-31 00:00:00" all read as 31 Mar 2025.
+  const d = /^\d{4}-\d{2}-\d{2}/.test(iso) ? new Date(iso.slice(0, 10) + "T00:00:00Z") : new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
   return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 

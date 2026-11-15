@@ -27,7 +27,9 @@ const dayClasses = {
   disabled: "opacity-30",
 };
 
-const fmt = (d?: Date) => (d ? format(d, "d MMM yyyy") : "");
+// An unparseable value shows the placeholder instead of crashing the page (date-fns throws on Invalid Date).
+const valid = (d?: Date) => (d && !Number.isNaN(d.getTime()) ? d : undefined);
+const fmt = (d?: Date) => (valid(d) ? format(d!, "d MMM yyyy") : "");
 
 const trigger = (text: string, placeholder: string, id?: string) => (
   <button id={id} type="button" className={cn(fieldBase, "flex h-control items-center gap-2 px-3 text-left")}>
@@ -43,10 +45,10 @@ export function DatePicker({ value, onChange, placeholder = "Pick a date", month
     <Popover open={open} onOpenChange={setOpen} className="relative p-3" trigger={trigger(fmt(value), placeholder, id)}>
       <DayPicker
         mode="single"
-        selected={value}
+        selected={valid(value)}
         onSelect={(d) => { onChange(d); setOpen(false); }}
         disabled={monthEndOnly ? (d) => endOfMonth(d).getDate() !== d.getDate() : undefined}
-        defaultMonth={value}
+        defaultMonth={valid(value)}
         weekStartsOn={1}
         classNames={dayClasses}
       />
