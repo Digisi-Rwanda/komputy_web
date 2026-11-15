@@ -5,9 +5,17 @@ import { ago } from "@/server/dal/members";
 import type { Principal } from "@/server/policy";
 import type { AttentionItem, Entitlement } from "@/types/domain";
 
-/** HM1 "Needs your attention" from the workspace side. shortcut: run/lease items join in Phase 5 (engine). */
-export async function homeAttention(p: Principal & { tenantId: string }, ents: Entitlement[]): Promise<AttentionItem[]> {
+type EngineSide = { runs: { id: string; name: string; status: string; createdById?: string; updatedAt: string }[]; leaseInbox: { id: string; title: string; meta: string; age: string; byId?: string; type: string }[]; reviewer: boolean };
+
+/** HM1 "Needs your attention": workspace items plus engine items (runs to sign off / returned / failed, lease approvals). */
+export async function homeAttention(p: Principal & { tenantId: string }, ents: Entitlement[], eng?: EngineSide): Promise<AttentionItem[]> {
   const items: AttentionItem[] = [];
+  for (const r of eng?.runs ?? []) {
+    if (r.status === "needs-review" && eng!.reviewer && r.createdById !== p.userId) items.push({ id: `run-${r.id}`, service: "ecl", title: `${r.name} is ready for sign-off`, meta: "Review the figures and sign off", status: ["info", "Sign-off"], age: ago(new Date(r.updatedAt)).replace(" ago", ""), href: `/ecl/runs/${r.id}/summary`, action: "Review" });
+    if (r.status === "returned" && r.createdById === p.userId) items.push({ id: `run-${r.id}`, service: "ecl", title: `${r.name} was returned`, meta: "See the reviewer's comment", status: ["warning", "Returned"], age: ago(new Date(r.updatedAt)).replace(" ago", ""), href: `/ecl/runs/${r.id}/summary`, action: "Open" });
+    if (r.status === "failed" && r.createdById === p.userId) items.push({ id: `run-${r.id}`, service: "ecl", title: `${r.name} failed to compute`, meta: "Fix the inputs and retry", status: ["negative", "Failed"], age: ago(new Date(r.updatedAt)).replace(" ago", ""), href: `/ecl/runs/new/compute?run=${r.id}`, action: "Open" });
+  }
+  for (const i of (eng?.leaseInbox ?? []).filter((x) => x.byId !== p.userId).slice(0, 5)) items.push({ id: `lease-${i.id}`, service: "leases", title: i.title, meta: i.meta, status: ["info", "Approval"], age: i.age, href: "/leases/inbox", action: "Review" });
   const admin = p.workspaceRole === "owner" || p.workspaceRole === "admin";
   if (admin) {
     const [reqs, support] = await Promise.all([
