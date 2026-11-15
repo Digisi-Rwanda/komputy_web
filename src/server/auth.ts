@@ -67,6 +67,9 @@ export const auth = betterAuth({
     database: { generateId: () => ulid() },
     cookiePrefix: "ledgerline",
     useSecureCookies: env.BETTER_AUTH_URL.startsWith("https://"),
+    // Per-client rate limits: Render's edge (Cloudflare) sends the client IP as a single value in these headers;
+    // a multi-hop X-Forwarded-For alone is not trusted, which would put every user in one shared bucket.
+    ipAddress: { ipAddressHeaders: ["true-client-ip", "cf-connecting-ip", "x-forwarded-for"] },
   },
   // Existing ECL-Server tables keep their column names; Better Auth's names are mapped onto them.
   user: {
