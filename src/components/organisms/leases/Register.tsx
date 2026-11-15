@@ -37,10 +37,10 @@ export function Register({ leases, view }: { leases: Lease[]; view: string }) {
     { id: "cls", header: "Asset class", accessorFn: (l) => l.assetClass, cell: ({ row: { original: l } }) => l.exempt ? <Badge>Exempt (low value)</Badge> : l.assetClass },
     { id: "start", header: "Commencement", accessorFn: (l) => l.start ?? "", cell: ({ row: { original: l } }) => (l.start ? date(l.start) : "—") },
     { id: "end", header: "End", accessorFn: (l) => l.end ?? "", cell: ({ row: { original: l } }) => (l.end ? date(l.end) : "—") },
-    { id: "liab", header: "Liability · USD", accessorFn: (l) => l.liability ?? 0, meta: { align: "right" }, cell: ({ row: { original: l } }) => (l.liability != null ? <Money value={l.liability} /> : "—") },
+    { id: "liab", header: "Liability", accessorFn: (l) => l.liability ?? 0, meta: { align: "right" }, cell: ({ row: { original: l } }) => (l.liability != null ? <Money value={l.liability} /> : "—") },
     { id: "status", header: "Status", accessorFn: (l) => l.status, cell: ({ row: { original: l } }) => <StatusPill tone={LEASE_STATUS[l.status][0]}>{LEASE_STATUS[l.status][1]}</StatusPill> },
   ];
-  const exportRows = (list: Lease[]) => download("lease-register.csv", toCsv([["Lease ID", "Name", "Counterparty", "Asset class", "Commencement", "End", "Liability USD", "Status"], ...list.map((l) => [l.id, l.name, l.counterparty, l.assetClass, l.start ?? "", l.end ?? "", l.liability ?? "", LEASE_STATUS[l.status][1]])]));
+  const exportRows = (list: Lease[]) => download("lease-register.csv", toCsv([["Lease ID", "Name", "Counterparty", "Asset class", "Commencement", "End", "Liability", "Status"], ...list.map((l) => [l.id, l.name, l.counterparty, l.assetClass, l.start ?? "", l.end ?? "", l.liability ?? "", LEASE_STATUS[l.status][1]])]));
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -58,7 +58,7 @@ export function Register({ leases, view }: { leases: Lease[]; view: string }) {
         <DataTable caption="Lease register" data={rows} columns={cols} getRowId={(l) => l.id} selectable columnPicker pageSize={10} density={density as "compact"}
           selectionActions={(sel, clear) => <><Button size="sm" variant="secondary" onClick={() => { exportRows(sel); clear(); }}>Export</Button><Button size="sm" variant="secondary" disabled={!sel.every((l) => l.status === "draft")} disabledReason={sel.every((l) => l.status === "draft") ? undefined : "Only drafts can be submitted"} onClick={() => { toast.success(`${sel.length} leases submitted`); clear(); }}>Submit</Button></>} />
       ) : <States.Filtered onClear={() => { setF({}); setQ(""); }} />}
-      <p className="text-right text-small text-fg-muted">Total liability (filtered) <span className="tabular-nums text-fg">USD {money(total)}</span></p>
+      <p className="text-right text-small text-fg-muted">Total liability (filtered) <span className="tabular-nums text-fg">{money(total)}</span></p>
     </div>
   );
 }
