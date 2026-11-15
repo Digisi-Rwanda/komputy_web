@@ -5,16 +5,18 @@ import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
 import { Textarea } from "@/components/atoms/Textarea";
-import { MetaChip } from "@/components/atoms/Chip";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { toast } from "@/components/organisms/Toaster";
+import { createRun } from "@/lib/actions/ecl";
 import { Field } from "@/components/molecules/Field";
 import { DatePicker } from "@/components/molecules/DatePicker";
 import { Sheet } from "@/components/organisms/Modal";
 import { CollateralSetup, SegmentsSetup, ThresholdsSetup } from "@/components/organisms/ecl/Setup";
-import { getCollateralSetup, getSegmentsSetup, getThresholds } from "@/data/mock/index";
+import type { WizardSetup } from "@/components/organisms/ecl/Wizard";
 import { setDraft, useDraft } from "@/hooks/useRunDraft";
 import { WizardShell } from "@/components/organisms/ecl/Shell";
 
-const seg = getSegmentsSetup().filter((s) => s.active), col = getCollateralSetup(), th = getThresholds();
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
 function UseCard({ title, value, editor }: { title: string; value: string; editor: React.ReactNode }) {
@@ -28,28 +30,37 @@ function UseCard({ title, value, editor }: { title: string; value: string; edito
 }
 
 /** W1 step 1: run settings + what this run will use (edit in a side drawer without leaving the wizard). */
-export function StepSetup() {
-  const d = useDraft();
+export function StepSetup({ setup }: { setup?: WizardSetup }) {
+  const seg = (setup?.segments ?? []).filter((s) => s.active), col = setup?.collateral ?? [], th = setup?.thresholds ?? [];
+  const d = useDraft(), router = useRouter();
+  const [busy, start] = useTransition();
+  const next = () => start(async () => {
+    if (d.runId) { router.push(`/ecl/runs/new/pd?run=${d.runId}`); return; }
+    const r = await createRun({ name: d.name.trim() || "Untitled run", reportingDate: d.reportingDate || undefined, currency: d.currency, reportingPeriod: d.description || undefined });
+    if (!r.ok) { toast.error(r.error); return; }
+    setDraft({ runId: r.data.fullId, id: d.name });
+    router.push(`/ecl/runs/new/pd?run=${r.data.fullId}`);
+  });
   return (
-    <WizardShell step={1} footer={<Button asChild right={<ArrowRight />}><Link href="/ecl/runs/new/pd">Continue to PD data</Link></Button>}>
+    <WizardShell step={1} footer={<Button loading={busy} disabled={!d.name.trim()} onClick={next} right={<ArrowRight />}>{d.runId ? "Continue to PD data" : "Create run and continue"}</Button>}>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="flex flex-col gap-6">
           <section className="flex flex-col gap-4">
             <h2 className="text-h4">Run settings</h2>
             <div className="grid gap-5 rounded-panel border border-line p-6 sm:grid-cols-2">
-              <Field label="Run name" id="ws-name" className="sm:col-span-2"><Input value={d.name} maxLength={80} onChange={(e) => setDraft({ name: e.target.value })} /></Field>
-              <Field label="Reporting date" id="ws-date" help="Month-end. All three files must match this date."><DatePicker value={new Date(d.reportingDate + "T00:00:00")} monthEndOnly onChange={(v) => v && setDraft({ reportingDate: iso(v) })} /></Field>
-              <Field label="Currency" id="ws-cur"><Select value={d.currency} onChange={(e) => setDraft({ currency: e.target.value })}><option value="USD">USD — US dollar</option><option value="RWF">RWF — Rwandan franc</option><option value="KES">KES — Kenyan shilling</option></Select></Field>
-              <Field label="Engine version" id="ws-engine" help={<MetaChip>Pinned by Aline Mugisha</MetaChip>}><Select value={d.engine} disabled><option value="v1.3.0">v1.3.0 (workspace default)</option></Select></Field>
+              <Field label="Run name" id="ws-name" className="sm:col-span-2"><Input value={d.name} maxLength={200} disabled={Boolean(d.runId)} onChange={(e) => setDraft({ name: e.target.value })} /></Field>
+              <Field label="Reporting date" id="ws-date" help={d.reportingDate ? "Exposure rows with another Reporting Date are excluded." : "Leave empty to use the EAD file's reporting date."}><DatePicker value={d.reportingDate ? new Date(d.reportingDate + "T00:00:00") : undefined} placeholder="From the EAD file" monthEndOnly onChange={(v) => !d.runId && setDraft({ reportingDate: v ? iso(v) : "" })} /></Field>
+              <Field label="Currency" id="ws-cur"><Select value={d.currency} disabled={Boolean(d.runId)} onChange={(e) => setDraft({ currency: e.target.value })}>{[["USD", "US dollar"], ["RWF", "Rwandan franc"], ["KES", "Kenyan shilling"], ["UGX", "Ugandan shilling"], ["TZS", "Tanzanian shilling"], ["EUR", "Euro"]].map(([c, n]) => <option key={c} value={c}>{c} — {n}</option>)}</Select></Field>
+              <Field label="Engine version" id="ws-engine" help="The workspace default (set by Ledgerline)."><Select value={d.engine} disabled><option value={d.engine}>{d.engine === "current" ? "Current release" : d.engine}</option></Select></Field>
               <Field label="Description" id="ws-desc" optional className="sm:col-span-2"><Textarea value={d.description} maxLength={500} onChange={(e) => setDraft({ description: e.target.value })} placeholder="Month-end provision for the board pack." /></Field>
             </div>
           </section>
           <section className="flex flex-col gap-4">
             <h2 className="text-h4">What this run will use</h2>
             <div className="grid gap-4 md:grid-cols-3">
-              <UseCard title="Segments" value={`${seg.length} active · ${seg.map((s) => s.name).join(", ")}`} editor={<SegmentsSetup initial={getSegmentsSetup()} />} />
-              <UseCard title="Collateral types" value={`${col.length} · ${col.map((c) => `${c.name} ${Math.round(c.haircut * 100)} %`).join(", ")}`} editor={<CollateralSetup initial={col} />} />
-              <UseCard title="Validation thresholds" value={`Default profile · max month gap ${th[0].value} · min transitions ${th[1].value}`} editor={<ThresholdsSetup initial={th} />} />
+              <UseCard title="Segments" value={seg.length ? `${seg.length} active · ${seg.map((s) => s.name).join(", ")}` : "Detected from your PD file"} editor={<SegmentsSetup initial={setup?.segments ?? []} />} />
+              <UseCard title="Collateral types" value={col.length ? `${col.length} · ${col.map((c) => `${c.name} ${Math.round(c.haircut * 100)} %`).join(", ")}` : "None yet: add the types in your collateral sheet"} editor={<CollateralSetup initial={col} />} />
+              <UseCard title="Validation thresholds" value={th.length ? `Max month gap ${th[0].value} · min transitions ${th[1].value}` : "Platform defaults"} editor={<ThresholdsSetup initial={th} />} />
             </div>
           </section>
         </div>
