@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SERVICES } from "@/lib/services";
 
-const BASE = "https://ledgerline.app";
+const BASE = "https://komputy.com";
 
 /** Public, indexable pages only (app and platform routes are private). */
 export default function sitemap(): MetadataRoute.Sitemap {
