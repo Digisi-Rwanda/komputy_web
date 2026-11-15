@@ -57,3 +57,10 @@ export function engine(p: Principal, tenantId: string | null = p.tenantId) {
   client.use(authz);
   return client;
 }
+
+/** Raw authenticated fetch (streams, files) for paths the typed client can't express. Server-side only. */
+export async function engineFetch(p: Principal, path: string, init: RequestInit = {}, tenantId: string | null = p.tenantId) {
+  const headers = new Headers(init.headers);
+  headers.set("Authorization", `Bearer ${await tokenFor(p, tenantId)}`);
+  return fetch(new URL(path, env.ENGINE_URL), { ...init, headers, cache: "no-store" });
+}
