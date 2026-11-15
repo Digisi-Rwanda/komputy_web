@@ -41,3 +41,12 @@ export function date(iso: string) {
 export function shortHash(hash: string) {
   return hash.length > 10 ? `${hash.slice(0, 4)}…${hash.slice(-3)}` : hash;
 }
+
+/** 1536 → "1.5 KB" (binary units, one decimal from KB up). */
+export function bytes(n: number) {
+  if (!Number.isFinite(n) || n < 1024) return `${Math.max(0, Math.round(n || 0))} B`;
+  const u = ["KB", "MB", "GB", "TB"];
+  let i = -1, v = n;
+  do { v /= 1024; i++; } while (v >= 1024 && i < u.length - 1);
+  return `${v.toFixed(1)} ${u[i]}`;
+}
