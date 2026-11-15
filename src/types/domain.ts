@@ -123,3 +123,9 @@ export interface Lead { id: string; stage: LeadStage; type: "Quote" | "Trial" | 
 
 /** Home "Needs your attention" row (HM1). */
 export interface AttentionItem { id: string; service: "ecl" | "leases" | "workspace"; title: string; meta: string; status: [import("@/types/ui").Tone, string]; age: string; href: string; action: string }
+
+/** Loan-level ECL result row (engine view). */
+export interface LoanRow { id: string; customer: string; segment: string; stage: Stage; outstanding: number; ead: number; pd: number; lgd: number; ecl: number; capped?: boolean }
+
+/** Spec 12.2 exception line (engine categories: Input Validation, PD Match, ECL Cap, Reconciliation). */
+export interface Exception { id: string; category: string; loan: string; rule: string; detail: string; impact: string; amount: number; ack?: string; input?: [string, string][] }
