@@ -1,7 +1,7 @@
 // Results data for RUN-0142 (R1–R14). Figures tie to the run headline (12,846,210.55).
-import type { Stage } from "@/types/domain";
+import type { Exception, LoanRow } from "@/types/domain";
 
-export interface LoanRow { id: string; customer: string; segment: string; stage: Stage; outstanding: number; ead: number; pd: number; lgd: number; ecl: number; capped?: boolean }
+
 export const loans: LoanRow[] = [
   { id: "LN-000184", customer: "CU-22817", segment: "Retail", stage: 1, outstanding: 25412.1, ead: 25412.1, pd: 0.0213, lgd: 0.412, ecl: 204.55 },
   { id: "LN-003311", customer: "CU-10442", segment: "SME", stage: 2, outstanding: 88120, ead: 91804.33, pd: 0.1402, lgd: 0.52, ecl: 6690.12 },
@@ -22,7 +22,6 @@ export const TOTAL_LOANS = 48312;
 /** ECL distribution by loan size (USD). */
 export const sizeBuckets = [{ bucket: "< 50k", ecl: 1.31e6 }, { bucket: "50k – 250k", ecl: 1.62e6 }, { bucket: "250k – 1M", ecl: 3.04e6 }, { bucket: "1M – 5M", ecl: 4.12e6 }, { bucket: "> 5M", ecl: 2.756e6 }];
 
-export interface Exception { id: string; category: "Input validation" | "PD match" | "ECL cap" | "Reconciliation"; loan: string; rule: string; detail: string; impact: string; amount: number; ack?: string; input?: [string, string][] }
 export const exceptions: Exception[] = [
   { id: "x1", category: "Input validation", loan: "LN-118802", rule: "EA-11", detail: "Reporting date 31 Aug 2026 ≠ run 30 Sep 2026", impact: "Excluded", amount: 0, ack: "Eric Uwase: “Legacy loans, see ticket FIN-221”", input: [["Reporting Date", "2026-08-31"], ["Outstanding Amount", "4,210.00"], ["Stage", "1"]] },
   { id: "x2", category: "ECL cap", loan: "LN-007702", rule: "Cap", detail: "ECL before cap 15,204.18 > outstanding 14,300.00", impact: "Capped at 14,300.00", amount: -904.18 },
@@ -89,3 +88,5 @@ export const recentExports = [
   { name: "ECL roll-forward Aug→Sep.xlsx", by: "Aline Mugisha", at: "2026-10-03T09:30:00Z", status: "ready" as const, size: "2.4 MB" },
   { name: "Stage movement Sep.xlsx", by: "Aline Mugisha", at: "2026-10-02T17:20:00Z", status: "ready" as const, size: "1.1 MB" },
 ];
+
+export type { Exception, LoanRow };
