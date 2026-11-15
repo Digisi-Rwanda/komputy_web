@@ -1,6 +1,6 @@
 import { UPDATES } from "@/data/updates";
 
-const BASE = "https://ledgerline.app";
+const BASE = "https://komputy.com";
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 export function GET() {
