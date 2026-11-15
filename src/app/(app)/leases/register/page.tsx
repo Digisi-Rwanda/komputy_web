@@ -2,13 +2,16 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { LeasesHeader } from "@/components/organisms/leases/LeasesHeader";
 import { Register } from "@/components/organisms/leases/Register";
-import { getLeases } from "@/data/mock/index";
+import { getLeaseBook } from "@/server/dal/leases";
+import { requireMember } from "@/server/session";
 import { one } from "@/lib/search";
 
 export const metadata: Metadata = { title: "Lease register" };
 
 async function Body({ searchParams }: { searchParams: PageProps<"/leases/register">["searchParams"] }) {
-  return <Register leases={getLeases()} view={one((await searchParams).view) ?? "all"} />;
+  const p = await requireMember("leases.view");
+  const book = await getLeaseBook(p);
+  return <Register leases={book.ok ? book.data.register : []} view={one((await searchParams).view) ?? "all"} />;
 }
 
 // LA-03.
