@@ -66,7 +66,7 @@ export function ContactForm({ prefill }: { prefill: ContactPrefill }) {
       )}
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Full name" id="c-name" required error={err.name}><Input name="name" autoComplete="name" /></Field>
-        <Field label="Work email" id="c-email" required error={err.email}><Input name="email" type="email" autoComplete="email" /></Field>
+        <Field label="Email" id="c-email" required help="A company email is preferred." error={err.email}><Input name="email" type="email" autoComplete="email" /></Field>
         <Field label="Company" id="c-company" required error={err.company}><Input name="company" autoComplete="organization" /></Field>
         <Field label="Country" id="c-country" required error={err.country}>
           <Select name="country" defaultValue=""><option value="" disabled>Choose…</option>{COUNTRIES.map((c) => <option key={c}>{c}</option>)}</Select>

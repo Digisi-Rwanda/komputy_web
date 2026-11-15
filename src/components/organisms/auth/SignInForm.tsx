@@ -33,7 +33,7 @@ export function SignInForm({ next, notice }: { next: string; notice?: string }) 
       {!locked && state && !state.ok && state.error && <FormAlert>{state.error}{state.attemptsLeft != null && ` ${state.attemptsLeft} ${state.attemptsLeft === 1 ? "attempt" : "attempts"} left before a short lock.`}</FormAlert>}
       {sso && <FormAlert tone="warning">SSO isn&apos;t configured for {email.split("@")[1] || "your domain"}. Sign in with your password instead.</FormAlert>}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="si-email">Work email</Label>
+        <Label htmlFor="si-email">Email</Label>
         <Input id="si-email" name="email" type="email" autoComplete="username" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} invalid={Boolean(f.email)} aria-describedby={f.email ? "si-email-err" : undefined} />
         {f.email && <p id="si-email-err" role="alert" className="text-micro text-negative">{f.email}</p>}
       </div>

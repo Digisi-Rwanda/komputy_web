@@ -1,9 +1,7 @@
 // Shared form validation for public-site forms (runs in the browser and again in the server action).
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const FREE = new Set(["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "live.com", "icloud.com", "aol.com", "proton.me", "protonmail.com", "gmx.com", "mail.com", "yandex.com"]);
 
 export const isEmail = (v: string) => EMAIL.test(v.trim());
-export const isWorkEmail = (v: string) => isEmail(v) && !FREE.has(v.trim().toLowerCase().split("@")[1]);
 
 export const SERVICE_IDS = ["ecl", "leases", "lease-planning", "tax", "doc-intel", "erp"] as const;
 export const TOPICS = ["sales", "quote", "waitlist", "design-partner", "support"] as const;
@@ -18,7 +16,6 @@ export function validateContact(v: ContactInput): Errors {
   const e: Errors = {};
   if (v.name.trim().length < 2) e.name = "Enter your full name.";
   if (!isEmail(v.email)) e.email = "Enter a valid email address.";
-  else if (!isWorkEmail(v.email)) e.email = "Use your work email address.";
   if (v.company.trim().length < 2) e.company = "Enter your company.";
   if (!v.country) e.country = "Choose your country.";
   if (!v.services.length) e.services = "Pick at least one service.";

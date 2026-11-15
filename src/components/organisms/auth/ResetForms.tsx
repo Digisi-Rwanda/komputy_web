@@ -20,9 +20,9 @@ export function ForgotForm() {
   );
   const f = state && !state.ok ? state.fields ?? {} : {};
   return (
-    <AuthCard title="Reset your password" sub="Enter your work email and we'll send you a reset link.">
+    <AuthCard title="Reset your password" sub="Enter your email and we'll send you a reset link.">
       <form onSubmit={submit} noValidate className="flex flex-col gap-4">
-        <Field label="Work email" id="fp-email" error={f.email}><Input name="email" type="email" autoComplete="email" /></Field>
+        <Field label="Email" id="fp-email" error={f.email}><Input name="email" type="email" autoComplete="email" /></Field>
         <Button type="submit" size="lg" loading={pending} className="w-full">Send reset link</Button>
         <Link href="/sign-in" className="text-center text-small text-link hover:underline">Back to sign in</Link>
       </form>

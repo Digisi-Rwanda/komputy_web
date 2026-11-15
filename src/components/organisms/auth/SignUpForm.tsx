@@ -13,7 +13,7 @@ import { CardSelector } from "@/components/molecules/CardSelector";
 import { Icon } from "@/components/atoms/Icon";
 import { Badge } from "@/components/atoms/Badge";
 import { signUp, type FormState } from "@/lib/actions/auth";
-import { isEmail, isWorkEmail } from "@/lib/validation";
+import { isEmail } from "@/lib/validation";
 import { passwordOk } from "@/lib/password";
 import { FormAlert } from "@/components/molecules/FormAlert";
 import { PasswordField } from "@/components/molecules/PasswordField";
@@ -45,7 +45,7 @@ export function SignUpForm({ preselect }: { preselect?: string }) {
     const e: Record<string, string> = {};
     if (step === 0) {
       if (g("name").length < 2) e.name = "Enter your full name.";
-      if (!isEmail(g("email"))) e.email = "Enter a valid email address."; else if (!isWorkEmail(g("email"))) e.email = "Use your work email address.";
+      if (!isEmail(g("email"))) e.email = "Enter a valid email address.";
       if (!passwordOk(String(fd.get("password") ?? ""))) e.password = "Use 12+ characters that aren't in known breaches.";
     } else {
       if (g("company").length < 2) e.company = "Enter your company name.";
@@ -62,7 +62,7 @@ export function SignUpForm({ preselect }: { preselect?: string }) {
       <div className={`${hide(0)} flex-col gap-4`}>
         <h2 className="text-h4">Create your account</h2>
         <Field label="Full name" id="su-name" required error={err.name}><Input name="name" autoComplete="name" /></Field>
-        <Field label="Work email" id="su-email" required error={err.email}><Input name="email" type="email" autoComplete="email" /></Field>
+        <Field label="Email" id="su-email" required help="A company email is preferred." error={err.email}><Input name="email" type="email" autoComplete="email" /></Field>
         {server.email?.includes("already") && <p className="-mt-2 text-micro"><Link href="/sign-in" className="text-link hover:underline">Sign in instead?</Link></p>}
         <div className="flex flex-col gap-1.5"><label htmlFor="su-password" className="text-small text-fg-body">Password <span className="text-negative">*</span></label><PasswordField id="su-password" meter autoComplete="new-password" invalid={Boolean(err.password)} />{err.password && <p role="alert" className="text-micro text-negative">{err.password}</p>}</div>
         <Button size="lg" className="w-full" onClick={next}>Continue</Button>

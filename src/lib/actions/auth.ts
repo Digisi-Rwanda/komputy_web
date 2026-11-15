@@ -3,7 +3,7 @@ import { and, eq, isNull } from "drizzle-orm";
 import { APIError } from "better-auth/api";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { isEmail, isWorkEmail } from "@/lib/validation";
+import { isEmail } from "@/lib/validation";
 import { passwordOk } from "@/lib/password";
 import { audit } from "@/server/audit";
 import { auth } from "@/server/auth";
@@ -83,7 +83,6 @@ export async function signUp(_: FormState, f: FormData): Promise<FormState> {
   const fields: Record<string, string> = {};
   if (name.length < 2) fields.name = "Enter your full name.";
   if (!isEmail(email)) fields.email = "Enter a valid email address.";
-  else if (!isWorkEmail(email)) fields.email = "Use your work email address.";
   if (!passwordOk(password)) fields.password = "Use 12+ characters that aren't in known breaches.";
   if (company.length < 2) fields.company = "Enter your company name.";
   if (!str(f, "country")) fields.country = "Choose your country.";
