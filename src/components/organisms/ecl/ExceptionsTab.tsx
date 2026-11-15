@@ -8,7 +8,7 @@ import { KeyValue } from "@/components/molecules/StatCard";
 import { ToggleGroup } from "@/components/molecules/Tabs";
 import { Sheet } from "@/components/organisms/Modal";
 import { download, toCsv } from "@/lib/csv";
-import { exceptionCounts, type Exception } from "@/data/mock/results";
+import type { Exception } from "@/types/domain";
 import type { Tone } from "@/types/ui";
 
 const TONE: Record<Exception["category"], Tone> = { "Input validation": "info", "PD match": "neutral", "ECL cap": "warning", Reconciliation: "negative" };
@@ -21,7 +21,7 @@ export function ExceptionsTab({ rows, runId }: { rows: Exception[]; runId: strin
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
-        <ToggleGroup label="Category" value={cat} onChange={setCat} options={[{ value: "all", label: "All", count: (Object.values(exceptionCounts) as number[]).reduce((a, b) => a + b, 0) }, ...Object.entries(exceptionCounts).map(([k, v]) => ({ value: k, label: k, count: v }))]} />
+        <ToggleGroup label="Category" value={cat} onChange={setCat} options={[{ value: "all", label: "All", count: rows.length }, ...Object.entries(rows.reduce<Record<string, number>>((a, x) => ({ ...a, [x.category]: (a[x.category] ?? 0) + 1 }), {})).map(([k, v]) => ({ value: k, label: k, count: v }))]} />
         <Button size="sm" variant="secondary" className="ml-auto" icon={<Download />} onClick={() => download(`${runId}-exceptions.csv`, toCsv([["Category", "Loan", "Rule", "Detail", "Impact", "Amount"], ...list.map((r) => [r.category, r.loan, r.rule, r.detail, r.impact, r.amount])]))}>Download exceptions (CSV)</Button>
       </div>
       <div className="relative overflow-x-auto rounded-panel border border-line">
