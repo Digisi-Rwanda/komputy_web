@@ -22,10 +22,10 @@ export function EclOverview({ run, trend, segments, inProgress }: { run: Run; tr
   const total = segments.reduce((a, s) => a + s.ecl, 0);
   return (
     <>
-      <HeroMetric label={`Total ECL · ${run.id} · signed off ${date(run.signedOffAt!.slice(0, 10))}`} currency="USD" value={<Money value={run.totalEcl} />} delta={<Delta value={run.deltaVsPrior} suffix=" vs Aug" />} sub={<>Coverage {percent(run.coverage)} · exposure USD {compact(run.exposure)}</>} />
+      <HeroMetric label={`Total ECL · ${run.name} · ${run.signedOffAt ? `signed off ${date(run.signedOffAt.slice(0, 10))}` : "awaiting sign-off"}`} currency={run.currency} value={<Money value={run.totalEcl} />} delta={<Delta value={run.deltaVsPrior} suffix=" vs previous run" />} sub={<>Coverage {percent(run.coverage)} · exposure {run.currency} {compact(run.exposure)}</>} />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {run.stages.map((s) => <StatCard key={s.stage} dot={stageDot[s.stage]} label={`Stage ${s.stage} · ${LABEL[s.stage]}`} value={<Money value={s.ecl} />} meta={<>{percent(s.share, 1)} of exposure · coverage {percent(s.ecl / s.exposure)}</>} />)}
-        <StatCard label="Reconciliation" value={`${run.checksPassed} / 7 passed`} meta={<Link href={`/ecl/runs/${run.id}/reconciliation`} className="text-link hover:underline">View checks →</Link>} />
+        <StatCard label="Reconciliation" value={`${run.checksPassed} / ${(run as { checksTotal?: number }).checksTotal ?? 7} passed`} meta={<Link href={`/ecl/runs/${run.id}/reconciliation`} className="text-link hover:underline">View checks →</Link>} />
       </div>
       <Section title="Total ECL by stage, last 8 runs">
         <div className="rounded-panel border border-line p-5"><StackedBars title="Total ECL by stage, last 8 runs" data={trend} x="month" format="compact" series={([1, 2, 3] as const).map((n) => ({ key: `s${n}`, label: `Stage ${n}`, color: `var(--stage-${n})`, value: `s${n}` as const }))} /></div>
@@ -46,16 +46,16 @@ export function EclOverview({ run, trend, segments, inProgress }: { run: Run; tr
             {inProgress.map((r) => (
               <li key={r.id} className="flex flex-wrap items-center gap-3 p-4">
                 <div className="min-w-0 flex-1"><p className="text-small text-fg"><span className="font-mono text-micro text-fg-muted">{r.id}</span> {r.name}</p>
-                  {r.step ? <p className="mt-1 flex items-center gap-2 text-micro text-fg-muted"><LiveDot tone="info" pulse />Step {r.step} of 7 · {r.stepLabel}</p> : <p className="mt-1 flex items-center gap-2 text-micro text-fg-muted"><Avatar initials={r.createdBy.split(" ").map((p) => p[0]).join("")} size="xs" />Submitted by {r.createdBy}</p>}
+                  {r.step ? <p className="mt-1 flex items-center gap-2 text-micro text-fg-muted"><LiveDot tone="info" pulse />Step {r.step} of 7{r.stepLabel ? ` · ${r.stepLabel}` : ""}</p> : <p className="mt-1 flex items-center gap-2 text-micro text-fg-muted"><Avatar initials={r.createdBy.split(" ").map((p) => p[0]).join("")} size="xs" />Submitted by {r.createdBy}</p>}
                 </div>
                 <RunStatusPill status={r.status} />
-                <Button asChild size="sm" variant={r.status === "needs-review" ? "primary" : "secondary"}><Link href={r.status === "needs-review" ? `/ecl/runs/${r.id}/summary` : `/ecl/runs/new/${["setup", "pd", "lgd", "ead", "review", "compute", "sign-off"][(r.step ?? 1) - 1]}`}>{r.status === "needs-review" ? "Review" : "Continue"}</Link></Button>
+                <Button asChild size="sm" variant={r.status === "needs-review" ? "primary" : "secondary"}><Link href={r.status === "needs-review" ? `/ecl/runs/${r.id}/summary` : r.status === "computing" ? `/ecl/runs/new/compute?run=${r.id}` : `/ecl/runs/new/${["setup", "pd", "lgd", "ead", "review", "compute", "sign-off"][(r.step ?? 1) - 1]}?run=${r.id}`}>{r.status === "needs-review" ? "Review" : "Continue"}</Link></Button>
               </li>
             ))}
           </ul>
         </Section>
       </div>
-      <p className="font-mono text-micro text-fg-muted">Figures from {run.id} · engine {run.engine} · inputs SHA 9f2c…a71</p>
+      <p className="font-mono text-micro text-fg-muted">Figures from {run.name} · engine {run.engine} · <Link href={`/ecl/runs/${run.id}/inputs`} className="hover:underline">inputs</Link></p>
     </>
   );
 }
