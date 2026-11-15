@@ -36,6 +36,13 @@ const RULES = {
   "notifications.manage": (p: Principal) => p.workspaceRole !== null,
   "access.request": (p: Principal) => p.workspaceRole !== null,
   "activity.view": (p: Principal) => p.workspaceRole !== null,
+  // services (per-service roles; workspace admins can do everything in a service). The engine enforces the same.
+  "ecl.view": (p: Principal) => atLeast(p, "admin") || (p.workspaceRole !== null && p.services.ecl !== "none"),
+  "ecl.prepare": (p: Principal) => atLeast(p, "admin") || (p.workspaceRole !== null && (p.services.ecl === "analyst" || p.services.ecl === "reviewer")),
+  "ecl.review": (p: Principal) => atLeast(p, "admin") || (p.workspaceRole !== null && p.services.ecl === "reviewer"),
+  "leases.view": (p: Principal) => atLeast(p, "admin") || (p.workspaceRole !== null && p.services.leases !== "none"),
+  "leases.prepare": (p: Principal) => atLeast(p, "admin") || (p.workspaceRole !== null && ["preparer", "reviewer", "poster"].includes(p.services.leases)),
+  "leases.review": (p: Principal) => atLeast(p, "admin") || (p.workspaceRole !== null && (p.services.leases === "reviewer" || p.services.leases === "poster")),
   // workspace administrators (CA1–CA8)
   "workspace.update": (p: Principal) => atLeast(p, "admin"),
   "members.view": (p: Principal) => atLeast(p, "admin"),
