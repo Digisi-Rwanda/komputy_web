@@ -1,63 +1,110 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { AlertTriangle, CheckCircle2, Download, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
+import { CheckCircle2, Download, XCircle } from "lucide-react";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
-import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
-import { Switch } from "@/components/atoms/Switch";
 import { StatusPill } from "@/components/atoms/StatusPill";
+import { Banner } from "@/components/molecules/Banner";
 import { FileDropzone } from "@/components/molecules/FileDropzone";
-import { ProgressCircle } from "@/components/molecules/Progress";
+import { ProgressBar } from "@/components/molecules/Progress";
 import { Stepper } from "@/components/molecules/Stepper";
 import { toast } from "@/components/organisms/Toaster";
-import { download, toCsv } from "@/lib/csv";
-import { leaseData } from "@/data/mock/index";
+import { getImport, importAction, setImportMapping, uploadImport, type ImportBatch } from "@/lib/actions/leases";
+import { useLeaseData } from "@/components/organisms/leases/LeaseData";
 
-const STEPS = ["upload", "map", "validate", "preview", "commit"];
-const FIELDS = ["Lease ID", "Counterparty", "Commencement date", "End date", "Payment amount", "Frequency", "Rate (%)", "Location", "Ignore"];
+// Engine import template (apps/leases/imports.py COLUMNS): key, label, required.
+const FIELDS: [string, string, boolean][] = [
+  ["lease_ref", "Lease reference", true], ["name", "Lease name", true], ["asset_class", "Asset class", true], ["lessor", "Lessor", true], ["location", "Location", false],
+  ["currency", "Currency", true], ["commencement_date", "Commencement date", true], ["end_date", "End date", true], ["payment_amount", "Payment amount", true],
+  ["frequency", "Frequency", true], ["timing", "Timing", true], ["rent_free_months", "Rent-free months", false], ["escalation_pct", "Escalation %", false],
+  ["escalation_every_months", "Escalation every (months)", false], ["discount_rate_pct", "Discount rate %", false], ["initial_direct_costs", "Initial direct costs", false],
+  ["incentives", "Incentives received", false], ["restoration_estimate", "Restoration estimate", false], ["exemption", "Exemption", false],
+];
+const STEP: Record<string, number> = { uploaded: 1, mapping: 1, validating: 2, validated: 3, needs_fixing: 2, committing: 4, committed: 4, cancelled: 0 };
+const BUSY = new Set(["validating", "committing"]);
 
-/** LC-02 imports: upload → map columns (auto + saved) → validate → preview → commit with progress. */
-export function Imports({ initialStep = "upload" }: { initialStep?: string }) {
-  const [step, setStep] = useState(STEPS.includes(initialStep) ? initialStep : "upload");
-  const [map, setMap] = useState(leaseData.importMapping.map((m) => m[1] as string));
-  const [ibrPercent, setIbrPercent] = useState(false);
-  const [skip, setSkip] = useState(false);
-  const [created, setCreated] = useState(0);
-  const i = STEPS.indexOf(step);
-  useEffect(() => { if (step !== "commit" || created >= 45) return; const t = setTimeout(() => setCreated((c) => Math.min(45, c + 9)), 300); return () => clearTimeout(t); }, [step, created]);
-  const dupTarget = map.find((m, k) => m !== "Ignore" && map.indexOf(m) !== k);
+/** LC-02 imports: upload → map columns → validate (engine job) → accept warnings → commit (engine job) → submit for approval. */
+export function Imports() {
+  const b = useLeaseData(), router = useRouter();
+  const [busy, start] = useTransition();
+  const [batch, setBatch] = useState<ImportBatch | null>(null);
+  const [map, setMap] = useState<Record<string, string>>({});
+  const reviewers = b.members.filter((m) => m.id !== b.me && (m.role === "reviewer" || m.role === "administrator"));
+  const open = (x: ImportBatch) => { setBatch(x); setMap(x.mapping ?? {}); };
+  // Poll while the engine job runs (validation/commit progress is committed per chunk).
+  useEffect(() => {
+    if (!batch || !BUSY.has(batch.status)) return;
+    const t = setInterval(async () => { const r = await getImport(batch.id); if (r.ok) { setBatch(r.data); if (!BUSY.has(r.data.status)) router.refresh(); } }, 1500);
+    return () => clearInterval(t);
+  }, [batch, router]);
+  const act = (fn: () => Promise<{ ok: boolean; error?: string }>, ok: string) => start(async () => {
+    const r = await fn();
+    if (!r.ok) { toast.error(r.error ?? "The engine refused this."); return; }
+    toast.success(ok);
+    const fresh = batch && (await getImport(batch.id));
+    if (fresh?.ok) open(fresh.data);
+    router.refresh();
+  });
+  const rows = batch?.rows ?? [];
+  const errors = rows.filter((r) => r.issues.some((i) => i.severity === "error")), warnings = rows.filter((r) => !r.issues.some((i) => i.severity === "error") && r.issues.length);
+  const missing = FIELDS.filter(([k, , req]) => req && !map[k]).map(([, l]) => l);
+  const used = Object.values(map).filter(Boolean), dup = used.find((h, i) => used.indexOf(h) !== i);
+
+  if (!batch) return (
+    <div className="flex flex-col gap-6">
+      <FileDropzone title="Drop a lease file here" hint=".xlsx or .csv · up to 10,000 rows" accept=".xlsx,.csv" maxMb={20} onFile={(f) => start(async () => {
+        const fd = new FormData(); fd.set("file", f);
+        const r = await uploadImport(fd);
+        if (!r.ok) { toast.error(r.error); return; }
+        toast.success(`${f.name} uploaded`); open(r.data);
+      })} />
+      <p className="text-micro text-fg-muted"><Link href="/api/leases/imports/template" prefetch={false} className="text-link hover:underline">Download import template (CSV)</Link></p>
+      <section className="flex flex-col gap-2"><h2 className="text-h4">Recent imports</h2>
+        <ul className="divide-y divide-line rounded-panel border border-line">{b.imports.map(([id, f, n, st, by, at]) => <li key={id} className="flex flex-wrap items-center gap-3 px-4 py-3 text-small"><span className="font-mono text-micro text-fg">{id}</span><span className="flex-1 text-fg-body">{f}{n ? ` · ${n} rows` : ""}</span><StatusPill tone={st === "committed" ? "positive" : st === "needs_fixing" ? "negative" : "neutral"}>{st.replace("_", " ")}</StatusPill><span className="text-micro text-fg-muted">{by} · {at}</span><Button size="sm" variant="ghost" loading={busy} onClick={() => start(async () => { const r = await getImport(id); if (r.ok) open(r.data); else toast.error(r.error); })}>Open</Button></li>)}
+          {!b.imports.length && <li className="px-4 py-6 text-center text-small text-fg-muted">No imports yet.</li>}</ul>
+      </section>
+    </div>
+  );
+
   return (
     <div className="flex flex-col gap-6">
-      <Stepper current={i} steps={["Upload", "Map columns", "Validate", "Preview", "Commit"].map((label) => ({ label }))} />
-      {step === "upload" && <>
-        <FileDropzone title="Drop a lease file here" hint=".xlsx or .csv · up to 10,000 rows" accept=".xlsx,.csv" maxMb={20} onFile={() => setStep("map")} />
-        <p className="text-micro text-fg-muted"><a href="/templates/leases-import-template.csv" download className="text-link hover:underline">Download import template</a> · <button type="button" className="text-link hover:underline" onClick={() => setStep("map")}>Use Branches_2026.xlsx (example)</button></p>
-        <section className="flex flex-col gap-2"><h2 className="text-h4">Recent imports</h2>
-          <ul className="divide-y divide-line rounded-panel border border-line">{leaseData.imports.map(([id, f, rows, st, by, at]) => <li key={id} className="flex flex-wrap items-center gap-3 px-4 py-3 text-small"><span className="font-mono text-micro text-fg">{id}</span><span className="flex-1 text-fg-body">{f} · {rows} rows</span><StatusPill tone={st === "committed" ? "positive" : st === "needs-fixing" ? "negative" : "neutral"}>{st === "needs-fixing" ? "Needs fixing" : st === "committed" ? "Committed" : "Cancelled"}</StatusPill><span className="text-micro text-fg-muted">{by} · {at}</span></li>)}</ul>
-        </section>
-      </>}
-      {step === "map" && <>
-        <div className="relative overflow-x-auto rounded-panel border border-line"><table className="w-full min-w-[620px] text-small"><caption className="sr-only">Column mapping</caption>
-          <thead><tr className="border-b border-line text-fg-muted">{["Your column", "Ledgerline field", "Sample value"].map((h) => <th key={h} scope="col" className="px-4 py-2 text-left font-normal">{h}</th>)}</tr></thead>
-          <tbody>{leaseData.importMapping.map(([col, , sample, auto], k) => <tr key={col} className="border-b border-line last:border-0"><td className="px-4 py-2 font-mono text-micro text-fg">{col}</td><td className="px-4 py-2"><span className="flex items-center gap-2"><Select aria-label={`Field for ${col}`} value={map[k]} invalid={map[k] === dupTarget} onChange={(e) => setMap((m) => m.map((x, j) => (j === k ? e.target.value : x)))} wrapperClassName="w-56">{FIELDS.map((f) => <option key={f}>{f}</option>)}</Select>{auto && <Badge tone="positive">Auto</Badge>}</span></td><td className="px-4 py-2 text-fg-body">{sample}</td></tr>)}</tbody></table></div>
-        {dupTarget && <p role="alert" className="text-small text-negative">“{dupTarget}” is mapped twice.</p>}
-        {!ibrPercent && <div className="flex flex-wrap items-center gap-3 rounded-card border border-warning/40 bg-warning-tint px-4 py-3 text-small text-fg"><AlertTriangle className="size-4 text-warning" />IBR values look like decimals (0.095). Treat as 9.5 %?<Button size="sm" variant="secondary" className="ml-auto" onClick={() => setIbrPercent(true)}>Yes, convert</Button></div>}
-        <div className="flex flex-wrap items-end justify-between gap-3"><label className="flex flex-col gap-1.5 text-small text-fg-body">Save mapping as<Input defaultValue="Branch template" className="w-56" /></label><Button disabled={Boolean(dupTarget)} onClick={() => setStep("validate")}>Validate 48 rows</Button></div>
-      </>}
-      {step === "validate" && <>
-        <p className="flex flex-wrap gap-2"><Badge tone="positive">41 valid</Badge><Badge tone="warning">4 warnings</Badge><Badge tone="negative">3 errors</Badge></p>
-        <ul className="divide-y divide-line rounded-panel border border-line">{leaseData.importErrors.map(([row, msg]) => <li key={row} className="flex items-center gap-3 px-4 py-3 text-small"><XCircle className="size-4 text-negative" /><span className="w-16 font-mono text-micro text-fg-muted">Row {row}</span><span className="flex-1 text-fg-body">{msg}</span></li>)}</ul>
-        <div className="flex flex-wrap gap-2"><Button variant="secondary" icon={<Download />} onClick={() => download("IMP-0031-errors.csv", toCsv([["Row", "Error"], ...leaseData.importErrors.map((e) => [...e])]))}>Download errors (CSV)</Button><Button variant="secondary" onClick={() => setStep("upload")}>Fix in file and re-upload</Button><Button onClick={() => { setSkip(true); setStep("preview"); }}>Skip error rows</Button></div>
-      </>}
-      {step === "preview" && <>
-        <section className="flex flex-col gap-1 rounded-panel border border-line p-5"><p className="text-h3 text-fg">45 leases will be created as drafts</p><p className="text-small text-fg-muted">Liability total USD 2,104,330.18{skip && " · 3 error rows skipped"}</p></section>
-        <Switch label="Submit all for approval after import" />
-        <div className="flex justify-end gap-2"><Button variant="ghost" onClick={() => setStep("validate")}>Back</Button><Button onClick={() => { setCreated(0); setStep("commit"); }}>Commit import</Button></div>
-      </>}
-      {step === "commit" && <section className="flex flex-col items-center gap-4 rounded-panel border border-line p-8 text-center">
-        {created < 45 ? <ProgressCircle value={created} max={45} size={120} label="Creating leases"><span className="font-mono text-small text-fg">{created} / 45</span></ProgressCircle> : <><CheckCircle2 className="size-12 text-positive" /><p className="text-h4 text-fg">45 drafts created · 3 rows skipped</p><div className="flex flex-wrap justify-center gap-3"><Link href="/leases/register?view=drafts" className="text-small text-link hover:underline">View in register (filtered to IMP-0031)</Link><button type="button" className="text-small text-link hover:underline" onClick={() => toast.success("Import report downloaded")}>Download import report</button></div></>}
+      <div className="flex flex-wrap items-center gap-3"><Button variant="ghost" size="sm" onClick={() => setBatch(null)}>← All imports</Button><span className="font-mono text-micro text-fg">{batch.id}</span><span className="text-small text-fg-body">{batch.fileName}</span><StatusPill tone={batch.status === "committed" ? "positive" : batch.status === "needs_fixing" ? "negative" : "info"}>{batch.status.replace("_", " ")}</StatusPill></div>
+      <Stepper current={STEP[batch.status] ?? 1} steps={["Upload", "Map columns", "Validate", "Review", "Commit"].map((label) => ({ label }))} />
+      {BUSY.has(batch.status) && <section aria-live="polite" className="flex flex-col gap-2 rounded-panel border border-line p-5"><p className="text-small text-fg">{batch.status === "validating" ? "Validating rows…" : "Creating leases…"}</p><ProgressBar value={batch.progress ?? 0} max={100} label="Progress" showValue /><p className="text-micro text-fg-muted">Runs in the background. You can leave this page.</p></section>}
+
+      {(batch.status === "uploaded" || batch.status === "mapping" || batch.status === "needs_fixing" || batch.status === "validated") && <section className="flex flex-col gap-3">
+        <h2 className="text-h4">Map columns</h2>
+        <div className="relative overflow-x-auto rounded-panel border border-line"><table className="w-full min-w-[560px] text-small"><caption className="sr-only">Column mapping</caption>
+          <thead><tr className="border-b border-line text-fg-muted">{["Ledgerline field", "Your column"].map((h) => <th key={h} scope="col" className="px-4 py-2 text-left font-normal">{h}</th>)}</tr></thead>
+          <tbody>{FIELDS.map(([k, label, req]) => <tr key={k} className="border-b border-line last:border-0"><td className="px-4 py-2 text-fg">{label}{req && <span className="text-negative"> *</span>}</td><td className="px-4 py-2"><Select aria-label={`Column for ${label}`} value={map[k] ?? ""} invalid={Boolean(map[k]) && map[k] === dup} onChange={(e) => setMap((m) => ({ ...m, [k]: e.target.value }))} wrapperClassName="w-64"><option value="">— Not in file —</option>{batch.headers.map((h) => <option key={h} value={h}>{h}</option>)}</Select></td></tr>)}</tbody></table></div>
+        {dup && <p role="alert" className="text-small text-negative">Column “{dup}” is mapped twice.</p>}
+        {missing.length > 0 && <p className="text-small text-fg-muted">Required: {missing.join(", ")}</p>}
+        <Button className="w-fit" loading={busy} disabled={missing.length > 0 || Boolean(dup)} disabledReason={missing.length ? "Map the required fields" : dup ? "A column is mapped twice" : undefined} onClick={() => act(() => setImportMapping(batch.id, map), "Validation started")}>Save mapping and validate</Button>
+      </section>}
+
+      {(batch.status === "validated" || batch.status === "needs_fixing") && <section className="flex flex-col gap-3">
+        <p className="flex flex-wrap gap-2"><Badge tone="positive">{rows.length - errors.length - warnings.length} valid</Badge><Badge tone="warning">{warnings.length} with warnings</Badge><Badge tone="negative">{errors.length} with errors</Badge></p>
+        <ul className="max-h-80 divide-y divide-line overflow-auto rounded-panel border border-line">{[...errors, ...warnings].slice(0, 200).map((r) => <li key={r.row} className="flex items-start gap-3 px-4 py-3 text-small">{r.issues.some((i) => i.severity === "error") ? <XCircle className="mt-0.5 size-4 shrink-0 text-negative" /> : <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-warning" />}<span className="w-16 shrink-0 font-mono text-micro text-fg-muted">Row {r.row}</span><span className="flex-1 text-fg-body">{r.issues.map((i) => `${i.column ? `${i.column}: ` : ""}${i.message}`).join(" · ")}</span></li>)}
+          {!errors.length && !warnings.length && <li className="px-4 py-4 text-small text-fg-muted">Every row passed.</li>}</ul>
+        <div className="flex flex-wrap gap-2">
+          {(errors.length > 0 || warnings.length > 0) && <Button asChild variant="secondary" icon={<Download />}><a href={`/api/leases/imports/${batch.id}`}>Download issues (CSV)</a></Button>}
+          {warnings.length > 0 && !batch.warningsAccepted && <Button variant="secondary" loading={busy} onClick={() => act(() => importAction(batch.id, "accept-warnings"), "Warnings accepted")}>Accept warnings</Button>}
+          <Button loading={busy} disabled={rows.length === errors.length || (warnings.length > 0 && !batch.warningsAccepted)} disabledReason={rows.length === errors.length ? "No valid rows to import" : warnings.length > 0 && !batch.warningsAccepted ? "Accept the warnings first" : undefined}
+            onClick={() => act(() => importAction(batch.id, "commit"), "Import started")}>Create {rows.length - errors.length} leases as drafts{errors.length ? ` (skip ${errors.length})` : ""}</Button>
+          <Button variant="ghost" loading={busy} onClick={() => act(() => importAction(batch.id, "cancel"), "Import cancelled")}>Cancel import</Button>
+        </div>
+      </section>}
+
+      {batch.status === "committed" && <section className="flex flex-col items-center gap-4 rounded-panel border border-line p-8 text-center">
+        <CheckCircle2 className="size-12 text-positive" /><p className="text-h4 text-fg">{rows.filter((r) => r.leaseId).length} drafts created{rows.some((r) => r.outcome === "failed") ? ` · ${rows.filter((r) => r.outcome === "failed").length} failed` : ""}</p>
+        <div className="flex flex-wrap justify-center gap-3">
+          {rows.some((r) => r.outcome === "failed") && <Button variant="secondary" loading={busy} onClick={() => act(() => importAction(batch.id, "retry"), "Retrying failed rows")}>Retry failed rows</Button>}
+          {reviewers[0] ? <Button loading={busy} onClick={() => act(() => importAction(batch.id, "submit", reviewers[0].id), `Submitted to ${reviewers[0].name}`)}>Submit all for approval</Button> : <Banner tone="warning">No reviewer available to approve these leases.</Banner>}
+          <Link href="/leases/register" className="self-center text-small text-link hover:underline">View in register</Link>
+        </div>
       </section>}
     </div>
   );
