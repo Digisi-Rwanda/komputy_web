@@ -1,56 +1,80 @@
 "use client";
-import { useState } from "react";
-import { Lock } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/atoms/Button";
 import { Icon } from "@/components/atoms/Icon";
 import { Input } from "@/components/atoms/Input";
-import { NumberInput } from "@/components/atoms/NumberInput";
+import { Select } from "@/components/atoms/Select";
 import { Textarea } from "@/components/atoms/Textarea";
+import { Banner } from "@/components/molecules/Banner";
 import { CardSelector } from "@/components/molecules/CardSelector";
 import { Field } from "@/components/molecules/Field";
-import { Banner } from "@/components/molecules/Banner";
 import { Sheet } from "@/components/organisms/Modal";
-import { Waterfall } from "@/components/organisms/Waterfall";
-import { remeasure } from "@/lib/lease";
+import { toast } from "@/components/organisms/Toaster";
 import { money } from "@/lib/format";
-import type { Lease } from "@/types/domain";
+import { addEvent, previewEvent } from "@/lib/actions/leases";
+import { useLeaseData } from "@/components/organisms/leases/LeaseData";
 
-const EVENTS = [["extension", "Extension or reduction of term", "Extend or reduce the lease term."], ["payments", "Change in payments", "Update payment amounts."], ["rate", "Rate / index change", "Update the rate or index."], ["partial", "Partial termination", "Terminate part of the lease."], ["full", "Full termination", "End the lease early."], ["correction", "Correction of an error", "Requires Administrator."]] as const;
+const EVENTS: [string, string, string][] = [
+  ["index", "Index / rent change", "New payment from a date; original rate kept (IFRS 16.42(b))"],
+  ["term", "Term change", "Extension or shortening; revised rate"],
+  ["modification", "Modification", "Scope decrease and/or new payment; revised rate"],
+  ["termination", "Termination", "Early end; derecognise, optional penalty"],
+];
 
-/** LB-05 add event with live remeasurement impact; locked-period guard; submit goes to approval. */
-export function AddEvent({ lease, closingBefore, onSubmitted }: { lease: Lease; closingBefore: number; onSubmitted: (title: string) => void }) {
+/** LB-05 add event: the engine previews the remeasurement (liability, ROU, journals); submitting sends it for approval. */
+export function AddEvent({ leaseId, rev, currency }: { leaseId: string; rev: number; currency: string }) {
+  const b = useLeaseData(), router = useRouter();
   const [open, setOpen] = useState(false);
-  const [kind, setKind] = useState("extension");
-  const [eff, setEff] = useState(`${Number(lease.end?.slice(0, 4) ?? 2029)}-01-01`);
-  const [extra, setExtra] = useState(2);
-  const [rate, setRate] = useState<number | null>(0.104);
-  const [reason, setReason] = useState("Board approved extension, minute BM-2028-07.");
-  const locked = eff < "2026-10-01";
-  const payment = 10000;
-  const impact = remeasure(closingBefore, { payment, frequency: "annual", timing: "arrears", rate: rate ?? 0 }, 1 + extra);
-  const valid = !locked && (rate ?? 0) > 0 && reason.trim().length >= 10;
+  const [busy, start] = useTransition();
+  const [kind, setKind] = useState("index");
+  const [eff, setEff] = useState(""), [amount, setAmount] = useState(""), [end, setEnd] = useState(""), [scope, setScope] = useState(""), [penalty, setPenalty] = useState(""), [rate, setRate] = useState(""), [reason, setReason] = useState("");
+  const reviewers = b.members.filter((m) => m.id !== b.me && (m.role === "reviewer" || m.role === "administrator"));
+  const [approver, setApprover] = useState("");
+  const [preview, setPreview] = useState<null | { segment: Record<string, string>; journals: { account: string; debit: string; credit: string }[] }>(null);
+  const ev = () => ({
+    event: kind, effectiveDate: eff, reason: reason.trim(),
+    ...(amount && (kind === "index" || kind === "modification") ? { newAmount: amount } : {}),
+    ...(end && kind === "term" ? { newEndDate: end } : {}),
+    ...(scope && kind === "modification" ? { scopeDecrease: String(Number(scope) / 100) } : {}),
+    ...(kind === "termination" ? { terminationPenalty: penalty || "0" } : {}),
+    ...(rate && (kind === "term" || kind === "modification") ? { rate: { value: String(Number(rate) / 100), source: "override", reason: "Revised rate at remeasurement" } } : {}),
+  });
+  const valid = /^\d{4}-\d{2}-\d{2}$/.test(eff) && reason.trim().length >= 5;
+  const run = (fn: () => Promise<void>) => start(async () => { try { await fn(); } catch (e) { toast.error(e instanceof Error ? e.message : "Something went wrong."); } });
+  const doPreview = () => run(async () => { const r = await previewEvent(leaseId, ev()); if (!r.ok) throw new Error(r.error); setPreview(r.data); });
+  const submit = () => run(async () => {
+    const to = approver || reviewers[0]?.id;
+    if (!to) throw new Error("There's no reviewer to send this to.");
+    const r = await addEvent(leaseId, rev, to, ev());
+    if (!r.ok) throw new Error(r.error);
+    toast.success("Event submitted for approval"); setOpen(false); setPreview(null); router.refresh();
+  });
+  const seg = preview?.segment ?? {};
   return (
-    <Sheet open={open} onOpenChange={setOpen} width="w-[640px]" title={`Add event · ${lease.id}`} trigger={<Button icon={<Icon name="plus" />}>Add event</Button>}
-      footer={<><Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button><Button disabled={!valid} disabledReason={!valid ? "Fix the highlighted fields" : undefined} onClick={() => { onSubmitted(`Extension proposed — +${extra} years`); setOpen(false); }}>Submit event for approval</Button></>}>
+    <Sheet open={open} onOpenChange={(o) => { setOpen(o); if (!o) setPreview(null); }} width="w-[640px]" title="Add event" trigger={<Button icon={<Icon name="plus" />}>Add event</Button>}
+      footer={<><Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button><Button variant="secondary" loading={busy} disabled={!valid} disabledReason={!valid ? "Add the effective date and a reason" : undefined} onClick={doPreview}>Preview impact</Button><Button loading={busy} disabled={!preview} disabledReason={!preview ? "Preview the impact first" : undefined} onClick={submit}>Submit for approval</Button></>}>
       <div className="flex flex-col gap-5">
-        <CardSelector label="Event type" columns={2} value={kind} onChange={setKind} options={EVENTS.map(([v, t, d]) => ({ value: v, title: t, description: d, disabled: v === "correction", icon: v === "correction" ? <Lock className="size-4" /> : undefined }))} />
-        {kind === "extension" ? <>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Effective date" id="ev-eff" error={locked ? "Effective date falls in a locked period. Choose a date in an open period." : undefined}><Input type="date" value={eff} onChange={(e) => setEff(e.target.value)} /></Field>
-            <Field label="Additional years" id="ev-x"><NumberInput defaultValue={extra} onValueChange={(n) => setExtra(Math.max(0, Math.round(n ?? 0)))} /></Field>
-            <Field label="Revised rate" id="ev-rate" help="Curve, 5 yrs: 10.40 %"><NumberInput kind="percent" defaultValue={rate} onValueChange={setRate} /></Field>
-            <Field label="Payments" id="ev-pay"><Input readOnly value={`${money(payment)} annual in arrears`} /></Field>
-          </div>
-          <Field label="Reason" id="ev-reason" required error={reason.trim().length < 10 ? "Explain the event (min 10 characters)." : undefined}><Textarea value={reason} maxLength={500} onChange={(e) => setReason(e.target.value)} /></Field>
+        <CardSelector label="Event type" columns={2} value={kind} onChange={(v) => { setKind(v); setPreview(null); }} options={EVENTS.map(([v, t, d]) => ({ value: v, title: t, description: d }))} />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Effective date" id="ev-eff" help="Must fall in an open period"><Input type="date" value={eff} onChange={(e) => { setEff(e.target.value); setPreview(null); }} /></Field>
+          {(kind === "index" || kind === "modification") && <Field label={`New payment · ${currency}`} id="ev-amt"><Input numeric value={amount} onChange={(e) => { setAmount(e.target.value); setPreview(null); }} /></Field>}
+          {kind === "term" && <Field label="New end date" id="ev-end"><Input type="date" value={end} onChange={(e) => { setEnd(e.target.value); setPreview(null); }} /></Field>}
+          {kind === "modification" && <Field label="Scope decrease (%)" id="ev-scope"><Input numeric value={scope} onChange={(e) => { setScope(e.target.value); setPreview(null); }} /></Field>}
+          {kind === "termination" && <Field label={`Termination penalty · ${currency}`} id="ev-pen"><Input numeric value={penalty} onChange={(e) => { setPenalty(e.target.value); setPreview(null); }} /></Field>}
+          {(kind === "term" || kind === "modification") && <Field label="Revised rate (%)" id="ev-rate" help="Blank keeps the current rate"><Input numeric value={rate} onChange={(e) => { setRate(e.target.value); setPreview(null); }} /></Field>}
+          <Field label="Approver" id="ev-appr"><Select value={approver || reviewers[0]?.id || ""} onChange={(e) => setApprover(e.target.value)}>{reviewers.length ? reviewers.map((m) => <option key={m.id} value={m.id}>{m.name}</option>) : <option value="">No reviewer available</option>}</Select></Field>
+        </div>
+        <Field label="Reason" id="ev-reason" required><Textarea value={reason} maxLength={500} onChange={(e) => { setReason(e.target.value); setPreview(null); }} /></Field>
+        {preview ? (
           <section className="glass ring-inner flex flex-col gap-3 rounded-panel border border-line p-5">
             <p className="text-small text-fg">Remeasurement on {eff}</p>
-            <p className="text-small tabular-nums text-fg-body">Liability before {money(impact.before)} → after <span className="text-fg">{money(impact.after)}</span> · Δ <span className="text-warning">{impact.delta >= 0 ? "+" : ""}{money(impact.delta)}</span></p>
-            <p className="text-small text-fg-body">ROU adjustment {impact.delta >= 0 ? "+" : ""}{money(impact.delta)}</p>
-            <Waterfall title="Remeasurement" height={160} increaseIsBad={false} steps={[{ label: "Old liability", value: impact.before, kind: "total" }, { label: "Remeasure", value: impact.delta }, { label: "New liability", value: impact.after, kind: "total" }]} />
-            <p className="rounded-md bg-surface px-3 py-2 font-mono text-micro text-fg-body">Dr ROU asset {money(impact.delta)} / Cr Lease liability {money(impact.delta)}</p>
-            <p className="font-mono text-micro text-fg-muted">Preview only — nothing changes until approved.</p>
+            <p className="text-small tabular-nums text-fg-body">Liability before {money(Number(seg.liabBefore ?? 0))} → after <span className="text-fg">{money(Number(seg.L0 ?? 0))}</span> · Δ {money(Number(seg.liabAdj ?? 0))}</p>
+            <p className="text-small tabular-nums text-fg-body">ROU before {money(Number(seg.rouBefore ?? 0))} → after <span className="text-fg">{money(Number(seg.R0 ?? 0))}</span>{Number(seg.gainLoss ?? 0) ? ` · gain/loss ${money(Number(seg.gainLoss))}` : ""}</p>
+            <ul className="flex flex-col gap-1 rounded-md bg-surface px-3 py-2 font-mono text-micro text-fg-body">{preview.journals.slice(0, 8).map((j, i) => <li key={i}>{Number(j.debit) ? `Dr ${j.account} ${money(Number(j.debit))}` : `Cr ${j.account} ${money(Number(j.credit))}`}</li>)}</ul>
+            <p className="font-mono text-micro text-fg-muted">Preview by the engine — nothing changes until approved.</p>
           </section>
-        </> : <Banner tone="info">This event type uses the same flow: details, live impact, then approval.</Banner>}
+        ) : <Banner tone="info">Preview the impact to see the remeasurement and journals before submitting.</Banner>}
       </div>
     </Sheet>
   );
