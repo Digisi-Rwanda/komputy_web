@@ -1,25 +1,33 @@
 "use client";
 import { useSyncExternalStore } from "react";
 
-// Run draft for the wizard (blueprint §11.4). Auto-saved per browser.
-// shortcut: localStorage draft; upgrade to the run API (PATCH /runs/{id}) so drafts follow the user across devices.
+// Run draft for the wizard (blueprint §11.4). The run itself lives in the engine (`runId`); this store holds the
+// screen state between steps and is re-hydrated from the engine whenever the wizard opens with ?run=<id>.
 export type Dataset = "pd" | "lgd" | "ead";
 export type Outcome = "passed" | "warnings" | "failed";
-export interface FileState { status: "empty" | "uploading" | "validating" | "report" | "accepted"; name?: string; sizeMb?: number; progress?: number; outcome?: Outcome; ack?: boolean; comment?: string; acceptedAt?: string }
+export interface EngineCriterion { id: string; title: string; detail: string; status: "passed" | "warning" | "error" }
+export interface FileState { status: "empty" | "uploading" | "uploaded" | "validating" | "report" | "accepted"; name?: string; sizeMb?: number; progress?: number; outcome?: Outcome; ack?: boolean; comment?: string; acceptedAt?: string; jobId?: string; criteria?: EngineCriterion[]; rows?: number | null; sha?: string }
 export type RunPhase = "draft" | "computing" | "compute-failed" | "computed" | "submitted" | "returned" | "signed-off";
 export interface Draft {
   id: string; name: string; reportingDate: string; currency: string; engine: string; description: string;
   files: Record<Dataset, FileState>; phase: RunPhase; computeStartedAt?: number; computeAttempt: number;
   sample: boolean; reviewer: string; note: string; savedAt: number; returnComment?: string;
+  /** Engine run id (ULID) once the run exists; every step after setup needs it. */
+  runId?: string; failureMessage?: string | null; progress?: Record<string, { status: string }> | null;
 }
 
 const KEY = "ll_run_draft";
 export { STEPS, type Step } from "@/data/wizard-steps";
 const empty: FileState = { status: "empty" };
-export const NEW_DRAFT = (): Draft => ({
-  id: "RUN-0144", name: "Nov 2026 month-end", reportingDate: "2026-11-30", currency: "USD", engine: "v1.3.0", description: "",
-  files: { pd: empty, lgd: empty, ead: empty }, phase: "draft", computeAttempt: 0, sample: false, reviewer: "Jean Habimana", note: "", savedAt: 0,
-});
+const lastMonthEnd = () => { const d = new Date(); d.setDate(0); return d; };
+export const NEW_DRAFT = (): Draft => {
+  const e = lastMonthEnd();
+  return {
+    // Reporting date blank = use the EAD file's most common Reporting Date (spec 1.5 excludes rows with another date).
+    id: "New run", name: `${e.toLocaleString("en-GB", { month: "short" })} ${e.getFullYear()} month-end`, reportingDate: "",
+    currency: "USD", engine: "current", description: "", files: { pd: empty, lgd: empty, ead: empty }, phase: "draft", computeAttempt: 0, sample: false, reviewer: "", note: "", savedAt: 0,
+  };
+};
 export const SAMPLE_FILES: Record<Dataset, FileState> = {
   pd: { status: "report", name: "SAMPLE_PD.xlsx", sizeMb: 0.4, outcome: "warnings" },
   lgd: { status: "empty" },
