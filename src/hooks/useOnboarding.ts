@@ -34,8 +34,10 @@ export function seedOnboarding(s: Pick<OnboardingState, "done" | "dismissed">) {
   if (server && server.dismissed === s.dismissed && server.done.join() === s.done.join()) return;
   server = s;
   if (cache) cache = { ...cache, ...s };
+  serverSnap = { ...INITIAL, ...s };
 }
+let serverSnap: OnboardingState = INITIAL;
 
 export function useOnboarding() {
-  return useSyncExternalStore((cb) => (subs.add(cb), () => subs.delete(cb)), read, () => ({ ...INITIAL, ...server }));
+  return useSyncExternalStore((cb) => (subs.add(cb), () => subs.delete(cb)), read, () => serverSnap);
 }
