@@ -9,8 +9,9 @@ import { HeroMetric, StatCard } from "@/components/molecules/StatCard";
 import { ProgressBar } from "@/components/molecules/Progress";
 import { Section } from "@/components/organisms/PageHeader";
 import { Waterfall } from "@/components/organisms/Waterfall";
-import { date, money } from "@/lib/format";
+import { date, money, month } from "@/lib/format";
 import { useLeaseData } from "@/components/organisms/leases/LeaseData";
+import { STEPS } from "@/components/organisms/leases/Close";
 
 
 /** LA-02 overview. */
@@ -36,24 +37,24 @@ export function LeasesOverview() {
         <StatCard label="Expiring in 12 months" value={`${O.expiring12} leases`} dot="bg-warning" />
       </div>
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <Section title="Liability roll-forward · financial year to date"><div className="rounded-panel border border-line p-5"><Waterfall title="Liability roll-forward, financial year to date" steps={O.rollForward} increaseIsBad={false} /></div></Section>
+        <Section title="Liability roll forward · financial year to date"><div className="rounded-panel border border-line p-5"><Waterfall title="Liability roll forward, financial year to date" steps={O.rollForward} increaseIsBad={false} /></div></Section>
         <Section title="Liability by asset class">
           <ul className="flex flex-col gap-4 rounded-panel border border-line p-5">{O.byClass.map(([k, v]) => (
-            <li key={k} className="flex flex-col gap-1.5"><span className="flex justify-between text-small"><span className="text-fg">{k}</span><span className="tabular-nums text-fg-body"><Money value={v} /> <span className="text-fg-muted">· {((v / total) * 100).toFixed(1)} %</span></span></span><ProgressBar value={v} max={total} label={k} tone="accent" /></li>
+            <li key={k} className="flex flex-col gap-1.5"><span className="flex justify-between text-small"><span className="text-fg">{k.charAt(0).toUpperCase() + k.slice(1)}</span><span className="tabular-nums text-fg-body"><Money value={v} /> <span className="text-fg-muted">· {total ? ((v / total) * 100).toFixed(1) : "0.0"} %</span></span></span><ProgressBar value={v} max={total} label={k} tone="accent" /></li>
           ))}</ul>
         </Section>
       </div>
-      <Section title={`${close ? close.period : label} close`} actions={<Button asChild variant="link" size="sm"><Link href="/leases/close">{close ? "Continue close →" : "Start close →"}</Link></Button>}>
+      <Section title={`${close ? month(close.period) : label} close`} actions={<Button asChild variant="link" size="sm"><Link href="/leases/close">{close ? "Continue close →" : "Start close →"}</Link></Button>}>
         <ol className="flex flex-wrap items-center gap-2 rounded-panel border border-line p-4 text-small">
           {(close?.steps ?? [{ id: "not started", status: "todo" }]).map((st, i) => (
-            <li key={st.id} className="flex items-center gap-2">{i > 0 && <span aria-hidden className="h-px w-6 bg-line-strong" />}<StatusPill tone={st.status === "done" ? "positive" : st.status === "warning" ? "warning" : st.status === "todo" ? "info" : "neutral"}>{st.id}{st.status === "done" && " ✓"}</StatusPill></li>
+            <li key={st.id} className="flex items-center gap-2">{i > 0 && <span aria-hidden className="h-px w-6 bg-line-strong" />}<StatusPill tone={st.status === "done" ? "positive" : st.status === "warning" ? "warning" : st.status === "todo" ? "info" : "neutral"}>{STEPS.find((x) => x.id === st.id)?.title ?? "Not started"}{st.status === "done" && " ✓"}</StatusPill></li>
           ))}
         </ol>
       </Section>
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <Section title="Needs attention">
           <ul className="divide-y divide-line rounded-panel border border-line">{attention.map(([t, m, tone, st, age, href]) => (
-            <li key={t}><Link href={href} className="flex flex-wrap items-center gap-3 px-4 py-3 hover:bg-surface/60"><span className="inline-flex size-8 items-center justify-center rounded-full bg-surface text-fg-muted"><Icon name="leases" size={14} /></span><span className="min-w-0 flex-1"><span className="block truncate text-small text-fg">{t}</span><span className="block text-micro text-fg-muted">{m}</span></span><StatusPill tone={tone}>{st}</StatusPill><span className="w-8 text-right font-mono text-micro text-fg-muted">{age}</span></Link></li>
+            <li key={t}><Link href={href} className="flex flex-wrap items-center gap-3 px-4 py-3 hover:bg-surface-hover"><span className="inline-flex size-8 items-center justify-center rounded-full bg-surface text-fg-muted"><Icon name="leases" size={14} /></span><span className="min-w-0 flex-1"><span className="block truncate text-small text-fg">{t}</span><span className="block text-micro text-fg-muted">{m}</span></span><StatusPill tone={tone}>{st}</StatusPill><span className="w-8 text-right font-mono text-micro text-fg-muted">{age}</span></Link></li>
           ))}{!attention.length && <li className="px-4 py-6 text-center text-small text-fg-muted">Nothing needs your attention.</li>}</ul>
         </Section>
         <Section title="Upcoming expiries">

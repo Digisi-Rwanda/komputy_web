@@ -10,7 +10,7 @@ function Word({ word, progress, range }: { word: string; progress: MotionValue<n
 }
 
 const fmt = (decimals: number, suffix: string) => (v: number) =>
-  `${v < 0 ? "−" : ""}${Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}${suffix}`;
+  `${v < 0 ? "(" : ""}${Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}${suffix}`;
 
 /** L2: paragraph that lights up word by word as it scrolls (Monitor effect), then four counting stats. */
 export function Manifesto() {

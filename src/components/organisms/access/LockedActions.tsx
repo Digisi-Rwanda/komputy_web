@@ -24,7 +24,7 @@ function StartTrialModal({ service, name, terms }: { service: ServiceId; name: s
   }, null);
   const submit = useKeepValuesSubmit(action);
   return (
-    <Modal title={`Start your ${name} trial`} trigger={<Button size="lg">Start 14-day trial</Button>}>
+    <Modal title={`Start your ${name} trial`} trigger={<Button size="lg">Start 14 day trial</Button>}>
       <form onSubmit={submit} className="flex flex-col gap-5">
         <input type="hidden" name="service" value={service} />
         {ack && <input type="hidden" name="ack" value="on" />}
@@ -53,7 +53,7 @@ function AskAdminModal({ service, name, admins }: { service: ServiceId; name: st
       <form onSubmit={submit} className="flex flex-col gap-4">
         <input type="hidden" name="service" value={service} />
         <Field label="Send to" id="ask-to"><Select name="to" defaultValue={admins[0]}>{admins.map((a) => <option key={a}>{a}</option>)}</Select></Field>
-        <Field label="Why do you need it?" id="ask-note" optional><Textarea name="note" maxLength={1000} placeholder="I review month-end close for the property portfolio." /></Field>
+        <Field label="Why do you need it?" id="ask-note" optional><Textarea name="note" maxLength={1000} placeholder="I review month end close for the property portfolio." /></Field>
         {state && !state.ok && <p role="alert" className="text-micro text-negative">{state.error}</p>}
         <div className="flex justify-end"><Button type="submit" loading={pending}>Send request</Button></div>
       </form>

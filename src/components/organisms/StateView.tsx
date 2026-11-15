@@ -47,8 +47,8 @@ export const States = {
   Filtered: ({ onClear }: { onClear?: () => void }) => <StateView icon="filter" tone="muted" title="No runs match these filters" action={<Button variant="secondary" onClick={onClear}>Clear filters</Button>} />,
   PageError: ({ refId = "req_01HF7K…9Q", onRetry }: { refId?: string; onRetry?: () => void }) => <StateView icon="x-circle" tone="negative" title="We couldn't load this run" description={<>The server didn&apos;t respond. Your data is safe. <span className="block pt-2 font-mono text-micro">Ref: {refId}</span></>} action={<Button variant="secondary" onClick={onRetry} icon={<Icon name="refresh" />}>Try again</Button>} />,
   NoPermission: ({ what = "sign off runs", role = "Reviewer", admins = "Aline Mugisha, Eric Uwase" }: { what?: string; role?: string; admins?: string }) => <StateView icon="lock" title={`You don't have access to ${what}`} description={<>Ask an administrator to give you the {role} role.<span className="block pt-2 text-micro">Admins: {admins}</span></>} action={<Button variant="secondary">Request role</Button>} />,
-  LockedService: ({ name = "Lease Accounting", features = ["IFRS 16 schedules & journals", "Month-end close", "Disclosures"] }: { name?: string; features?: string[] }) => (
-    <StateView icon="lock" tone="muted" title={`${name} isn't active in this workspace`} action={<Button>Start 14-day trial</Button>} secondary={<><Button variant="secondary">Request access</Button>{linkBtn("/pricing", "See pricing")}</>}>
+  LockedService: ({ name = "Lease Accounting", features = ["IFRS 16 schedules & journals", "Month end close", "Disclosures"] }: { name?: string; features?: string[] }) => (
+    <StateView icon="lock" tone="muted" title={`${name} isn't active in this workspace`} action={<Button>Start 14 day trial</Button>} secondary={<><Button variant="secondary">Request access</Button>{linkBtn("/pricing", "See pricing")}</>}>
       <ul className="flex flex-col gap-2 text-left text-small text-fg-body">{features.map((f) => <li key={f} className="flex items-center gap-2"><Icon name="check" className="text-positive" />{f}</li>)}</ul>
     </StateView>
   ),
@@ -57,9 +57,9 @@ export const States = {
       <ProgressBar value={used} max={limit} label={unit} tone="warning" showValue />
     </StateView>
   ),
-  ReadOnly: () => <StateView icon="lock" tone="negative" title="Read-only: this workspace is suspended" description="You can still view and export everything." action={<Button variant="secondary" icon={<Icon name="download" />}>Export all data</Button>} />,
+  ReadOnly: () => <StateView icon="lock" tone="negative" title="View only: this workspace is suspended" description="You can still view and export everything." action={<Button variant="secondary" icon={<Icon name="download" />}>Export all data</Button>} />,
   NotFound: () => (
     <StateView title="This page doesn't exist" art={<span aria-hidden className="font-serif text-[120px] leading-none text-line-strong">404</span>} action={<Button asChild><Link href="/">Go home</Link></Button>} />
   ),
-  Maintenance: () => <StateView icon="clock" title={<span className="inline-flex items-center gap-2"><LiveDot tone="warning" pulse />Komputy is updating</span>} description="Back in about 10 minutes. Uploads are paused, everything else is read-only." secondary={linkBtn("/status", "Status page")} />,
+  Maintenance: () => <StateView icon="clock" title={<span className="inline-flex items-center gap-2"><LiveDot tone="warning" pulse />Komputy is updating</span>} description="Back in about 10 minutes. Uploads are paused, everything else is view only." secondary={linkBtn("/status", "Status page")} />,
 };

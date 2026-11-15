@@ -30,7 +30,7 @@ export function EmailTemplates() {
         <Email subject="Your Lease Accounting trial ends in 4 days" cta="Request full access" note={<>Questions? <span className="text-[#0099FF] underline">Talk to M. Achieng</span></>}>
           <H>4 days left in your trial</H>
           <div className="rounded-card border border-[#1F1F1F] p-4 font-mono text-small">8 of 10 leases · 1 close period used</div>
-          <p className="text-base">Your data stays available read-only after the trial.</p>
+          <p className="text-base">Your data stays available view only after the trial.</p>
         </Email></section>
       <section className="flex flex-col gap-3"><p className="font-mono text-micro uppercase tracking-wider text-fg-muted">NA6.3 Service activated</p>
         <Email subject="Lease Accounting is now active" cta="Go to Lease Accounting">

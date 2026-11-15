@@ -21,6 +21,7 @@ import { hydrate, uploadFile, validate } from "@/lib/wizard-engine";
 import { setDraft, setFile, useDraft, type Dataset } from "@/hooks/useRunDraft";
 import { ECL_REQUIRED, precheckXlsx } from "@/lib/xlsx-precheck";
 import { DesktopOnlyNote, WizardShell } from "@/components/organisms/ecl/Shell";
+import { showCode } from "@/lib/code";
 
 const NAME: Record<Dataset, string> = { pd: "PD", lgd: "LGD", ead: "EAD" };
 const NEXT: Record<Dataset, string> = { pd: "lgd", lgd: "ead", ead: "review" };
@@ -50,7 +51,7 @@ function CriterionRow({ c, open, onToggle }: { c: Criterion; open: boolean; onTo
     <li>
       <button type="button" disabled={!expandable} aria-expanded={expandable ? open : undefined} onClick={onToggle} className="flex w-full flex-wrap items-center gap-3 px-5 py-3 text-left disabled:cursor-default">
         <I aria-hidden className={cn("size-4 shrink-0", cl)} />
-        <span className="min-w-0 flex-1"><span className="block text-small text-fg"><span className="mr-2 font-mono text-micro text-fg-muted">{c.id}</span>{c.title}</span>{c.detail && <span className="block text-micro text-fg-muted">{c.detail}</span>}</span>
+        <span className="min-w-0 flex-1"><span className="block text-small text-fg"><span className="mr-2 font-mono text-micro text-fg-muted">{showCode(c.id)}</span>{c.title}</span>{c.detail && <span className="block text-micro text-fg-muted">{c.detail}</span>}</span>
         <span className={cn("text-micro capitalize", cl)}>{c.status === "passed" ? "Passed" : c.status}</span>
         {c.affected && <span className="w-28 text-right font-mono text-micro text-fg-muted">{c.affected}</span>}
         {expandable && <ChevronDown aria-hidden className={cn("size-4 text-fg-muted transition-transform", open && "rotate-180")} />}
@@ -166,7 +167,7 @@ export function DataStep({ k }: { k: Dataset }) {
           )}
 
           {(f.status === "report" || f.status === "accepted") && f.outcome && !f.criteria && (
-            <Banner tone={f.outcome === "failed" ? "negative" : "info"} action={f.status === "report" ? <Button size="sm" variant="secondary" onClick={runValidation}>Show the report</Button> : undefined}>{f.status === "accepted" ? `${NAME[k]} data accepted.` : `${NAME[k]} was validated (${f.outcome}). Re-open the report to accept it.`}</Banner>
+            <Banner tone={f.outcome === "failed" ? "negative" : "info"} action={f.status === "report" ? <Button size="sm" variant="secondary" onClick={runValidation}>Show the report</Button> : undefined}>{f.status === "accepted" ? `${NAME[k]} data accepted.` : `${NAME[k]} was validated (${f.outcome}). Reopen the report to accept it.`}</Banner>
           )}
           {(f.status === "report" || f.status === "accepted") && f.outcome && f.criteria && (
             <>

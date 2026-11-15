@@ -9,7 +9,7 @@ export const GROUPS: Group[] = [
     { id: "verify-email", label: "Verify your email", action: { label: "Resend", href: "/verify-email-pending" } },
     { id: "profile", label: "Confirm company profile", hint: "currency RWF, year end 31 Dec", action: { label: "Review", href: "/admin/profile" } },
     { id: "invite", label: "Invite your team", hint: "reviewers sign off, analysts upload", action: { label: "Invite", href: "/admin/members" } },
-    { id: "mfa", label: "Turn on two-step verification", hint: "recommended", action: { label: "Set up", href: "/account/security" } },
+    { id: "mfa", label: "Turn on two step verification", hint: "recommended", action: { label: "Set up", href: "/account/security" } },
   ] },
   { id: "ecl", title: "Expected Credit Loss", service: "ecl", tasks: [
     { id: "ecl-segments", label: "Define segments", hint: "or detect them from your first PD file", action: { label: "Define", href: "/ecl/setup/segments" } },

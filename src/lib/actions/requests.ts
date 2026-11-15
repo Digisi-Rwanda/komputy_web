@@ -32,7 +32,7 @@ export const decideRequest = mutate({
     if (input.decision === "forwarded") {
       const [t] = await tx.select({ name: schema.tenants.name }).from(schema.tenants).where(eq(schema.tenants.id, p.tenantId!));
       const id = ulid();
-      await tx.insert(schema.accessRequests).values({ id, code: `REQ-${id.slice(-4)}`, tenantId: p.tenantId!, requesterId: r.requesterId, kind: "service", scope: "platform", status: "new", service: r.service, source: `Forwarded by ${p.name}`, details: { company: t.name, type: "Forwarded", services: [d.requested ?? r.service], size: "Member-forwarded", message: input.reply } });
+      await tx.insert(schema.accessRequests).values({ id, code: `REQ-${id.slice(-4)}`, tenantId: p.tenantId!, requesterId: r.requesterId, kind: "service", scope: "platform", status: "new", service: r.service, source: `Forwarded by ${p.name}`, details: { company: t.name, type: "Forwarded", services: [d.requested ?? r.service], size: "Forwarded by a member", message: input.reply } });
       await tx.insert(schema.requestEvents).values({ id: ulid(), requestId: id, actorId: p.userId, kind: "created", note: `Forwarded from ${t.name} by ${p.name}` });
     }
     await tx.update(schema.accessRequests).set({ status: input.decision, updatedAt: new Date() }).where(eq(schema.accessRequests.id, r.id));

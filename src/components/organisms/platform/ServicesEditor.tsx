@@ -51,7 +51,7 @@ export function ServicesEditor({ draft, published: pub }: { draft: CatalogDoc; p
         </section>
         <aside className="flex h-fit flex-col gap-3"><Badge mono className="w-fit">PREVIEW</Badge>
           <div className={cn("flex flex-col gap-4 rounded-panel border p-6", p.featured ? "border-fg" : "border-line")}>{p.featured && <Badge tone="info" className="w-fit">Most popular</Badge>}<p className="text-h4">{p.name || "Untitled"}</p><p><span className="text-h2 tracking-[-0.03em]">{p.price}</span> <span className="text-small text-fg-muted">{p.unit}</span></p>
-            <ul className="flex flex-col gap-1.5">{p.features.filter(Boolean).map((f) => <li key={f} className="text-small text-fg-body">✓ {f}</li>)}</ul><span className="inline-flex h-10 items-center justify-center rounded-full bg-fg text-small text-fg-inverse">{p.cta || "-"}</span></div></aside>
+            <ul className="flex flex-col gap-1.5">{p.features.filter(Boolean).map((f) => <li key={f} className="text-small text-fg-body">✓ {f}</li>)}</ul><span className="inline-flex h-10 items-center justify-center rounded-full bg-fg text-small text-fg-inverse">{p.cta || "No button"}</span></div></aside>
       </div>}
       <p className="text-micro text-fg-muted">Trial defaults: {draft.trialDefaults.map(([n, d]) => `${n.replace("Expected Credit Loss", "ECL").replace("Lease Accounting", "Leases")} ${d}`).join(" · ")}</p>
     </div>

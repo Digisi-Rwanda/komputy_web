@@ -3,9 +3,9 @@ import type { IconName } from "@/components/atoms/Icon";
 
 export const PRINCIPLES: { icon: IconName; title: string; body: string }[] = [
   { icon: "layers", title: "Workspace isolation", body: "Every query, file and cache entry is scoped to your workspace." },
-  { icon: "lock", title: "Encryption", body: "TLS 1.2+ in transit, AES-256 at rest, including uploaded workbooks." },
-  { icon: "security", title: "Identity", body: "MFA, session controls, breach-checked passwords and account lockout." },
-  { icon: "users", title: "Staff access", body: "Our team can't see your results. Support access needs your admin's approval, is time-boxed and fully logged." },
+  { icon: "lock", title: "Encryption", body: "TLS 1.2+ in transit, AES 256 at rest, including uploaded workbooks." },
+  { icon: "security", title: "Identity", body: "MFA, session controls, checked against known breaches passwords and account lockout." },
+  { icon: "users", title: "Staff access", body: "Our team can't see your results. Support access needs your admin's approval, is time limited and fully logged." },
   { icon: "audit", title: "Audit", body: "Every action recorded with who and when, exportable to CSV and retained for 7 years." },
   { icon: "key", title: "Reproducibility", body: "Inputs hashed and engine versions pinned on every run." },
 ];
@@ -25,8 +25,8 @@ export const COMPLIANCE = [
 
 export const DATA = [
   ["Region", "EU (Frankfurt) by default; regional hosting on request."],
-  ["Backups", "Encrypted daily backups, 30-day retention."],
-  ["Retention", "Data kept for the contract term; expired workspaces are read-only for 90 days, then archived."],
+  ["Backups", "Encrypted daily backups, 30 day retention."],
+  ["Retention", "Data kept for the contract term; expired workspaces are view only for 90 days, then archived."],
   ["Export", "Everything exportable at any time: runs, leases, journals and the audit log."],
 ] as const;
 

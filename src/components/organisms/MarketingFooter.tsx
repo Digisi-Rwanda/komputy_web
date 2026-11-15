@@ -32,7 +32,7 @@ export function MarketingFooter() {
       <div className="mx-auto grid max-w-site gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
         <div className="flex flex-col gap-3">
           <Logo />
-          <p className="max-w-60 text-small text-fg-muted">IFRS 9 and IFRS 16 reporting, from upload to sign-off.</p>
+          <p className="max-w-60 text-small text-fg-muted">IFRS 9 and IFRS 16 reporting, from upload to sign off.</p>
           <ul className="flex gap-2">
             {SOCIAL.map(([label, href, Icon]) => (
               <li key={label}><a href={href} aria-label={label} target="_blank" rel="noopener noreferrer" className="inline-flex size-9 items-center justify-center rounded-full border border-line text-fg-muted transition-colors hover:text-fg"><Icon className="size-4" /></a></li>

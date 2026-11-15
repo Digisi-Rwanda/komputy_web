@@ -22,7 +22,7 @@ export const APP_NAV: NavItem[] = [
       { label: "Inbox", href: "/leases/inbox" },
       { label: "New lease", href: "/leases/new" },
       { label: "Imports", href: "/leases/imports" },
-      { label: "Month-end close", href: "/leases/close" },
+      { label: "Month end close", href: "/leases/close" },
       { label: "Journals", href: "/leases/journals" },
       { label: "Reports", href: "/leases/reports" },
       { label: "Setup", href: "/leases/setup" },

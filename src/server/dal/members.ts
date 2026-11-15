@@ -7,7 +7,7 @@ import type { EclRole, LeasesRole, Member, WorkspaceRole } from "@/types/domain"
 
 const initials = (n: string) => n.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 export function ago(d: Date | null, now = Date.now()): string {
-  if (!d) return "-";
+  if (!d) return "Never";
   const m = Math.round((now - d.getTime()) / 6e4);
   if (m < 5) return "Now";
   if (m < 60) return `${m} min ago`;

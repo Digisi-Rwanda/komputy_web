@@ -30,7 +30,7 @@ export function StackedBars<T>({ title, data, x, series, format: formatter, heig
           })}
         </svg>
         {hover != null && (
-          <div className="pointer-events-none absolute top-2 z-10 min-w-36 -translate-x-1/2 rounded-md border border-line bg-chart-tooltip px-3 py-2 text-micro backdrop-blur" style={{ left: `${((L + (hover + 0.5) * bw) / W) * 100}%` }}>
+          <div className="pointer-events-none absolute top-2 z-10 min-w-36 -translate-x-1/2 rounded-md border border-line bg-chart-tooltip px-3 py-2 text-micro" style={{ left: `${((L + (hover + 0.5) * bw) / W) * 100}%` }}>
             <p className="mb-1 text-fg">{xv(data[hover])}</p>
             {series.map((s) => <p key={s.key} className="flex items-center gap-2 text-fg-muted"><span className="size-1.5 rounded-full" style={{ background: s.color }} />{s.label}<span className="ml-auto pl-3 tabular-nums text-fg">{format(val(s, data[hover]))}</span></p>)}
             <p className="mt-1 flex border-t border-line pt-1 text-fg-muted">Total<span className="ml-auto tabular-nums text-fg">{format(totals[hover])}</span></p>

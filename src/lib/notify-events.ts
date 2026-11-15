@@ -1,11 +1,11 @@
 /** NA2 notification events: [id, label, in-app default, email default, lock note]. Shared by the prefs UI and server/notify.ts. */
 export type EventRow = [string, string, boolean, boolean, string?];
 export const EVENT_GROUPS: [string, EventRow[]][] = [
-  ["Runs", [["completed", "Completed", true, false], ["failed", "Failed", true, true], ["signoff", "Awaiting my sign-off", true, true, "Required for reviewers"]]],
+  ["Runs", [["completed", "Completed", true, false], ["failed", "Failed", true, true], ["signoff", "Awaiting my sign off", true, true, "Required for reviewers"]]],
   ["Leases", [["approvals", "Approvals", true, true], ["close", "Close steps due", true, true], ["alerts", "Alerts (expiries, payments)", true, false]]],
   ["Workspace", [["joined", "Member joined", true, false], ["role", "Role changed", true, true], ["invites", "Invites", true, false]]],
   ["Access", [["trial", "Trial started / ending / ended", true, true], ["service", "Service activated / suspended", true, true], ["requests", "Request updates", true, true]]],
-  ["Security", [["device", "New device sign-in", true, true, "Always on for your safety"], ["pw", "Password or MFA changed", true, true, "Always on for your safety"], ["support", "Support session started/ended", true, true, "Always on for your safety"]]],
+  ["Security", [["device", "New device sign in", true, true, "Always on for your safety"], ["pw", "Password or MFA changed", true, true, "Always on for your safety"], ["support", "Support session started/ended", true, true, "Always on for your safety"]]],
 ];
 export type NotifyEvent = "completed" | "failed" | "signoff" | "approvals" | "close" | "alerts" | "joined" | "role" | "invites" | "trial" | "service" | "requests" | "device" | "pw" | "support";
 const SECURITY = new Set(["device", "pw", "support"]);

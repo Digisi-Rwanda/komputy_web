@@ -8,7 +8,7 @@ import type { Principal } from "@/server/policy";
 import type { paths } from "./schema";
 
 type Claims = Record<string, unknown>;
-const TTL = 4 * 60 * 1000; // tokens live 5 min; reuse for 4 so one never expires mid-request
+const TTL = 4 * 60 * 1000; // tokens live 5 min; reuse for 4 so one never expires mid request
 const cache = new Map<string, { token: string; until: number }>();
 
 /** Claims Python trusts (plan §3.2): tenant, roles, entitlements, authz version, support session. */

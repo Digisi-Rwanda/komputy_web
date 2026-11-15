@@ -14,12 +14,13 @@ import { Stepper } from "@/components/molecules/Stepper";
 import { toast } from "@/components/organisms/Toaster";
 import { getImport, importAction, setImportMapping, uploadImport, type ImportBatch } from "@/lib/actions/leases";
 import { useLeaseData } from "@/components/organisms/leases/LeaseData";
+import { showCode } from "@/lib/code";
 
 // Engine import template (apps/leases/imports.py COLUMNS): key, label, required.
 const FIELDS: [string, string, boolean][] = [
   ["lease_ref", "Lease reference", true], ["name", "Lease name", true], ["asset_class", "Asset class", true], ["lessor", "Lessor", true], ["location", "Location", false],
   ["currency", "Currency", true], ["commencement_date", "Commencement date", true], ["end_date", "End date", true], ["payment_amount", "Payment amount", true],
-  ["frequency", "Frequency", true], ["timing", "Timing", true], ["rent_free_months", "Rent-free months", false], ["escalation_pct", "Escalation %", false],
+  ["frequency", "Frequency", true], ["timing", "Timing", true], ["rent_free_months", "Rent free months", false], ["escalation_pct", "Escalation %", false],
   ["escalation_every_months", "Escalation every (months)", false], ["discount_rate_pct", "Discount rate %", false], ["initial_direct_costs", "Initial direct costs", false],
   ["incentives", "Incentives received", false], ["restoration_estimate", "Restoration estimate", false], ["exemption", "Exemption", false],
 ];
@@ -63,7 +64,7 @@ export function Imports() {
       })} />
       <p className="text-micro text-fg-muted"><Link href="/api/leases/imports/template" prefetch={false} className="text-link hover:underline">Download import template (CSV)</Link></p>
       <section className="flex flex-col gap-2"><h2 className="text-h4">Recent imports</h2>
-        <ul className="divide-y divide-line rounded-panel border border-line">{b.imports.map(([id, f, n, st, by, at]) => <li key={id} className="flex flex-wrap items-center gap-3 px-4 py-3 text-small"><span className="font-mono text-micro text-fg">{id}</span><span className="flex-1 text-fg-body">{f}{n ? ` · ${n} rows` : ""}</span><StatusPill tone={st === "committed" ? "positive" : st === "needs_fixing" ? "negative" : "neutral"}>{st.replace("_", " ")}</StatusPill><span className="text-micro text-fg-muted">{by} · {at}</span><Button size="sm" variant="ghost" loading={busy} onClick={() => start(async () => { const r = await getImport(id); if (r.ok) open(r.data); else toast.error(r.error); })}>Open</Button></li>)}
+        <ul className="divide-y divide-line rounded-panel border border-line">{b.imports.map(([id, f, n, st, by, at]) => <li key={id} className="flex flex-wrap items-center gap-3 px-4 py-3 text-small"><span className="font-mono text-micro text-fg">{showCode(id)}</span><span className="flex-1 text-fg-body">{f}{n ? ` · ${n} rows` : ""}</span><StatusPill tone={st === "committed" ? "positive" : st === "needs_fixing" ? "negative" : "neutral"}>{st.replace("_", " ")}</StatusPill><span className="text-micro text-fg-muted">{by} · {at}</span><Button size="sm" variant="ghost" loading={busy} onClick={() => start(async () => { const r = await getImport(id); if (r.ok) open(r.data); else toast.error(r.error); })}>Open</Button></li>)}
           {!b.imports.length && <li className="px-4 py-6 text-center text-small text-fg-muted">No imports yet.</li>}</ul>
       </section>
     </div>
@@ -71,7 +72,7 @@ export function Imports() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center gap-3"><Button variant="ghost" size="sm" onClick={() => setBatch(null)}>← All imports</Button><span className="font-mono text-micro text-fg">{batch.id}</span><span className="text-small text-fg-body">{batch.fileName}</span><StatusPill tone={batch.status === "committed" ? "positive" : batch.status === "needs_fixing" ? "negative" : "info"}>{batch.status.replace("_", " ")}</StatusPill></div>
+      <div className="flex flex-wrap items-center gap-3"><Button variant="ghost" size="sm" onClick={() => setBatch(null)}>← All imports</Button><span className="font-mono text-micro text-fg">{showCode(batch.id)}</span><span className="text-small text-fg-body">{batch.fileName}</span><StatusPill tone={batch.status === "committed" ? "positive" : batch.status === "needs_fixing" ? "negative" : "info"}>{batch.status.replace("_", " ")}</StatusPill></div>
       <Stepper current={STEP[batch.status] ?? 1} steps={["Upload", "Map columns", "Validate", "Review", "Commit"].map((label) => ({ label }))} />
       {BUSY.has(batch.status) && <section aria-live="polite" className="flex flex-col gap-2 rounded-panel border border-line p-5"><p className="text-small text-fg">{batch.status === "validating" ? "Validating rows…" : "Creating leases…"}</p><ProgressBar value={batch.progress ?? 0} max={100} label="Progress" showValue /><p className="text-micro text-fg-muted">Runs in the background. You can leave this page.</p></section>}
 

@@ -90,7 +90,7 @@ export const remindMfa = mutate({
       .innerJoin(schema.users, eq(schema.users.id, schema.tenantMemberships.userId))
       .where(and(eq(schema.tenantMemberships.tenantId, p.tenantId!), inArray(schema.tenantMemberships.id, input.membershipIds)));
     const targets = rows.filter((r) => !r.mfa);
-    for (const r of targets) await enqueueEmail(r.email, "Turn on two-factor authentication", { preview: "Protect your Komputy account", headline: "Turn on two-factor authentication", paragraphs: [`Hi ${r.name.split(" ")[0]}, your administrator asked you to protect your account with an authenticator app. It takes about a minute.`], cta: { label: "Set up two-factor", href: link("/account/security") } }, tx);
+    for (const r of targets) await enqueueEmail(r.email, "Turn on two factor authentication", { preview: "Protect your Komputy account", headline: "Turn on two factor authentication", paragraphs: [`Hi ${r.name.split(" ")[0]}, your administrator asked you to protect your account with an authenticator app. It takes about a minute.`], cta: { label: "Set up two factor", href: link("/account/security") } }, tx);
     await audit("member.mfa_reminder", { count: targets.length });
     return targets.length;
   },
@@ -139,7 +139,7 @@ export const resendInvite = mutate({
     const i = await invite(tx, p.tenantId!, input.invitationId);
     const [t] = await tx.select({ name: schema.tenants.name }).from(schema.tenants).where(eq(schema.tenants.id, p.tenantId!));
     await tx.update(schema.invitations).set({ expiresAt: new Date(Date.now() + 7 * 864e5), updatedAt: new Date() }).where(eq(schema.invitations.id, i.id));
-    await enqueueEmail(i.email, `Reminder: join ${t.name} on Komputy`, { preview: `Join ${t.name}`, headline: `Join ${t.name}`, paragraphs: [`${p.name} re-sent your invite to ${t.name}. It now expires in 7 days.`], cta: { label: "Accept invite", href: link(`/invite/${i.id}`) } }, tx);
+    await enqueueEmail(i.email, `Reminder: join ${t.name} on Komputy`, { preview: `Join ${t.name}`, headline: `Join ${t.name}`, paragraphs: [`${p.name} resent your invite to ${t.name}. It now expires in 7 days.`], cta: { label: "Accept invite", href: link(`/invite/${i.id}`) } }, tx);
     await audit("member.invite_resent", { email: i.email });
   },
 });

@@ -64,7 +64,7 @@ export function WizardShell({ step, children, footer, resetMarks = [] }: { step:
       </header>
       {children}
       {footer && (
-        <div className="glass sticky bottom-4 z-[var(--z-sticky)] flex flex-wrap items-center gap-3 rounded-full border border-line py-2 pl-5 pr-2">
+        <div className="bg-canvas sticky bottom-4 z-[var(--z-sticky)] flex flex-wrap items-center gap-3 rounded-full border border-line py-2 pl-5 pr-2">
           <span className="text-micro text-fg-muted" aria-live="polite"><SavedAgo at={d.savedAt} /></span>
           <span className="ml-auto flex flex-wrap items-center gap-2">{footer}</span>
         </div>

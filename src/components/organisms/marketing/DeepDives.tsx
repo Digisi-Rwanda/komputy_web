@@ -32,11 +32,11 @@ export function EclDeepDive() {
         <FadeIn className="relative pb-40 sm:pb-36">
           <div aria-hidden className="absolute -inset-10 -z-0 rounded-full bg-accent/10 blur-3xl" />
           <div className={cn(card, "relative p-5")}>
-            <p className="mb-3 text-small text-fg">Retail transition matrix <span className="text-fg-muted">· pooled Jan-Sep 2026</span></p>
+            <p className="mb-3 text-small text-fg">Retail transition matrix <span className="text-fg-muted">· pooled Jan to Sep 2026</span></p>
             <PdMatrix {...pdMatrix} caption="Retail transition matrix, pooled January to September 2026" />
           </div>
           <div className={cn(card, "absolute bottom-0 right-0 w-[min(100%,380px)] p-5 shadow-[0_-24px_48px_-12px_var(--canvas)] sm:-right-4")}>
-            <p className="mb-4 text-small text-fg">ECL build-up <span className="text-fg-muted">· LN-000184</span></p>
+            <p className="mb-4 text-small text-fg">ECL buildup <span className="text-fg-muted">· LN-000184</span></p>
             <div aria-hidden className="flex h-20 items-end gap-2">
               {[0.34, 0.44, 0.58, 0.4, 1].map((h, i) => (
                 <span key={i} className={cn("flex-1 rounded-t-sm", i === 4 ? "bg-accent" : i === 3 ? "bg-positive/70" : "bg-positive/40")} style={{ height: `${Math.min(100, h * 100)}%` }} />
@@ -80,9 +80,9 @@ export function LeasesDeepDive() {
             </ol>
           </div>
           <div className={cn(card, "p-5")}>
-            <p className="mb-4 text-small text-fg">Lease liability roll-forward <span className="text-fg-muted">· USD</span></p>
+            <p className="mb-4 text-small text-fg">Lease liability roll forward <span className="text-fg-muted">· USD</span></p>
             <table className="w-full text-small tabular-nums">
-              <caption className="sr-only">Lease liability roll-forward, October 2026, USD millions</caption>
+              <caption className="sr-only">Lease liability roll forward, October 2026, USD millions</caption>
               <tbody>
                 {leases.rollForward.map(([k, v], i) => (
                   <tr key={k} className={cn(i === leases.rollForward.length - 1 && "border-t border-line")}>

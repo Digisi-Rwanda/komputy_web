@@ -22,7 +22,7 @@ export function TopBar({ initials, image, notifications, menu }: { initials: str
   const crumbs = crumbsFor(path);
   useHotkey("k", useCallback(() => setPalette(true), []));
   return (
-    <header className="glass sticky top-0 z-[var(--z-sticky)] flex h-topbar shrink-0 items-center gap-2 border-b border-line px-3 lg:px-6">
+    <header className="bg-canvas sticky top-0 z-[var(--z-sticky)] flex h-topbar shrink-0 items-center gap-2 border-b border-line px-3 lg:px-6">
       {menu}
       <div className="hidden min-w-0 flex-1 md:block">{crumbs.length > 0 && <Breadcrumb items={crumbs} />}</div>
       <p className="min-w-0 flex-1 truncate text-small text-fg md:hidden">{crumbs.at(-1)?.label}</p>

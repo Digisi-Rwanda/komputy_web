@@ -13,11 +13,11 @@ import { TrustStrip } from "@/components/organisms/marketing/TrustStrip";
 import { hero } from "@/data/content";
 
 export const metadata: Metadata = {
-  title: { absolute: "Komputy · IFRS 9 and IFRS 16 reporting, from upload to sign-off" },
+  title: { absolute: "Komputy · IFRS 9 and IFRS 16 reporting, from upload to sign off" },
   description: hero.sub,
   alternates: { canonical: "/" },
-  openGraph: { title: "Komputy · IFRS reporting, from upload to sign-off", description: hero.sub, url: "/", type: "website", siteName: "Komputy", images: ["/opengraph-image"] },
-  twitter: { card: "summary_large_image", title: "Komputy · IFRS reporting, from upload to sign-off", description: hero.sub, images: ["/twitter-image"] },
+  openGraph: { title: "Komputy · IFRS reporting, from upload to sign off", description: hero.sub, url: "/", type: "website", siteName: "Komputy", images: ["/opengraph-image"] },
+  twitter: { card: "summary_large_image", title: "Komputy · IFRS reporting, from upload to sign off", description: hero.sub, images: ["/twitter-image"] },
 };
 
 const orgJsonLd = {

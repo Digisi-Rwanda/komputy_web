@@ -8,17 +8,17 @@ const passed = (id: string, title: string, detail = ""): Criterion => ({ id, tit
 export const CRITERIA: Record<Dataset, Record<Outcome, Criterion[]>> = {
   pd: {
     warnings: [
-      { id: "PD-03", title: "Loans missing next-month staging", detail: "Treated as Offbooks in the matrix", status: "warning", affected: "312 loans", explain: "A loan that disappears from the next month's snapshot is counted as leaving the book (Offbooks). If these loans were sold or written off, that's correct. If they're missing by mistake, upload a corrected file.", sample: [["Loan ID", "Last month", "Segment"], ["LN-004102", "2026-08", "Retail"], ["LN-007719", "2026-08", "SME"], ["LN-010355", "2026-07", "Retail"]] },
-      { id: "EC-16", title: "Thin segment-months", detail: "Mortgage Feb 2026 has 412 transitions (min 500)", status: "warning", affected: "1 segment-month", explain: "Months with few transitions make the pooled matrix noisier. Pooling across Jan-Sep keeps the result stable." },
+      { id: "PD-03", title: "Loans missing next month staging", detail: "Treated as Offbooks in the matrix", status: "warning", affected: "312 loans", explain: "A loan that disappears from the next month's snapshot is counted as leaving the book (Offbooks). If these loans were sold or written off, that's correct. If they're missing by mistake, upload a corrected file.", sample: [["Loan ID", "Last month", "Segment"], ["LN-004102", "2026-08", "Retail"], ["LN-007719", "2026-08", "SME"], ["LN-010355", "2026-07", "Retail"]] },
+      { id: "EC-16", title: "Thin segment months", detail: "Mortgage Feb 2026 has 412 transitions (min 500)", status: "warning", affected: "1 segment-month", explain: "Months with few transitions make the pooled matrix noisier. Pooling across Jan to Sep keeps the result stable." },
       passed("PD-01", "Required columns present", "All 5 found"), passed("PD-02", "Staging values are 1, 2 or 3", "No invalid values"), passed("PD-04", "Loan amounts positive"),
       passed("PD-05", "Minimum transitions per segment", "Lowest: Mortgage 4,980 (min 500)"), passed("PD-06", "Consecutive months", "No gaps"), passed("PD-07", "Single reporting month per row"),
-      passed("EC-12", "Duplicate Loan IDs per month", "None"), ...Array.from({ length: 12 }, (_, i) => passed(`PD-${String(i + 8).padStart(2, "0")}`, ["Header row detected", "Sheet names recognised", "Reporting month parsed", "Segment values match setup", "No blank Loan IDs", "Amounts numeric", "No merged cells", "No hidden rows", "Encoding valid", "File not password-protected", "No macros", "Size within limit"][i])),
+      passed("EC-12", "Duplicate Loan IDs per month", "None"), ...Array.from({ length: 12 }, (_, i) => passed(`PD-${String(i + 8).padStart(2, "0")}`, ["Header row detected", "Sheet names recognised", "Reporting month parsed", "Segment values match setup", "No blank Loan IDs", "Amounts numeric", "No merged cells", "No hidden rows", "Encoding valid", "File not password protected", "No macros", "Size within limit"][i])),
     ],
     failed: [
       { id: "EC-12", title: "Duplicate Loan IDs within a month", detail: "Each Loan ID must appear once per reporting month", status: "error", affected: "7 rows", explain: "The same loan appears more than once in a month, so its transition can't be determined.", sample: [["Loan ID", "Month", "Sheet", "Row"], ["LN-004418", "2026-08", "Aug", "1,204"], ["LN-004418", "2026-08", "Aug", "1,377"], ["LN-004418", "2026-08", "Aug", "1,552"]] },
       { id: "PD-02", title: "Staging values are 1, 2 or 3", detail: "Found values: 4, “S2”", status: "error", affected: "18 rows", explain: "Stage must be the number 1, 2 or 3. Replace text like “S2” with 2 and check the rows marked 4.", sample: [["Loan ID", "Month", "Staging"], ["LN-002201", "2026-05", "4"], ["LN-003310", "2026-06", "S2"]] },
-      { id: "PD-03", title: "Loans missing next-month staging", detail: "Treated as Offbooks in the matrix", status: "warning", affected: "312 loans" },
-      { id: "EC-16", title: "Thin segment-months", detail: "Mortgage Feb 2026 has 412 transitions (min 500)", status: "warning", affected: "1 segment-month" },
+      { id: "PD-03", title: "Loans missing next month staging", detail: "Treated as Offbooks in the matrix", status: "warning", affected: "312 loans" },
+      { id: "EC-16", title: "Thin segment months", detail: "Mortgage Feb 2026 has 412 transitions (min 500)", status: "warning", affected: "1 segment-month" },
       ...Array.from({ length: 17 }, (_, i) => passed(`PD-${String(i + 4).padStart(2, "0")}`, "Check passed")),
     ],
     passed: [],
@@ -26,7 +26,7 @@ export const CRITERIA: Record<Dataset, Record<Outcome, Criterion[]>> = {
   lgd: {
     warnings: [
       { id: "LG-07", title: "Unknown collateral column ignored", detail: "Column “Livestock” is not a collateral type", status: "warning", affected: "1 column", explain: "Only columns that match a collateral type in Setup are used. Add “Livestock” in Setup if it should count." },
-      passed("LG-01", "Customer IDs present"), passed("LG-02", "Collateral values non-negative"), passed("LG-03", "Every loan has a customer"), passed("LG-04", "Outstanding amounts positive"),
+      passed("LG-01", "Customer IDs present"), passed("LG-02", "Collateral values non negative"), passed("LG-03", "Every loan has a customer"), passed("LG-04", "Outstanding amounts positive"),
       ...Array.from({ length: 9 }, (_, i) => passed(`LG-${String(i + 5).padStart(2, "0")}`, "Check passed")),
     ],
     failed: [{ id: "LG-01", title: "Customer IDs present", detail: "214 rows have no Customer ID", status: "error", affected: "214 rows" }, ...Array.from({ length: 12 }, (_, i) => passed(`LG-${String(i + 2).padStart(2, "0")}`, "Check passed"))],
@@ -45,9 +45,9 @@ export const CRITERIA: Record<Dataset, Record<Outcome, Criterion[]>> = {
 };
 
 export const REQUIREMENTS: Record<Dataset, { title: string; intro: string; columns: string[]; aliases?: string; template: string; example: string[][]; tip: string; defaultFile: string; sizeMb: number; rows: string; sha: string }> = {
-  pd: { title: "PD data: what we need", intro: "Monthly loan-level staging snapshots. We build a money-weighted transition matrix per segment from consecutive months.", columns: ["Loan ID", "Staging (1, 2 or 3)", "Loan Amount", "SEGMENT", "Reporting Month"], aliases: "Reporting Month aliases: As At, Month, Period", template: "/templates/pd-template.csv", example: [["Loan ID", "Staging", "Loan Amount", "SEGMENT", "Reporting Month"], ["LN-000184", "1", "25,000.00", "Retail", "2026-01"]], tip: "Include at least 6 months for a stable matrix.", defaultFile: "PD_Jan-Nov_2026.xlsx", sizeMb: 38.4, rows: "3 sheets · 434,808 rows", sha: "9f2c…a71" },
+  pd: { title: "PD data: what we need", intro: "Monthly loan level staging snapshots. We build a money weighted transition matrix per segment from consecutive months.", columns: ["Loan ID", "Staging (1, 2 or 3)", "Loan Amount", "SEGMENT", "Reporting Month"], aliases: "Reporting Month aliases: As At, Month, Period", template: "/templates/pd-template.csv", example: [["Loan ID", "Staging", "Loan Amount", "SEGMENT", "Reporting Month"], ["LN-000184", "1", "25,000.00", "Retail", "2026-01"]], tip: "Include at least 6 months for a stable matrix.", defaultFile: "PD_Jan-Nov_2026.xlsx", sizeMb: 38.4, rows: "3 sheets · 434,808 rows", sha: "9f2c…a71" },
   lgd: { title: "LGD data: what we need", intro: "Customer collateral by type. Collateral is shared across a customer's loans by exposure, then discounted.", columns: ["Customer ID", "Loan ID", "Outstanding Amount", "One column per collateral type"], template: "/templates/lgd-template.csv", example: [["Customer ID", "Loan ID", "Outstanding Amount", "Property"], ["CU-22817", "LN-000184", "25,412.10", "54,240.00"]], tip: "Column names must match collateral types in Setup.", defaultFile: "LGD_Collateral_Nov2026.xlsx", sizeMb: 6.1, rows: "2 sheets · 29,800 rows", sha: "41ad…07c" },
-  ead: { title: "EAD data: what we need", intro: "Loan exposures at the reporting date. We project month-by-month balances to maturity.", columns: ["Loan ID", "Customer ID", "SEGMENT", "Reporting Date", "First Payment Date", "Maturity Date", "Stage", "Outstanding Amount", "EIR"], aliases: "Ignored columns: Repayment Frequency (monthly is assumed)", template: "/templates/ead-template.csv", example: [["Loan ID", "Stage", "Outstanding Amount", "EIR"], ["LN-000184", "1", "25,412.10", "0.125"]], tip: "One row per loan at the reporting date.", defaultFile: "EAD_Loans_Nov2026.xlsx", sizeMb: 21.9, rows: "48,330 rows", sha: "c7e0…5b2" },
+  ead: { title: "EAD data: what we need", intro: "Loan exposures at the reporting date. We project month by month balances to maturity.", columns: ["Loan ID", "Customer ID", "SEGMENT", "Reporting Date", "First Payment Date", "Maturity Date", "Stage", "Outstanding Amount", "EIR"], aliases: "Ignored columns: Repayment Frequency (monthly is assumed)", template: "/templates/ead-template.csv", example: [["Loan ID", "Stage", "Outstanding Amount", "EIR"], ["LN-000184", "1", "25,412.10", "0.125"]], tip: "One row per loan at the reporting date.", defaultFile: "EAD_Loans_Nov2026.xlsx", sizeMb: 21.9, rows: "48,330 rows", sha: "c7e0…5b2" },
 };
 
 /** File names containing "fail" produce a failed report (demo hook for W5). */
@@ -78,9 +78,9 @@ export const TREATMENT = [
 
 /** Computed headline for the draft (W13). */
 export const RESULT = {
-  total: 13104882.4, delta: 0.02, vs: "RUN-0142", exposure: 561_204_330, coverage: 0.02335,
+  total: 13104882.4, delta: 0.02, vs: "RUN 0142", exposure: 561_204_330, coverage: 0.02335,
   stages: [{ stage: 1 as const, ecl: 2131020.44, share: 0.713 }, { stage: 2 as const, ecl: 3988211.6, share: 0.211 }, { stage: 3 as const, ecl: 6985650.36, share: 0.076 }],
-  checks: ["Loan count", "Outstanding balance", "Row coverage", "Collateral allocation", "ECL build-up", "Summary totals", "ECL limits (tolerance 0.01)"],
+  checks: ["Loan count", "Outstanding balance", "Row coverage", "Collateral allocation", "ECL buildup", "Summary totals", "ECL limits (tolerance 0.01)"],
   exceptions: [["Input validation", 18], ["PD match", 0], ["ECL cap", 46], ["Reconciliation", 0]] as [string, number][],
   movement: [{ label: "Q3 ECL", value: 12846210.55, kind: "total" as const }, { label: "New loans", value: 310000 }, { label: "Repayments", value: -150000 }, { label: "Stage 1→2", value: 120000 }, { label: "Stage 2→3", value: 90000 }, { label: "Cures", value: -60000 }, { label: "LGD change", value: -51328.15 }, { label: "Nov ECL", value: 13104882.4, kind: "total" as const }],
 };

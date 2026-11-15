@@ -153,7 +153,7 @@ export const auth = betterAuth({
         headline: `Welcome, ${user.name.split(" ")[0]}`,
         paragraphs: [
           "Your Komputy account is ready. Create a workspace for your company, or open the invite your administrator sent you.",
-          "Tip: turn on two-factor authentication in Account › Security. It takes a minute.",
+          "Tip: turn on two factor authentication in Account › Security. It takes a minute.",
         ],
         cta: { label: "Open Komputy", href: url("/select-workspace") },
       }),
@@ -179,8 +179,8 @@ export const auth = betterAuth({
             .where(and(eq(schema.authSessions.userId, session.userId), sql`${schema.authSessions.id} <> ${session.id}`)).limit(50);
           if (!prev.length || prev.some((p) => p.ua === ua)) return;
           const [u] = await db.select({ email: schema.users.email }).from(schema.users).where(eq(schema.users.id, session.userId));
-          if (u) await enqueueEmail(u.email, "New sign-in to your Komputy account", {
-            preview: "New device sign-in", headline: "New sign-in from a new device",
+          if (u) await enqueueEmail(u.email, "New sign in to your Komputy account", {
+            preview: "New device sign in", headline: "New sign in from a new device",
             paragraphs: ["Your account was just used to sign in from a device we haven't seen before.", "If this was you, there's nothing to do. If not, change your password and sign out other sessions now."],
             details: [["Device", ua.slice(0, 120) || "Unknown"], ["IP", (session as { ipAddress?: string | null }).ipAddress || "Unknown"], ["Time", new Date().toISOString().replace("T", " ").slice(0, 16) + " UTC"]],
             cta: { label: "Review sessions", href: url("/account/security") },
@@ -237,8 +237,8 @@ export const auth = betterAuth({
       // Security emails for in-account changes (reset has its own in onPasswordReset). Always on.
       const SEC: Record<string, [string, string]> = {
         "/change-password": ["Your Komputy password was changed", "Your password was just changed from your account settings."],
-        "/two-factor/enable": ["Two-factor authentication turned on", "Two-factor authentication is now protecting your account."],
-        "/two-factor/disable": ["Two-factor authentication turned off", "Two-factor authentication was turned off for your account."],
+        "/two-factor/enable": ["Two factor authentication turned on", "Two factor authentication is now protecting your account."],
+        "/two-factor/disable": ["Two factor authentication turned off", "Two factor authentication was turned off for your account."],
         "/two-factor/generate-backup-codes": ["New backup codes created", "New backup codes were created; the old ones no longer work."],
       };
       const sec = SEC[ctx.path];

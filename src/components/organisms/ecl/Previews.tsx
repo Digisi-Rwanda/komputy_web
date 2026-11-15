@@ -19,13 +19,13 @@ export function PdPreview() {
       <div className="flex flex-wrap items-center gap-3">
         <ToggleGroup label="Preview" value={view} onChange={setView} options={[{ value: "matrix", label: "Matrix" }, { value: "term", label: "Term structure" }]} />
         {view === "matrix" && <ToggleGroup label="Segment" value={seg} onChange={setSeg} options={Object.keys(PD_SEGMENTS).map((s) => ({ value: s, label: s }))} />}
-        <span className="ml-auto text-micro text-fg-muted">Pooled Jan-Nov 2026</span>
+        <span className="ml-auto text-micro text-fg-muted">Pooled Jan to Nov 2026</span>
       </div>
       {view === "matrix" ? (
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
           <div className="rounded-panel border border-line p-5"><PdMatrix rows={["S1", "S2", "S3"]} cols={["S1", "S2", "S3", "Offbooks"]} values={PD_SEGMENTS[seg]} caption={`${seg} transition matrix`} />
             <p className="mt-3 text-micro text-fg-muted">Cure rate (S3 → S1 + S3 → S2) = {(PD_SEGMENTS[seg][2][0] + PD_SEGMENTS[seg][2][1]).toFixed(4)}. After normalisation, S1 → S3 is folded into S1 → S2 and Stage 3 is absorbing.</p></div>
-          <div className="flex flex-col gap-1 rounded-panel border border-line p-5"><p className="text-micro text-fg-muted">Observed transitions</p><p className="text-h3 text-fg tabular-nums">312,406</p><p className="text-micro text-fg-muted">Money-weighted</p></div>
+          <div className="flex flex-col gap-1 rounded-panel border border-line p-5"><p className="text-micro text-fg-muted">Observed transitions</p><p className="text-h3 text-fg tabular-nums">312,406</p><p className="text-micro text-fg-muted">Money weighted</p></div>
         </div>
       ) : (
         <div className="rounded-panel border border-line p-5">

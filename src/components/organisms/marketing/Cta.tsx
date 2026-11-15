@@ -22,7 +22,7 @@ export function Cta({ title = cta.title, sub = cta.sub, checks = cta.checks }: {
         </FadeIn>
         <ul className="relative mt-6 grid w-full max-w-4xl gap-3 sm:grid-cols-3">
           {checks.map((c) => (
-            <li key={c} className="glass flex items-center gap-3 rounded-panel border border-line p-4 text-left text-small text-fg">
+            <li key={c} className="bg-raised flex items-center gap-3 rounded-panel border border-line p-4 text-left text-small text-fg">
               <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-line-strong"><Check aria-hidden className="size-3.5" /></span>
               {c}
             </li>

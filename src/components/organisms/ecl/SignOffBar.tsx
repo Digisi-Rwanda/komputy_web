@@ -29,10 +29,10 @@ export function SignOffBar({ id, name, status, preparer, preparerId, me, canRevi
   if (status === "returned") {
     if (!canPrepare) return null;
     return (
-      <div className="sticky bottom-0 z-10 -mx-4 flex items-center gap-2 border-t border-line bg-canvas/90 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-panel sm:border">
+      <div className="sticky bottom-0 z-10 -mx-4 flex items-center gap-2 border-t border-line bg-canvas px-4 py-3 sm:mx-0 sm:rounded-panel sm:border">
         <p className="hidden flex-1 text-small text-fg-body sm:block">Returned for changes. Fix the inputs with a rerun, or resubmit with a note if nothing needs to change.</p>
         <Modal open={open === "resubmit"} onOpenChange={(o) => setOpen(o ? "resubmit" : null)} title={`Resubmit ${name}?`} description="Reviewers are notified." size="sm"
-          trigger={<Button className="h-11 flex-1 sm:h-10 sm:flex-none">Resubmit for sign-off</Button>}
+          trigger={<Button className="h-11 flex-1 sm:h-10 sm:flex-none">Resubmit for sign off</Button>}
           footer={<Button loading={busy} onClick={() => act("resubmit", note, `${name} resubmitted`)}>Resubmit</Button>}>
           <label className="flex flex-col gap-1.5 text-small text-fg-body">Note for the reviewer (optional)<Textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={2000} /></label>
         </Modal>
@@ -41,14 +41,14 @@ export function SignOffBar({ id, name, status, preparer, preparerId, me, canRevi
   }
   if (!canReview) return <p className="rounded-panel border border-line px-4 py-3 text-small text-fg-muted">Waiting for a reviewer to sign off.</p>;
   return (
-    <div className="sticky bottom-0 z-10 -mx-4 flex items-center gap-2 border-t border-line bg-canvas/90 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-panel sm:border">
-      <p className="hidden flex-1 text-small text-fg-body sm:block">{self ? "You prepared this run, so someone else must sign it off." : `Prepared by ${preparer} · waiting for your sign-off`}</p>
+    <div className="sticky bottom-0 z-10 -mx-4 flex items-center gap-2 border-t border-line bg-canvas px-4 py-3 sm:mx-0 sm:rounded-panel sm:border">
+      <p className="hidden flex-1 text-small text-fg-body sm:block">{self ? "You prepared this run, so someone else must sign it off." : `Prepared by ${preparer} · waiting for your sign off`}</p>
       <Modal open={open === "return"} onOpenChange={(o) => setOpen(o ? "return" : null)} title={`Return ${name}?`} description={`${preparer} gets your reason and can resubmit.`} size="sm"
         trigger={<Button variant="secondary" disabled={self} className="h-11 flex-1 sm:h-10 sm:flex-none">Return</Button>}
         footer={<Button loading={busy} disabled={reason.trim().length < 3} disabledReason={reason.trim().length < 3 ? "Give a reason" : undefined} onClick={() => act("return", reason, `${name} returned to ${preparer}`)}>Return run</Button>}>
         <label className="flex flex-col gap-1.5 text-small text-fg-body">Reason (required)<Textarea value={reason} onChange={(e) => setReason(e.target.value)} maxLength={2000} /></label>
       </Modal>
-      <Modal open={open === "sign"} onOpenChange={(o) => setOpen(o ? "sign" : null)} title={`Sign off ${name}?`} description="Signed-off figures are locked: they can't be edited, recomputed or deleted." size="sm"
+      <Modal open={open === "sign"} onOpenChange={(o) => setOpen(o ? "sign" : null)} title={`Sign off ${name}?`} description="Signed off figures are locked: they can't be edited, recomputed or deleted." size="sm"
         trigger={<Button disabled={self} disabledReason={self ? "You can't sign off a run you prepared." : undefined} className="h-11 flex-[2] sm:h-10 sm:flex-none">Approve &amp; sign off</Button>}
         footer={<Button loading={busy} onClick={() => act("sign-off", note, `${name} signed off`)}>Sign off</Button>}>
         <label className="flex flex-col gap-1.5 text-small text-fg-body">Note (optional, shown in audit)<Textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={2000} /></label>

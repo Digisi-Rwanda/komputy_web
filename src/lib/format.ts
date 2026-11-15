@@ -24,12 +24,22 @@ export function pd(value: number) {
   return value.toFixed(4);
 }
 
-/** Signed delta: 0.042 -> "+4.2 %" */
+/** Signed delta: 0.042 -> "+4.2 %", -0.042 -> "(4.2 %)" (accounting style, no minus sign) */
 export function delta(ratio: number, decimals = 1) {
-  return `${ratio >= 0 ? "+" : "−"}${num(decimals).format(Math.abs(ratio) * 100)} %`;
+  const s = `${num(decimals).format(Math.abs(ratio) * 100)} %`;
+  return ratio < 0 ? `(${s})` : `+${s}`;
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** "2026-11" -> "Nov 2026" (reporting and lease periods) */
+export function month(period: string) {
+  const [y, m] = period.split("-");
+  return m ? `${MONTHS[Number(m) - 1]} ${y}` : period;
+}
+
+/** 1 -> "1 day", 3 -> "3 days" */
+export const days = (n: number) => `${n} day${n === 1 ? "" : "s"}`;
 
 /** "2026-09-30" -> "30 Sep 2026" (fixed names: en-GB renders "Sept") */
 export function date(iso: string) {

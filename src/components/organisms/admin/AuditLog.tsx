@@ -37,7 +37,7 @@ export function AuditLog({ events, initialQuery = "" }: { events: Row[]; initial
             <thead><tr className="border-b border-line text-fg-muted"><th scope="col" className="w-8" /><th scope="col" className="px-3 py-2.5 text-left font-normal">Timestamp · UTC</th>{["Actor", "Action", "Object", "Service", "IP"].map((h) => <th key={h} scope="col" className="px-3 py-2.5 text-left font-normal">{h}</th>)}</tr></thead>
             <tbody>{list.map((e) => { const o = open === e.at; return (
               <Fragment key={e.at}>
-                <tr className="cursor-pointer border-b border-line hover:bg-surface/50" onClick={() => setOpen(o ? null : e.at)}>
+                <tr className="cursor-pointer border-b border-line hover:bg-surface-hover" onClick={() => setOpen(o ? null : e.at)}>
                   <td className="pl-3"><button type="button" aria-expanded={o} aria-label={`Details for ${e.action}`} className="inline-flex size-6 items-center justify-center rounded-full hover:bg-surface"><ChevronRight className={cn("size-4 text-fg-muted transition-transform", o && "rotate-90")} /></button></td>
                   <td className="px-3 py-3 font-mono text-micro text-fg-body">{ts(e.at)}</td>
                   <td className="px-3"><span className="flex items-center gap-2"><Avatar initials={e.initials} size="xs" /><span className="text-fg">{e.actor}</span>{e.staff && <Badge tone="info" mono>STAFF</Badge>}</span></td>

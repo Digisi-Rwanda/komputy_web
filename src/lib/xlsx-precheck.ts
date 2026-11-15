@@ -46,7 +46,7 @@ const unxml = (s: string) => s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").repla
 
 export async function precheckXlsx(file: File, required: string[][], maxMb = 50): Promise<Precheck> {
   const errors: string[] = [];
-  if (!/\.xlsx$/i.test(file.name)) return { ok: false, errors: [/\.xls[mb]$/i.test(file.name) ? "Macro-enabled or binary workbooks aren't accepted. Save as .xlsx." : "Upload an Excel workbook (.xlsx)."], sheets: [] };
+  if (!/\.xlsx$/i.test(file.name)) return { ok: false, errors: [/\.xls[mb]$/i.test(file.name) ? "Macro enabled or binary workbooks aren't accepted. Save as .xlsx." : "Upload an Excel workbook (.xlsx)."], sheets: [] };
   if (file.size > maxMb * 1048576) return { ok: false, errors: [`The file is ${(file.size / 1048576).toFixed(1)} MB; the limit is ${maxMb} MB.`], sheets: [] };
   let list: Entry[];
   try { list = await entries(file); } catch { return { ok: false, errors: ["This file isn't a valid .xlsx workbook. Open it in Excel and save it again."], sheets: [] }; }

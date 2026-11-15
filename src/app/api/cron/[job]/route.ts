@@ -5,6 +5,7 @@ import { db, schema } from "@/server/db/client";
 import { bumpAuthz } from "@/server/dal/members";
 import { enqueueEmail } from "@/server/email/enqueue";
 import { env } from "@/server/env";
+import { date } from "@/lib/format";
 import { notify, workspaceAdmins } from "@/server/notify";
 
 // Scheduled jobs (plan Phase 3/4). Call with `Authorization: Bearer $CRON_SECRET`:
@@ -25,8 +26,8 @@ async function expire() {
     for (const tenantId of new Set([...trials, ...sessions].map((r) => r.tenantId))) await bumpAuthz(tx, tenantId);
     for (const t of trials) {
       const name = t.service === "ecl" ? "Expected Credit Loss" : "Lease Accounting";
-      await notify(await workspaceAdmins(t.tenantId, tx), { event: "trial", kind: "access", tenantId: t.tenantId, title: `Your ${name} trial ended`, body: "Your data stays available read-only.", href: "/admin/services", action: "Request access",
-        email: { subject: `Your ${name} trial ended`, message: { preview: "Trial ended", headline: `Your ${name} trial ended`, paragraphs: ["Your data stays available read-only. Request full access to keep working."], cta: { label: "Request full access", href: link("/admin/services") } } } }, tx);
+      await notify(await workspaceAdmins(t.tenantId, tx), { event: "trial", kind: "access", tenantId: t.tenantId, title: `Your ${name} trial ended`, body: "Your data stays available view only.", href: "/admin/services", action: "Request access",
+        email: { subject: `Your ${name} trial ended`, message: { preview: "Trial ended", headline: `Your ${name} trial ended`, paragraphs: ["Your data stays available view only. Request full access to keep working."], cta: { label: "Request full access", href: link("/admin/services") } } } }, tx);
       await audit({ event: "trial.expired", userId: null, tenantId: t.tenantId, details: { service: t.service } }, tx);
     }
     for (const t of sessions) await notify(await workspaceAdmins(t.tenantId, tx), { event: "support", kind: "security", tenantId: t.tenantId, title: "Komputy Support session ended", body: "Access was removed automatically when the time ran out.", href: "/admin/security" }, tx);
@@ -48,9 +49,9 @@ async function daily() {
     const days = Math.max(0, Math.ceil((e.trialEndsAt!.getTime() - now.getTime()) / 864e5));
     await db.transaction(async (tx) => {
       const subject = `Your ${name} trial ends in ${days} day${days === 1 ? "" : "s"}`;
-      await notify(owners, { event: "trial", kind: "access", tenantId: e.tenantId, title: subject, body: "Your data stays available read-only after the trial.", href: "/admin/services", action: "Request access", email: { subject, message: {
-        preview: `${days} days left in your trial`, headline: `${days} day${days === 1 ? "" : "s"} left in your trial`,
-        paragraphs: [`The ${name} trial for ${tenant} ends on ${e.trialEndsAt!.toISOString().slice(0, 10)}.`, "Your data stays available read-only after the trial."],
+      await notify(owners, { event: "trial", kind: "access", tenantId: e.tenantId, title: subject, body: "Your data stays available view only after the trial.", href: "/admin/services", action: "Request access", email: { subject, message: {
+        preview: `${days} day${days === 1 ? "" : "s"} left in your trial`, headline: `${days} day${days === 1 ? "" : "s"} left in your trial`,
+        paragraphs: [`The ${name} trial for ${tenant} ends on ${date(e.trialEndsAt!.toISOString())}.`, "Your data stays available view only after the trial."],
         cta: { label: "Request full access", href: link("/admin/services") },
       } } }, tx);
       await audit({ event: "trial.reminder_sent", userId: null, tenantId: e.tenantId, details: { entitlementId: e.id, service: e.service } }, tx);

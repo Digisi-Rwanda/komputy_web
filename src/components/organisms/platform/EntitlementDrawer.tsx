@@ -32,7 +32,7 @@ export function EntitlementDrawer({ kind, ws, tenantId, service = "leases", trig
   const [start, setStart] = useState(() => iso(new Date()));
   const [end, setEnd] = useState(() => iso(new Date(Date.now() + 365 * 864e5)));
   const [ref, setRef] = useState(""), [price, setPrice] = useState(""), [watermark, setWatermark] = useState(true);
-  const [msg, setMsg] = useState(`Your ${NAME[svc]} contract has ended. Data is read-only. Contact your account manager to renew.`);
+  const [msg, setMsg] = useState(`Your ${NAME[svc]} contract has ended. Data is view only. Contact your account manager to renew.`);
   const [keepData, setKeepData] = useState(true);
   const danger = kind === "suspend" || kind === "expire";
   const limits: Record<string, number> = svc === "ecl" ? { runs_month: a ?? 0, loans_run: b ?? 0 } : { active_leases: a ?? 0, entities: b ?? 0 };
@@ -55,7 +55,7 @@ export function EntitlementDrawer({ kind, ws, tenantId, service = "leases", trig
     <Sheet open={open} onOpenChange={setOpen} trigger={trigger} width="w-[520px]" title={`${TITLE[kind]} · ${ws}`} description="Logged and emailed to the workspace owner."
       footer={<Button variant={danger ? "danger" : "primary"} loading={busy} disabled={!ok} disabledReason={!ok ? (reason.trim().length < 3 ? "A reason is required" : "Check the dates") : undefined} onClick={submit}>{kind === "activate" ? `Activate ${NAME[svc]}` : kind === "extend" ? `Extend by ${Math.min(30, days ?? 0)} days` : TITLE[kind]}</Button>}>
       <div className="flex flex-col gap-5">
-        {danger && <div className="rounded-card border border-negative/40 bg-negative-tint px-4 py-3 text-small text-fg">The client keeps their data. Outputs become read-only.</div>}
+        {danger && <div className="rounded-card border border-negative/40 bg-negative-tint px-4 py-3 text-small text-fg">The client keeps their data. Outputs become view only.</div>}
         {R("Service", <Select value={svc} onChange={(e) => setSvc(e.target.value as Svc)}><option value="leases">Lease Accounting</option><option value="ecl">Expected Credit Loss</option></Select>)}
         {kind === "trial" && <>{R("Duration (days)", <NumberInput aria-label="Duration" value={days} onValueChange={setDays} />)}{lim}<Switch checked={watermark} onCheckedChange={setWatermark} label="Watermark outputs as TRIAL" /></>}
         {kind === "activate" && <><div className="grid grid-cols-2 gap-3">{R("Start", <Input type="date" value={start} onChange={(e) => setStart(e.target.value)} />)}{R("End", <Input type="date" value={end} onChange={(e) => setEnd(e.target.value)} />)}</div>{lim}
@@ -64,7 +64,7 @@ export function EntitlementDrawer({ kind, ws, tenantId, service = "leases", trig
           <div className="rounded-card border border-line bg-raised p-4"><p className="mb-1 font-mono text-micro uppercase tracking-wider text-fg-muted">What the client will see</p><p className="text-small text-fg">{NAME[svc]} is now active · {svc === "ecl" ? `${a ?? 0} runs / month` : `${a ?? 0} leases`} · until {end}</p></div></>}
         {kind === "units" && lim}
         {kind === "extend" && R("+ days (max 30)", <NumberInput aria-label="Extra days" value={days} onValueChange={(v) => setDays(v == null ? null : Math.min(30, v))} />)}
-        {danger && <>{R("Message shown to client", <Textarea value={msg} onChange={(e) => setMsg(e.target.value)} maxLength={1000} />)}<Checkbox checked={keepData} onCheckedChange={(v) => setKeepData(v === true)} label="Keep data read-only (required)" /></>}
+        {danger && <>{R("Message shown to client", <Textarea value={msg} onChange={(e) => setMsg(e.target.value)} maxLength={1000} />)}<Checkbox checked={keepData} onCheckedChange={(v) => setKeepData(v === true)} label="Keep data view only (required)" /></>}
         {R("Reason (required, logged)", <Textarea value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} placeholder={kind === "extend" ? "Customer evaluating with auditors" : ""} />)}
       </div>
     </Sheet>

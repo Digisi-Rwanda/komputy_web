@@ -22,7 +22,7 @@ export function CheckEmail({ email }: { email: string }) {
         {state?.ok && <p role="status" className="flex items-center gap-1.5 text-micro text-positive"><CheckCircle2 className="size-3.5" />{state.message}</p>}
       </form>
       <Link href="/sign-up" className="text-small text-link hover:underline">Change email</Link>
-      <p className="mt-2 rounded-card border border-line px-4 py-3 text-center text-micro text-fg-muted">You can look around in <Link href="/home?tour=1" className="text-link hover:underline">read-only mode</Link> meanwhile. Uploads unlock once you verify.</p>
+      <p className="mt-2 rounded-card border border-line px-4 py-3 text-center text-micro text-fg-muted">You can look around in <Link href="/home?tour=1" className="text-link hover:underline">view only mode</Link> meanwhile. Uploads unlock once you verify.</p>
     </div>
   );
 }

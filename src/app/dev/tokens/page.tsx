@@ -44,7 +44,7 @@ export default function TokensPage() {
             <span className={`truncate text-fg ${t === "label" ? "label-mono" : `text-${t}`}`}>Expected credit loss 12,846,210.55</span>
           </div>
         ))}
-        <p className="font-mono text-body text-fg">Mono · RUN-0142 · v1.3.0 · 9f2c…a71</p>
+        <p className="font-mono text-body text-fg">Mono · RUN 0142 · v1.3.0 · 9f2c…a71</p>
         <p className="font-serif text-h1 text-fg">Coustard 404</p>
       </section>
 
@@ -53,7 +53,7 @@ export default function TokensPage() {
         <div className="flex flex-wrap gap-4">
           {RADII.map((r) => <div key={r} className={`flex h-20 w-32 items-end border border-line-strong bg-surface p-2 font-mono text-micro text-fg-muted rounded-${r}`}>{r}</div>)}
           <div className="ring-inner flex h-20 w-32 items-end rounded-card bg-raised p-2 font-mono text-micro text-fg-muted">inner ring</div>
-          <div className="glass flex h-20 w-32 items-end rounded-card border border-line p-2 font-mono text-micro text-fg-muted">glass</div>
+          <div className="bg-overlay flex h-20 w-32 items-end rounded-card border border-line p-2 font-mono text-micro text-fg-muted">overlay</div>
         </div>
       </section>
 

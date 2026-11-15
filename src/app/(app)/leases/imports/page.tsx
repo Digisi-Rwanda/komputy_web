@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Imports" };
 export default function ImportsPage() {
   return (
     <>
-      <LeasesHeader title="Imports" description="Bulk-create leases from Excel or CSV. Rows land as drafts." />
+      <LeasesHeader title="Imports" description="Bulk create leases from Excel or CSV. Rows land as drafts." />
       <Imports />
     </>
   );

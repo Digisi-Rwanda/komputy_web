@@ -46,7 +46,7 @@ export function Portfolio({ run, segments, explore }: { run: Run; segments: Segm
       <div className="grid gap-8 lg:grid-cols-2">
         <Section title="ECL by segment">
           <ul className="divide-y divide-line rounded-panel border border-line">{segments.map((s) => (
-            <li key={s.segment}><Link href={`${base(run.id)}&segment=${encodeURIComponent(s.segment)}`} className="flex items-center gap-4 px-5 py-3 hover:bg-surface/60"><span className="w-28 truncate text-small text-fg">{s.segment}</span><span className="flex-1 text-right text-small tabular-nums"><Money value={s.ecl} /></span><span className="w-16 text-right text-micro text-fg-muted">{percent(s.coverage)}</span><ArrowRight aria-hidden className="size-4 text-fg-muted" /></Link></li>
+            <li key={s.segment}><Link href={`${base(run.id)}&segment=${encodeURIComponent(s.segment)}`} className="flex items-center gap-4 px-5 py-3 hover:bg-surface-hover"><span className="w-28 truncate text-small text-fg">{s.segment}</span><span className="flex-1 text-right text-small tabular-nums"><Money value={s.ecl} /></span><span className="w-16 text-right text-micro text-fg-muted">{percent(s.coverage)}</span><ArrowRight aria-hidden className="size-4 text-fg-muted" /></Link></li>
           ))}</ul>
         </Section>
         <Section title="ECL distribution by loan size"><div className="rounded-panel border border-line p-5"><StackedBars title="ECL by loan size (outstanding)" data={explore.sizes} x="bucket" format="compact" height={180} series={[{ key: "ecl", label: "ECL", color: "var(--chart-1)", value: "ecl" }]} /></div></Section>
@@ -67,13 +67,13 @@ export function SegmentView({ run, seg, segments, explore }: { run: Run; seg: Se
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard label={`Exposure · ${run.currency}`} value={compact(seg.exposure)} /><StatCard label={`ECL · ${run.currency}`} value={money(seg.ecl)} /><StatCard label="Coverage" value={percent(seg.coverage)} />
-        <StatCard label="Loans" value={explore.loans.toLocaleString("en-US")} /><StatCard label="Cure rate" value={explore.cureRate != null ? explore.cureRate.toFixed(4) : "-"} />
+        <StatCard label="Loans" value={explore.loans.toLocaleString("en-US")} /><StatCard label="Cure rate" value={explore.cureRate != null ? explore.cureRate.toFixed(4) : "No data"} />
       </div>
       <Section title="Stage split (exposure)">
         <div role="img" aria-label={explore.stages.map((s) => `Stage ${s.stage} ${(s.share * 100).toFixed(1)}%`).join(", ")} className="flex h-3 overflow-hidden rounded-full">{explore.stages.map((s) => <span key={s.stage} className={stageDot[s.stage]} style={{ width: `${s.share * 100}%` }} />)}</div>
         <p className="flex gap-4 text-micro text-fg-muted">{explore.stages.map((s) => <span key={s.stage}>Stage {s.stage} {(s.share * 100).toFixed(1)} %</span>)}</p>
       </Section>
-      <Section title="LGD summary"><KeyValue columns={2} className="rounded-panel border border-line p-5" items={[["Average LGD", explore.avgLgd != null ? percent(explore.avgLgd, 1) : "-"], ["ECL by loan size", explore.sizes.filter((b) => b.ecl).map((b) => `${b.bucket} ${compact(b.ecl)}`).join(" · ") || "-"]]} /></Section>
+      <Section title="LGD summary"><KeyValue columns={2} className="rounded-panel border border-line p-5" items={[["Average LGD", explore.avgLgd != null ? percent(explore.avgLgd, 1) : "No data"], ["ECL by loan size", explore.sizes.filter((b) => b.ecl).map((b) => `${b.bucket} ${compact(b.ecl)}`).join(" · ") || "No data"]]} /></Section>
       <Section title="Top contributors"><TopLoans run={run} rows={explore.top} segment={seg.segment} /></Section>
     </>
   );
@@ -91,11 +91,11 @@ export function LoanView({ run, loan: l }: { run: Run; loan: LoanDetail }) {
       </div>
       <div className="flex flex-wrap items-center gap-2"><h2 className="font-mono text-h3 text-fg">{l.id}</h2><Badge>{l.customer}</Badge><StagePill stage={l.stage} /><Badge>{l.segment}</Badge>{l.capped && <Badge tone="warning">Capped</Badge>}</div>
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <KeyValue columns={3} className="rounded-panel border border-line p-5" items={[["Outstanding", money(l.outstanding)], ["EIR", l.eir != null ? percent(l.eir, 2) : "-"], ["Reporting date", date(l.reportingDate)], ["Treatment", l.treatment ?? `Stage ${l.stage}`], ["PD rule", l.pdRule ?? "-"], ["Projection rows", String(l.schedule.length)]]} />
+        <KeyValue columns={3} className="rounded-panel border border-line p-5" items={[["Outstanding", money(l.outstanding)], ["EIR", l.eir != null ? percent(l.eir, 2) : "Not set"], ["Reporting date", date(l.reportingDate)], ["Treatment", l.treatment ?? `Stage ${l.stage}`], ["PD rule", l.pdRule ?? "None"], ["Projection rows", String(l.schedule.length)]]} />
         <div className="flex flex-col gap-2 rounded-panel border border-line p-5"><p className="text-small text-fg">Collateral</p><p className="text-small tabular-nums text-fg-body">Discounted collateral <span className="text-fg">{money(l.discountedCollateral)}</span></p></div>
       </div>
-      <Section title="ECL build-up">
-        <div className="rounded-panel border border-line p-5"><Waterfall title={`ECL build-up for ${l.id}`} height={200} increaseIsBad={false} steps={[{ label: "Discounted losses", value: l.eclBeforeCap, kind: "total" }, ...(capCut > 0.005 ? [{ label: "Cap at outstanding", value: -capCut }] : []), { label: "ECL", value: l.ecl, kind: "total" as const }]} />
+      <Section title="ECL buildup">
+        <div className="rounded-panel border border-line p-5"><Waterfall title={`ECL buildup for ${l.id}`} height={200} increaseIsBad={false} steps={[{ label: "Discounted losses", value: l.eclBeforeCap, kind: "total" }, ...(capCut > 0.005 ? [{ label: "Cap at outstanding", value: -capCut }] : []), { label: "ECL", value: l.ecl, kind: "total" as const }]} />
           <p className="mt-2 font-mono text-micro text-fg-muted">Σ discounted monthly losses {money(discounted)}{capCut > 0.005 ? ` − cap ${money(capCut)}` : ""} = ECL {money(l.ecl)}</p></div>
       </Section>
       <Section title="Monthly ECL schedule">

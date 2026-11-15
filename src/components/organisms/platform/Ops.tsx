@@ -39,7 +39,7 @@ export function Health({ probes, checkedAt }: { probes: Probe[]; checkedAt: stri
   return (
     <div className="flex flex-col gap-6">
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{probes.map((p) => <div key={p.name} className="flex flex-col gap-2 rounded-card border border-line p-4"><span className="flex items-center gap-2 text-small text-fg-muted">{p.ok ? <LiveDot /> : <span className="size-2 rounded-full bg-negative" />}{p.name}</span><span className={`text-h4 ${p.ok ? "text-fg" : "text-negative"}`}>{p.value}</span>{p.ms !== null && <span className="font-mono text-micro text-fg-muted">{p.ms} ms</span>}</div>)}</div>
-      <p className="text-micro text-fg-muted">Checked {new Date(checkedAt).toLocaleTimeString("en-GB")} · refresh the page to re-check.</p>
+      <p className="text-micro text-fg-muted">Checked {new Date(checkedAt).toLocaleTimeString("en-GB")} · refresh the page to recheck.</p>
       {/* shortcut: no latency history or incident log yet; wire OpenTelemetry metrics + a status page (plan 0.7). */}
       <section className="flex flex-col gap-3"><h2 className="text-h4">Recent incidents</h2><p className="rounded-panel border border-line px-4 py-6 text-center text-small text-fg-muted">No incidents recorded.</p></section>
     </div>

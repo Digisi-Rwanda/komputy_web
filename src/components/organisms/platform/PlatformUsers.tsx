@@ -17,7 +17,7 @@ import { resetUserMfa, setStaffRole, setUserActive } from "@/lib/actions/platfor
 import type { listPeople } from "@/server/dal/platform";
 
 type People = Awaited<ReturnType<typeof listPeople>>;
-const STAFF_ROLES = [["admin", "Platform admin"], ["sales", "Sales (can propose, not activate)"], ["support", "Support (read-only)"]];
+const STAFF_ROLES = [["admin", "Platform admin"], ["sales", "Sales (can propose, not activate)"], ["support", "Support (view only)"]];
 const ini = (s: string) => s.split(/[ .]+/).filter(Boolean).map((x) => x[0]).join("").slice(0, 2).toUpperCase();
 
 /** PA7 global people directory + staff roles. No data access from here; every change needs a logged reason. */
@@ -41,7 +41,7 @@ export function PlatformUsers({ data, me }: { data: People; me: string }) {
           <thead><tr className="border-b border-line text-fg-muted">{["Person", "Workspaces", "MFA", "Last login", "Status", ""].map((h, i) => <th key={i} scope="col" className="px-4 py-2.5 text-left font-normal">{h}</th>)}</tr></thead>
           <tbody>{data.people.map((p) => <tr key={p.id} className={cn("border-b border-line last:border-0", p.status === "disabled" && "opacity-60")}>
             <td className="px-4 py-3"><span className="flex items-center gap-3"><Avatar initials={ini(p.name)} size="sm" /><span><span className="block text-fg">{p.name}</span><span className="block text-micro text-fg-muted">{p.email}</span></span></span></td>
-            <td className="px-4"><span className="flex flex-wrap gap-1">{p.ws.length ? p.ws.map((w) => <span key={w} className="rounded-full bg-surface px-2 py-0.5 text-micro text-fg-body">{w}</span>) : <span className="text-fg-muted">-</span>}</span></td>
+            <td className="px-4"><span className="flex flex-wrap gap-1">{p.ws.length ? p.ws.map((w) => <span key={w} className="rounded-full bg-surface px-2 py-0.5 text-micro text-fg-body">{w}</span>) : <span className="text-fg-muted">None</span>}</span></td>
             <td className="px-4">{p.mfa ? "On" : <StatusPill tone="warning">Off</StatusPill>}</td><td className="px-4 text-fg-muted">{p.last}</td>
             <td className="px-4"><StatusPill tone={p.status === "active" ? "positive" : "neutral"}>{p.status === "active" ? "Active" : "Disabled"}</StatusPill></td>
             <td className="px-4 text-right"><DropdownMenu trigger={<IconButton label={`Actions for ${p.name}`} size="sm"><Icon name="more" /></IconButton>} items={[
@@ -56,7 +56,7 @@ export function PlatformUsers({ data, me }: { data: People; me: string }) {
       )}
       <Modal open={pending !== null} onOpenChange={(o) => { if (!o) { setPending(null); setReason(""); } }} size="sm"
         title={pending?.kind === "mfa" ? `Reset MFA for ${pending.name}?` : pending?.kind === "disable" ? `Disable ${pending?.name} everywhere?` : `Enable ${pending?.name}?`}
-        description={pending?.kind === "mfa" ? "They set up a new authenticator at next sign-in. Their sessions end now." : pending?.kind === "disable" ? "They're signed out of every workspace and can't sign in until enabled." : "They can sign in again."}
+        description={pending?.kind === "mfa" ? "They set up a new authenticator at next sign in. Their sessions end now." : pending?.kind === "disable" ? "They're signed out of every workspace and can't sign in until enabled." : "They can sign in again."}
         footer={<Button variant={pending?.kind === "enable" ? "primary" : "danger"} disabled={reason.trim().length < (pending?.kind === "mfa" ? 10 : 3)} onClick={confirm}>{pending?.kind === "mfa" ? "Reset MFA" : pending?.kind === "disable" ? "Disable" : "Enable"}</Button>}>
         <label className="flex flex-col gap-1.5 text-small text-fg-body">{pending?.kind === "mfa" ? "How you verified the person (required, logged)" : "Reason (required, logged)"}<Textarea value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} /></label>
       </Modal>

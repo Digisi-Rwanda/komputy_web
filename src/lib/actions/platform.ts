@@ -75,9 +75,9 @@ export const changeEntitlement = mutate({
     await bumpAuthz(tx, t.id);
     const verb = { trial: "trial started", extend: "trial extended", units: "capacity updated", activate: "is now active", suspend: "was suspended", expire: "has ended" }[input.kind];
     const ent = input.kind === "trial" || input.kind === "extend" ? "trial" : "service";
-    await notify(await workspaceAdmins(t.id, tx), { event: ent, kind: "access", tenantId: t.id, title: `${NAME[input.service]} ${verb}`, body: input.kind === "suspend" || input.kind === "expire" ? (input.clientMessage ?? "Data stays available read-only.") : `Changes apply straight away.`, href: "/admin/services", email: { subject: `${NAME[input.service]} ${verb}`, message: {
+    await notify(await workspaceAdmins(t.id, tx), { event: ent, kind: "access", tenantId: t.id, title: `${NAME[input.service]} ${verb}`, body: input.kind === "suspend" || input.kind === "expire" ? (input.clientMessage ?? "Data stays available view only.") : `Changes apply straight away.`, href: "/admin/services", email: { subject: `${NAME[input.service]} ${verb}`, message: {
       preview: `${NAME[input.service]} ${verb}`, headline: `${NAME[input.service]} ${verb}`,
-      paragraphs: [input.kind === "suspend" || input.kind === "expire" ? (input.clientMessage ?? "Your data stays available read-only. Contact your account manager to continue.") : `Changes to ${t.name} apply straight away.`],
+      paragraphs: [input.kind === "suspend" || input.kind === "expire" ? (input.clientMessage ?? "Your data stays available view only. Contact your account manager to continue.") : `Changes to ${t.name} apply straight away.`],
       details: [["Service", NAME[input.service]], ...(patch.endsAt ? [["Until", (patch.endsAt as Date).toISOString().slice(0, 10)] as [string, string]] : []), ...(patch.trialEndsAt ? [["Trial ends", (patch.trialEndsAt as Date).toISOString().slice(0, 10)] as [string, string]] : []), ...(input.contractRef ? [["Ref", input.contractRef] as [string, string]] : [])],
       cta: { label: `Go to ${NAME[input.service]}`, href: link(input.service === "ecl" ? "/ecl" : "/leases") },
     } } }, tx);
@@ -223,7 +223,7 @@ export const requestSupport = mutate({
     await tx.insert(schema.supportSessions).values({ id: ulid(), tenantId: t.id, staffId: p.userId, reason: input.reason, minutes: input.minutes, status: auto ? "active" : "requested", ...(auto && { startsAt: now, endsAt: new Date(now.getTime() + input.minutes * 6e4), decidedAt: now }) });
     if (!auto) {
       await notify(await workspaceAdmins(t.id, tx), { event: "support", kind: "security", tenantId: t.id, title: `${p.name} (Komputy Support) requests access`, body: `${input.reason} · ${input.minutes} min`, href: "/admin/security", action: "Review",
-        email: { subject: `Komputy Support asks to access ${t.name}`, message: { preview: "Support access request", headline: "Support asks for access", paragraphs: [`${p.name} from Komputy Support asks for ${input.minutes} minutes of read-only access to ${t.name}.`, `Reason: ${input.reason}`, "Nothing happens unless an administrator approves."], cta: { label: "Review request", href: link("/admin/security") } } } }, tx);
+        email: { subject: `Komputy Support asks to access ${t.name}`, message: { preview: "Support access request", headline: "Support asks for access", paragraphs: [`${p.name} from Komputy Support asks for ${input.minutes} minutes of view only access to ${t.name}.`, `Reason: ${input.reason}`, "Nothing happens unless an administrator approves."], cta: { label: "Review request", href: link("/admin/security") } } } }, tx);
     }
     await staffAudit(tx, p.userId, t.id, "support_requested", { detail: `${input.minutes} min`, reason: input.reason, auto });
     return { status: auto ? "active" : "requested" };

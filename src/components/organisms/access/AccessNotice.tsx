@@ -18,11 +18,11 @@ export function AccessNotice({ state, info = {} }: { state: ServiceState; info?:
         </div>
       );
     case "trial-expired":
-      return <Banner tone="warning" action={<Button asChild size="sm"><Link href="/contact?topic=quote">Request a quote</Link></Button>}>Your trial ended on {info.trialEndedAt ?? "-"} · read-only. Your data stays available.</Banner>;
+      return <Banner tone="warning" action={<Button asChild size="sm"><Link href="/contact?topic=quote">Request a quote</Link></Button>}>Your trial ended on {info.trialEndedAt ?? "an earlier date"} · view only. Your data stays available.</Banner>;
     case "expired":
-      return <Banner tone="warning" action={<Button asChild size="sm"><Link href="/contact?topic=quote">Renew</Link></Button>}>Contract expired {info.expiredAt ?? "-"} · read-only until {info.archiveAt ?? "-"}, then archived.</Banner>;
+      return <Banner tone="warning" action={<Button asChild size="sm"><Link href="/contact?topic=quote">Renew</Link></Button>}>Contract expired {info.expiredAt ?? "earlier"} · view only until {info.archiveAt ?? "the archive date"}, then archived.</Banner>;
     case "suspended":
-      return <Banner tone="negative" action={<Button size="sm" variant="secondary">Export all data</Button>}>Suspended{info.reason ? `: ${info.reason}` : ""}. Everything is read-only. You can still export.</Banner>;
+      return <Banner tone="negative" action={<Button size="sm" variant="secondary">Export all data</Button>}>Suspended{info.reason ? `: ${info.reason}` : ""}. Everything is view only. You can still export.</Banner>;
     default:
       return null;
   }

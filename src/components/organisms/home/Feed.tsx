@@ -14,7 +14,7 @@ export function RecentActivity({ events }: { events: AuditEvent[] }) {
         <li key={e.at + e.action} className="flex items-start gap-3 py-3">
           <Avatar initials={e.initials} size="sm" />
           <p className="min-w-0 flex-1 text-small text-fg-body"><span className="text-fg">{e.actor}</span> {e.action.charAt(0).toLowerCase() + e.action.slice(1)} <span className="font-mono text-micro text-fg">{e.object}</span></p>
-          <time dateTime={e.at} className="shrink-0 font-mono text-micro text-fg-muted">{e.at.slice(5, 16).replace("T", " ")}</time>
+          <time dateTime={e.at} className="shrink-0 font-mono text-micro text-fg-muted">{`${date(e.at)} ${e.at.slice(11, 16)}`}</time>
         </li>
       ))}
     </ul>

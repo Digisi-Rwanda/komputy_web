@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Reports" };
 export default function Page() {
   return (
     <>
-      <LeasesHeader  title="Reports" description="Roll-forward, maturity and IFRS 16 disclosures for Oct 2026." />
+      <LeasesHeader  title="Reports" description="Roll forward, maturity and IFRS 16 disclosures for Oct 2026." />
       <LeaseReports />
     </>
   );

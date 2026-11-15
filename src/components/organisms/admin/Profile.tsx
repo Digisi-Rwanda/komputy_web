@@ -44,7 +44,7 @@ export function Profile({ ws }: { ws: WorkspaceProfile }) {
         <label className="flex flex-col gap-1.5 text-small text-fg-body">Country<Select {...f("country")}>{["Rwanda", "Kenya", "Uganda", "Tanzania", "Burundi"].map((c) => <option key={c}>{c}</option>)}</Select></label>
         <label className="flex flex-col gap-1.5 text-small text-fg-body">Reporting currency<Select {...f("currency")}>{[["RWF", "RWF: Rwandan franc"], ["USD", "USD: US dollar"], ["KES", "KES: Kenyan shilling"], ["UGX", "UGX: Ugandan shilling"], ["TZS", "TZS: Tanzanian shilling"], ["EUR", "EUR: Euro"]].map(([k, l]) => <option key={k} value={k}>{l}</option>)}</Select><span className="text-micro text-fg-muted">Changing currency affects new runs only.</span></label>
         <label className="flex flex-col gap-1.5 text-small text-fg-body">Fiscal year end<Select {...f("fye")}><option value="12-31">31 December</option><option value="06-30">30 June</option><option value="03-31">31 March</option></Select></label>
-        <label className="flex flex-col gap-1.5 text-small text-fg-body">Default reporting date<Select {...f("date")}><option value="month-end">Month-end</option><option value="quarter-end">Quarter-end</option></Select></label>
+        <label className="flex flex-col gap-1.5 text-small text-fg-body">Default reporting date<Select {...f("date")}><option value="month-end">Month end</option><option value="quarter-end">Quarter end</option></Select></label>
       </FormSection>
       <FormSection title="Data" description="Fixed at creation. Contact us to change.">
         <dl className="grid gap-4 text-small">

@@ -16,7 +16,7 @@ import type { RunStatus } from "@/types/domain";
 export interface CommandItem { group: string; label: string; href?: string; run?: () => void; icon?: IconName; status?: RunStatus; meta?: string }
 
 type Data = NonNullable<Awaited<ReturnType<typeof paletteData>>>;
-const PAGES: [string, string, IconName, keyof Data["can"] | null][] = [["Home", "/home", "home", null], ["ECL overview", "/ecl", "ecl", "ecl"], ["ECL runs", "/ecl/runs", "ecl", "ecl"], ["Lease register", "/leases/register", "leases", "leases"], ["Month-end close", "/leases/close", "calendar", "leases"], ["Workspace admin", "/admin/overview", "admin", "admin"], ["Members", "/admin/members", "users", "admin"], ["Audit log", "/admin/audit", "admin", "admin"], ["Notifications", "/notifications", "bell", null], ["Account settings", "/account/profile", "user", null], ["Security", "/account/security", "user", null], ["Platform console", "/platform", "admin", "staff"]];
+const PAGES: [string, string, IconName, keyof Data["can"] | null][] = [["Home", "/home", "home", null], ["ECL overview", "/ecl", "ecl", "ecl"], ["ECL runs", "/ecl/runs", "ecl", "ecl"], ["Lease register", "/leases/register", "leases", "leases"], ["Month end close", "/leases/close", "calendar", "leases"], ["Workspace admin", "/admin/overview", "admin", "admin"], ["Members", "/admin/members", "users", "admin"], ["Audit log", "/admin/audit", "admin", "admin"], ["Notifications", "/notifications", "bell", null], ["Account settings", "/account/profile", "user", null], ["Security", "/account/security", "user", null], ["Platform console", "/platform", "admin", "staff"]];
 
 /** Commands for what this person can do, their workspaces and (admins) people. Runs/leases join once the engine search exists (Phase 5). */
 export function buildCommands(d: Data | null, switchTo: (id: string, name: string) => void): CommandItem[] {
@@ -58,8 +58,8 @@ export function CommandPalette({ open, onOpenChange, commands: given }: { open: 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-[var(--z-modal)] bg-scrim backdrop-blur-[20px] data-[state=open]:animate-fade-in" />
-        <Dialog.Content className="glass ring-inner fixed left-1/2 top-[14vh] z-[var(--z-modal)] w-[640px] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-hidden rounded-panel border border-line outline-none data-[state=open]:animate-scale-in">
+        <Dialog.Overlay className="fixed inset-0 z-[var(--z-modal)] bg-scrim data-[state=open]:animate-fade-in" />
+        <Dialog.Content className="bg-raised ring-inner fixed left-1/2 top-[14vh] z-[var(--z-modal)] w-[640px] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-hidden rounded-panel border border-line outline-none data-[state=open]:animate-scale-in">
           <Dialog.Title className="sr-only">Command palette</Dialog.Title>
           <Dialog.Description className="sr-only">Search runs, leases, people and pages, or run an action</Dialog.Description>
           <Command loop onKeyDown={(e) => {

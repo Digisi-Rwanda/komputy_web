@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 // Share card for every page (WhatsApp, LinkedIn, Slack, X). Built from text and the mark only: no third-party images.
-export const alt = "Komputy · IFRS 9 and IFRS 16 reporting, from upload to sign-off";
+export const alt = "Komputy · IFRS 9 and IFRS 16 reporting, from upload to sign off";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -18,7 +18,7 @@ export default function OpengraphImage() {
           <div style={{ fontSize: 64, fontWeight: 600, letterSpacing: -2 }}>Komputy</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <div style={{ fontSize: 68, fontWeight: 600, lineHeight: 1.1, letterSpacing: -2, maxWidth: 980 }}>IFRS 9 and IFRS 16 reporting, from upload to sign-off.</div>
+          <div style={{ fontSize: 68, fontWeight: 600, lineHeight: 1.1, letterSpacing: -2, maxWidth: 980 }}>IFRS 9 and IFRS 16 reporting, from upload to sign off.</div>
           <div style={{ fontSize: 30, color: "#a3a3a3" }}>Expected credit loss and lease accounting for banks and finance teams.</div>
         </div>
         <div style={{ fontSize: 28, color: "#7a7a7a" }}>komputy.com</div>

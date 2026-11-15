@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { updateLead } from "@/lib/actions/platform";
 import type { Lead, LeadStage as Stage } from "@/types/domain";
 import { EntitlementDrawer } from "@/components/organisms/platform/EntitlementDrawer";
+import { showCode } from "@/lib/code";
 
 const STAGES: [Stage, string][] = [["new", "New"], ["contacted", "Contacted"], ["negotiating", "Negotiating"], ["won", "Won"], ["lost", "Lost"]];
 const ini = (s: string) => s.split(/[ .]+/).filter(Boolean).map((x) => x[0]).join("").slice(0, 2).toUpperCase();
@@ -56,11 +57,11 @@ export function RequestsPipeline({ initial, assignees }: { initial: Row[]; assig
         <FilterBar value={f} onChange={setF} filters={[{ key: "type", label: "Type", options: [...new Set(leads.map((l) => l.type))].map((t) => ({ value: t, label: t })) }, { key: "service", label: "Service", options: [...new Set(leads.flatMap((l) => l.services))].map((t) => ({ value: t, label: t })) }, { key: "assignee", label: "Assignee", options: [...assignees.map((a) => ({ value: a, label: a })), { value: "none", label: "Unassigned" }] }]} /></div>
       {mode === "board" ? (
         <div className="relative overflow-x-auto pb-2"><div className="grid min-w-[1100px] grid-cols-5 gap-3">{STAGES.map(([s, label]) => { const col = list.filter((l) => l.stage === s); return (
-          <section key={s} aria-label={label} className="flex flex-col gap-2 rounded-panel border border-line bg-raised/50 p-2"><h2 className="flex items-center justify-between px-1 py-1 text-small text-fg">{label}<span className="font-mono text-micro text-fg-muted">{s === "won" ? 12 + col.length - 1 : col.length}</span></h2>{col.map(card)}{!col.length && <p className="px-1 py-4 text-center text-micro text-fg-subtle">Nothing here</p>}</section>); })}</div></div>
+          <section key={s} aria-label={label} className="flex flex-col gap-2 rounded-panel border border-line bg-raised p-2"><h2 className="flex items-center justify-between px-1 py-1 text-small text-fg">{label}<span className="font-mono text-micro text-fg-muted">{s === "won" ? 12 + col.length - 1 : col.length}</span></h2>{col.map(card)}{!col.length && <p className="px-1 py-4 text-center text-micro text-fg-subtle">Nothing here</p>}</section>); })}</div></div>
       ) : (
         <div className="relative overflow-x-auto rounded-panel border border-line"><table className="w-full min-w-[820px] text-small"><caption className="sr-only">Requests</caption>
           <thead><tr className="border-b border-line text-fg-muted">{["ID", "Company", "Type", "Service", "Stage", "Assignee", "Age"].map((h) => <th key={h} scope="col" className="px-4 py-2.5 text-left font-normal">{h}</th>)}</tr></thead>
-          <tbody>{list.map((l) => <tr key={l.id} onClick={() => setSel(l.id)} className="cursor-pointer border-b border-line last:border-0 hover:bg-surface/40"><td className="px-4 py-3 font-mono text-micro">{l.code ?? l.id}</td><td className="px-4 text-fg">{l.company}</td><td className="px-4">{l.type}</td><td className="px-4">{l.services.join(", ")}</td><td className="px-4"><StatusPill tone={l.stage === "won" ? "positive" : l.stage === "lost" ? "neutral" : "info"}>{STAGES.find((s) => s[0] === l.stage)![1]}</StatusPill></td><td className="px-4">{l.assignee ?? "-"}</td><td className="px-4 text-fg-muted">{l.age}</td></tr>)}</tbody></table></div>
+          <tbody>{list.map((l) => <tr key={l.id} onClick={() => setSel(l.id)} className="cursor-pointer border-b border-line last:border-0 hover:bg-surface-hover"><td className="px-4 py-3 font-mono text-micro">{showCode(l.code ?? l.id)}</td><td className="px-4 text-fg">{l.company}</td><td className="px-4">{l.type}</td><td className="px-4">{l.services.join(", ")}</td><td className="px-4"><StatusPill tone={l.stage === "won" ? "positive" : l.stage === "lost" ? "neutral" : "info"}>{STAGES.find((s) => s[0] === l.stage)![1]}</StatusPill></td><td className="px-4">{l.assignee ?? "Unassigned"}</td><td className="px-4 text-fg-muted">{l.age}</td></tr>)}</tbody></table></div>
       )}
       <Sheet open={Boolean(cur)} onOpenChange={(v) => !v && setSel(null)} title={cur ? `${cur.company} · ${cur.type}` : ""} description={cur?.code}
         footer={cur && <>{cur.stage !== "lost" && cur.stage !== "won" && <Button variant="ghost" onClick={() => move(cur.id, "lost")}>Mark lost</Button>}

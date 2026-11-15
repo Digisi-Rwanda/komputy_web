@@ -44,7 +44,7 @@ const setCollapsedPref = (v: boolean) => { try { localStorage.setItem(KEY, v ? "
 const dot: Partial<Record<ServiceState, string>> = { active: "bg-svc-ecl", trial: "bg-svc-leases", suspended: "bg-negative", "trial-expired": "bg-fg-muted", expired: "bg-fg-muted", requested: "bg-accent" };
 const row = "flex h-9 items-center gap-3 rounded-full px-3 text-[15px] transition-colors duration-fast";
 
-/** Collapsed-rail group: icon + glass flyout of its pages on hover or click (SH2). */
+/** Collapsed-rail group: icon + solid flyout of its pages on hover or click (SH2). */
 function RailGroup({ n, active, stateDot, onNavigate, path }: { n: NavItem; active: boolean; stateDot?: string; onNavigate?: () => void; path: string }) {
   const [open, setOpen] = useState(false);
   return (

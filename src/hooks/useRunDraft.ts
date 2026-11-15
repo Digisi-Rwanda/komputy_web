@@ -24,7 +24,7 @@ export const NEW_DRAFT = (): Draft => {
   const e = lastMonthEnd();
   return {
     // Reporting date blank = use the EAD file's most common Reporting Date (spec 1.5 excludes rows with another date).
-    id: "New run", name: `${e.toLocaleString("en-GB", { month: "short" })} ${e.getFullYear()} month-end`, reportingDate: "",
+    id: "New run", name: `${e.toLocaleString("en-GB", { month: "short" })} ${e.getFullYear()} month end`, reportingDate: "",
     currency: "USD", engine: "current", description: "", files: { pd: empty, lgd: empty, ead: empty }, phase: "draft", computeAttempt: 0, sample: false, reviewer: "", note: "", savedAt: 0,
   };
 };

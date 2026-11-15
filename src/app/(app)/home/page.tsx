@@ -20,6 +20,7 @@ import { getWorkspace } from "@/server/dal/workspace";
 import { requireMember } from "@/server/session";
 import { one } from "@/lib/search";
 import type { Entitlement } from "@/types/domain";
+import { month } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Home" };
 
@@ -44,7 +45,7 @@ async function Body({ searchParams }: { searchParams: PageProps<"/home">["search
   const lb = book?.ok ? book.data : null;
   const closeSteps = (lb?.close as { steps?: { status: string }[]; period?: string } | null) ?? null;
   const leaseSummary = lb && lb.register.length ? { liability: lb.overview.liability, rou: lb.overview.rou,
-    close: { label: closeSteps?.period ?? lb.period, step: (closeSteps?.steps ?? []).filter((x) => x.status === "done" || x.status === "warning").length + 1, of: 8 } } : undefined;
+    close: { label: month(closeSteps?.period ?? lb.period), step: (closeSteps?.steps ?? []).filter((x) => x.status === "done" || x.status === "warning").length + 1, of: 8 } } : undefined;
   const isNew = scenario === "new";
   const states = { ecl: ecl.state, leases: leases.state };
   const progress = await getOnboarding(p.tenantId, p.mfa);
@@ -58,7 +59,7 @@ async function Body({ searchParams }: { searchParams: PageProps<"/home">["search
       <Section title="My services">
         <div className="grid gap-4 md:grid-cols-2">
           {usable(ecl) && <EclCard e={ecl} run={latestRun} sample={scenario === "trial"} />}
-          {usable(leases) ? <LeasesCard e={leases} summary={leaseSummary} /> : <LockedCard id="leases" name="Lease Accounting" standard="IFRS 16" line="Schedules, journals and month-end close in the same workspace." />}
+          {usable(leases) ? <LeasesCard e={leases} summary={leaseSummary} /> : <LockedCard id="leases" name="Lease Accounting" standard="IFRS 16" line="Schedules, journals and month end close in the same workspace." />}
         </div>
         {scenario === "trial" && <ComingSoon />}
       </Section>

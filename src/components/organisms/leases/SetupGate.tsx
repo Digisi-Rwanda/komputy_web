@@ -25,7 +25,7 @@ const PILL: Record<SetupStatus, ["positive" | "warning" | "neutral", string]> = 
 export const GL_KEYS: [string, string][] = [
   ["rou_cost", "ROU asset: cost"], ["rou_accdep", "ROU asset: accumulated depreciation"], ["lease_liability", "Lease liability"], ["interest_expense", "Interest expense"],
   ["depreciation_expense", "Depreciation expense"], ["cash_payable", "Cash / payables clearing"], ["restoration_provision", "Restoration provision"], ["idc_clearing", "Initial direct costs clearing"],
-  ["incentive_receivable", "Lease incentive receivable"], ["modification_gain_loss", "Modification gain / loss"], ["lease_expense", "Short-term / low-value lease expense"],
+  ["incentive_receivable", "Lease incentive receivable"], ["modification_gain_loss", "Modification gain / loss"], ["lease_expense", "Short term / low value lease expense"],
 ];
 const CLASSES = [["property", "Property"], ["vehicles", "Vehicles"], ["equipment", "Equipment / IT"], ["atm", "Branch ATMs"]];
 const today = () => new Date().toISOString().slice(0, 10);
@@ -77,7 +77,7 @@ export function SetupGate({ initialStep = "entity" }: { initialStep?: string }) 
         <ol className="flex flex-col gap-1">
           {steps.map((s, i) => (
             <li key={s.id}>
-              <button type="button" aria-current={s.id === cur ? "step" : undefined} onClick={() => setCur(s.id)} className={cn("flex w-full items-center gap-3 rounded-card px-3 py-2.5 text-left", s.id === cur ? "bg-surface" : "hover:bg-surface/60")}>
+              <button type="button" aria-current={s.id === cur ? "step" : undefined} onClick={() => setCur(s.id)} className={cn("flex w-full items-center gap-3 rounded-card px-3 py-2.5 text-left", s.id === cur ? "bg-surface" : "hover:bg-surface-hover")}>
                 <span className={cn("inline-flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-micro", s.status === "approved" ? "bg-positive text-fg-inverse" : s.id === cur ? "bg-fg text-fg-inverse" : "border border-line-strong text-fg-muted")}>{s.status === "approved" ? <Check className="size-3.5" /> : i + 1}</span>
                 <span className="flex-1 text-small text-fg">{s.label}</span>
                 <StatusPill tone={PILL[s.status as SetupStatus][0]}>{PILL[s.status as SetupStatus][1]}</StatusPill>
@@ -110,14 +110,14 @@ export function SetupGate({ initialStep = "entity" }: { initialStep?: string }) 
             <Banner tone="info">Locked periods cannot change. Reopening needs a reason and is logged.</Banner>
           </>}
           {cur === "policies" && <div className="flex flex-col gap-4">
-            <fieldset className="flex flex-col gap-2"><legend className="mb-1 text-small text-fg-body">Short-term exemption (≤ 12 months) applies to</legend>
+            <fieldset className="flex flex-col gap-2"><legend className="mb-1 text-small text-fg-body">Short term exemption (≤ 12 months) applies to</legend>
               <div className="flex flex-wrap gap-2">{CLASSES.map(([v, l]) => <Button key={v} size="sm" variant={pol.shortTermClasses.includes(v) ? "primary" : "secondary"} onClick={() => setPol({ ...pol, shortTermClasses: toggle(pol.shortTermClasses, v) })}>{l}</Button>)}</div></fieldset>
-            <Switch checked={pol.lowValueElection} onCheckedChange={(v) => setPol({ ...pol, lowValueElection: v })} label="Apply the low-value exemption" />
-            {pol.lowValueElection && <Field label={`Low-value threshold · ${entity.currency}`} id="po-th" className="max-w-xs"><Input numeric value={pol.lowValueThreshold} onChange={(e) => setPol({ ...pol, lowValueThreshold: e.target.value })} /></Field>}
-            <fieldset className="flex flex-col gap-2"><legend className="mb-1 text-small text-fg-body">Separate non-lease components for</legend>
+            <Switch checked={pol.lowValueElection} onCheckedChange={(v) => setPol({ ...pol, lowValueElection: v })} label="Apply the low value exemption" />
+            {pol.lowValueElection && <Field label={`Low value threshold · ${entity.currency}`} id="po-th" className="max-w-xs"><Input numeric value={pol.lowValueThreshold} onChange={(e) => setPol({ ...pol, lowValueThreshold: e.target.value })} /></Field>}
+            <fieldset className="flex flex-col gap-2"><legend className="mb-1 text-small text-fg-body">Separate non lease components for</legend>
               <div className="flex flex-wrap gap-2">{CLASSES.map(([v, l]) => <Button key={v} size="sm" variant={pol.separateNonLeaseClasses.includes(v) ? "primary" : "secondary"} onClick={() => setPol({ ...pol, separateNonLeaseClasses: toggle(pol.separateNonLeaseClasses, v) })}>{l}</Button>)}</div></fieldset>
             <Field label={`Capitalisation threshold · ${entity.currency}`} id="po-cap" className="max-w-xs"><Input numeric value={pol.capitalisationThreshold} onChange={(e) => setPol({ ...pol, capitalisationThreshold: e.target.value })} /></Field>
-            <div className="flex flex-col gap-1.5"><span className="text-small text-fg-body">Day-count convention</span><ToggleGroup label="Day count" value={pol.dayCount} onChange={(v) => setPol({ ...pol, dayCount: v })} options={[{ value: "periodic", label: "Periodic" }, { value: "act365", label: "Actual/365" }]} /></div>
+            <div className="flex flex-col gap-1.5"><span className="text-small text-fg-body">Day count convention</span><ToggleGroup label="Day count" value={pol.dayCount} onChange={(v) => setPol({ ...pol, dayCount: v })} options={[{ value: "periodic", label: "Periodic" }, { value: "act365", label: "Actual/365" }]} /></div>
           </div>}
           {cur === "rates" && <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
             <div className="flex flex-col gap-3">

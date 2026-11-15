@@ -124,7 +124,7 @@ export async function saveSegment(input: { id?: string; name: string; active: bo
 
 export async function saveCollateral(input: { id?: string; name: string; haircutPct: number; months: number }) {
   const v = z.object({ id: id.optional(), name: z.string().trim().min(2).max(100), haircutPct: z.number().min(0).max(100), months: z.number().int().min(0).max(600) }).safeParse(input);
-  if (!v.success) return { ok: false, error: "Haircut must be 0-100 % and time to realise whole months." } as const;
+  if (!v.success) return { ok: false, error: "Haircut must be 0 to 100 % and time to realise whole months." } as const;
   return as<unknown>("ecl.review", async (p) => {
     const body = { name: v.data.name, haircut: v.data.haircutPct.toFixed(2), time_to_realize: v.data.months };
     const r = v.data.id

@@ -17,6 +17,7 @@ import { executeRun } from "@/lib/actions/ecl";
 import { hydrate } from "@/lib/wizard-engine";
 import { setDraft, useDraft, type Dataset } from "@/hooks/useRunDraft";
 import { WizardShell } from "@/components/organisms/ecl/Shell";
+import { showCode } from "@/lib/code";
 
 const DS: Dataset[] = ["pd", "lgd", "ead"];
 
@@ -38,11 +39,11 @@ export function StepReview() {
         <table className="w-full min-w-[680px] text-small"><caption className="px-5 pt-4 text-left text-h4 text-fg">Inputs</caption>
           <thead><tr className="border-b border-line text-fg-muted">{["File", "Rows", "Hash", "Validation", "Accepted"].map((h) => <th key={h} scope="col" className="px-5 py-2 text-left font-normal">{h}</th>)}</tr></thead>
           <tbody>{DS.map((k) => { const f = d.files[k], w = (f.criteria ?? []).filter((c) => c.status === "warning").length; return (
-            <tr key={k} className="border-b border-line last:border-0"><td className="px-5 py-3 text-fg">{f.name ?? "-"}</td><td className="px-5 text-fg-body">{f.rows ? f.rows.toLocaleString("en-US") : "-"}</td><td className="px-5 font-mono text-micro">{f.sha ? `${f.sha.slice(0, 4)}…${f.sha.slice(-3)}` : "-"}</td><td className="px-5"><Badge tone={f.outcome === "warnings" || w ? "warning" : "positive"}>{f.outcome === "warnings" ? `Passed with ${w || "some"} warning${w === 1 ? "" : "s"}` : "Passed"}</Badge></td><td className="px-5 text-micro text-fg-muted">{f.status === "accepted" ? (f.acceptedAt ? `${date(f.acceptedAt.slice(0, 10))} ${f.acceptedAt.slice(11, 16)}` : "Yes") : "-"}</td></tr>
+            <tr key={k} className="border-b border-line last:border-0"><td className="px-5 py-3 text-fg">{f.name ?? "Not uploaded"}</td><td className="px-5 text-fg-body">{f.rows ? f.rows.toLocaleString("en-US") : "No data"}</td><td className="px-5 font-mono text-micro">{f.sha ? `${f.sha.slice(0, 4)}…${f.sha.slice(-3)}` : "No data"}</td><td className="px-5"><Badge tone={f.outcome === "warnings" || w ? "warning" : "positive"}>{f.outcome === "warnings" ? `Passed with ${w || "some"} warning${w === 1 ? "" : "s"}` : "Passed"}</Badge></td><td className="px-5 text-micro text-fg-muted">{f.status === "accepted" ? (f.acceptedAt ? `${date(f.acceptedAt.slice(0, 10))} ${f.acceptedAt.slice(11, 16)}` : "Yes") : "Not yet"}</td></tr>
           ); })}</tbody>
         </table>
       </section>
-      {warnings.length > 0 && <Accordion type="single" items={[{ value: "w", title: <span className="text-h4">Acknowledged warnings ({warnings.length})</span>, content: <ul className="flex flex-col gap-2">{warnings.map(({ k, c, comment }) => <li key={k + c.id} className="text-small"><span className="font-mono text-micro text-fg-muted">{c.id}</span> {c.title} <span className="text-fg-muted">· {k.toUpperCase()}{comment ? ` · “${comment}”` : ""}</span></li>)}</ul> }]} />}
+      {warnings.length > 0 && <Accordion type="single" items={[{ value: "w", title: <span className="text-h4">Acknowledged warnings ({warnings.length})</span>, content: <ul className="flex flex-col gap-2">{warnings.map(({ k, c, comment }) => <li key={k + c.id} className="text-small"><span className="font-mono text-micro text-fg-muted">{showCode(c.id)}</span> {c.title} <span className="text-fg-muted">· {k.toUpperCase()}{comment ? ` · “${comment}”` : ""}</span></li>)}</ul> }]} />}
       <section className="rounded-panel border border-line p-5"><h3 className="mb-4 text-h4">Settings</h3><KeyValue columns={3} items={[["Reporting date", d.reportingDate ? date(d.reportingDate) : "From the EAD file"], ["Currency", d.currency], ["Engine", d.engine]]} /></section>
       <Banner tone="info">This run counts towards your workspace&apos;s monthly run quota once computed. A failed run doesn&apos;t.</Banner>
     </WizardShell>
@@ -91,7 +92,7 @@ export function StepCompute() {
   );
   const finished = d.phase !== "computing";
   return (
-    <WizardShell step={6} footer={finished ? <Button asChild right={<ArrowRight />}><Link href={`/ecl/runs/${d.runId}/summary`}>Open results &amp; sign-off</Link></Button> : undefined}>
+    <WizardShell step={6} footer={finished ? <Button asChild right={<ArrowRight />}><Link href={`/ecl/runs/${d.runId}/summary`}>Open results &amp; sign off</Link></Button> : undefined}>
       <h2 className="text-h3">{finished ? "ECL computed" : "Computing ECL…"}</h2>
       <section className="grid items-center gap-10 rounded-panel border border-line p-6 md:grid-cols-[auto_1fr] md:p-8">
         <ProgressCircle value={pct} size={200} label="Compute progress"><span className="text-h2 text-fg tabular-nums">{pct} %</span><span className="text-micro text-fg-muted">{finished ? "Done" : STAGES.find((s) => st(s.key) === "running")?.label.split(" ")[0] ?? "Queued"}</span></ProgressCircle>

@@ -14,7 +14,7 @@ import { SERVICE_PAGES, type LiveServicePage } from "@/data/services";
 import { compact, date, percent } from "@/lib/format";
 import type { Run, SegmentResult } from "@/types/domain";
 
-const LABEL = { 1: "Performing", 2: "SICR", 3: "Credit-impaired" } as const;
+const LABEL = { 1: "Performing", 2: "SICR", 3: "Credit impaired" } as const;
 type Trend = { month: string; s1: number; s2: number; s3: number }[];
 
 /** E1 populated overview: hero, stage + reconciliation cards, trend, segments, runs in progress, provenance. */
@@ -22,7 +22,7 @@ export function EclOverview({ run, trend, segments, inProgress }: { run: Run; tr
   const total = segments.reduce((a, s) => a + s.ecl, 0);
   return (
     <>
-      <HeroMetric label={`Total ECL · ${run.name} · ${run.signedOffAt ? `signed off ${date(run.signedOffAt.slice(0, 10))}` : "awaiting sign-off"}`} currency={run.currency} value={<Money value={run.totalEcl} />} delta={<Delta value={run.deltaVsPrior} suffix=" vs previous run" />} sub={<>Coverage {percent(run.coverage)} · exposure {run.currency} {compact(run.exposure)}</>} />
+      <HeroMetric label={`Total ECL · ${run.name} · ${run.signedOffAt ? `signed off ${date(run.signedOffAt.slice(0, 10))}` : "awaiting sign off"}`} currency={run.currency} value={<Money value={run.totalEcl} />} delta={<Delta value={run.deltaVsPrior} suffix=" vs previous run" />} sub={<>Coverage {percent(run.coverage)} · exposure {run.currency} {compact(run.exposure)}</>} />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {run.stages.map((s) => <StatCard key={s.stage} dot={stageDot[s.stage]} label={`Stage ${s.stage} · ${LABEL[s.stage]}`} value={<Money value={s.ecl} />} meta={<>{percent(s.share, 1)} of exposure · coverage {percent(s.ecl / s.exposure)}</>} />)}
         <StatCard label="Reconciliation" value={`${run.checksPassed} / ${(run as { checksTotal?: number }).checksTotal ?? 7} passed`} meta={<Link href={`/ecl/runs/${run.id}/reconciliation`} className="text-link hover:underline">View checks →</Link>} />

@@ -95,7 +95,7 @@ const { page: ap } = await signIn(ADMIN);
 const { page: op } = await signIn(OWNER);
 await step("suspend workspace", async () => {
   await ap.goto(`${BASE}/platform/workspaces/${tid}/summary`, { timeout: 120000 }); await ap.getByRole("button", { name: "More" }).click();
-  await ap.getByRole("menuitem", { name: /Suspend workspace/ }).click(); await ap.locator("textarea").last().fill("Non-payment test");
+  await ap.getByRole("menuitem", { name: /Suspend workspace/ }).click(); await ap.locator("textarea").last().fill("Unpaid invoices test");
   await ap.getByRole("button", { name: "Suspend workspace" }).click(); await ap.waitForTimeout(3000);
   await op.goto(`${BASE}/home`); await op.waitForURL(/select-workspace/, { timeout: 60000 }).catch(() => {});
   check("suspend workspace", sql(`select status from tenants where id='${tid}'`) === "suspended" && op.url().includes("error=suspended"), op.url());

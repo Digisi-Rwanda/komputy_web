@@ -22,6 +22,7 @@ import { compact, date } from "@/lib/format";
 import { saveCollateral, saveSegment, saveThresholds } from "@/lib/actions/ecl";
 import { SERVICE_PAGES, type LiveServicePage } from "@/data/services";
 import { SaveBar } from "@/components/molecules/SaveBar";
+import { showCode } from "@/lib/code";
 
 export interface Segment { id?: string; name: string; active: boolean; loans: number; source: "manual" | "data"; firstSeen?: string; updated: string }
 export interface CollateralType { id?: string; name: string; haircut: number; months: number; usedUsd: number; active: boolean }
@@ -104,7 +105,7 @@ export function CollateralSetup({ initial, canEdit = true }: { initial: Collater
                   <td className="px-4 py-3 text-fg">{c.id === "__new" ? <Input aria-label="Collateral type name" value={name} maxLength={100} onChange={(e) => setName(e.target.value)} placeholder="e.g. Property" /> : c.name}</td>
                   <td className="px-4 py-3"><div className="ml-auto w-28"><Input aria-label="Haircut percent" numeric value={h} onChange={(e) => setH(e.target.value)} trailing="%" invalid={Boolean(guard)} />{guard && <button type="button" onClick={() => setH(String(Math.round(pct * 100)))} className="mt-1 text-micro text-warning underline">{guard}</button>}</div></td>
                   <td className="px-4 py-3"><div className="ml-auto w-28"><Input aria-label="Months to realise" numeric value={m} onChange={(e) => setM(e.target.value)} trailing="mo" /></div></td>
-                  <td className="px-4 py-3 text-right text-fg-muted">-</td>
+                  <td className="px-4 py-3 text-right text-fg-muted">None</td>
                   <td className="px-4 py-3"><StatusPill tone="positive">Active</StatusPill></td>
                   <td className="px-4 py-3"><span className="flex justify-end gap-1"><IconButton size="sm" variant="secondary" label="Save" disabled={invalid || (c.id === "__new" && name.trim().length < 2)} onClick={() => void save()}><Check /></IconButton><IconButton size="sm" label="Cancel" onClick={() => { setEditing(null); setAdding(false); }}><X /></IconButton></span></td>
                 </tr>
@@ -113,7 +114,7 @@ export function CollateralSetup({ initial, canEdit = true }: { initial: Collater
                   <td className="h-row px-4 text-fg">{c.name}</td>
                   <td className="px-4 text-right tabular-nums">{Math.round(c.haircut * 100)} %</td>
                   <td className="px-4 text-right tabular-nums">{c.months} months</td>
-                  <td className="px-4 text-right tabular-nums text-fg-body">{c.usedUsd ? compact(c.usedUsd) : "-"}</td>
+                  <td className="px-4 text-right tabular-nums text-fg-body">{c.usedUsd ? compact(c.usedUsd) : "None"}</td>
                   <td className="px-4"><StatusPill tone={c.active ? "positive" : "neutral"}>{c.active ? "Active" : "Inactive"}</StatusPill></td>
                   <td className="px-4 text-right">{canEdit && <Button size="sm" variant="ghost" onClick={() => start(c)}>Edit</Button>}</td>
                 </tr>
@@ -150,7 +151,7 @@ export function ThresholdsSetup({ initial, canEdit = true }: { initial: Threshol
               const i = vals.indexOf(t), modified = t.value !== t.def;
               return (
                 <li key={t.id} className="grid items-center gap-3 px-5 py-4 md:grid-cols-[1fr_160px_auto]">
-                  <div><p className="text-small text-fg"><span className="mr-2 font-mono text-micro text-fg-muted">{t.id}</span>{t.label}{modified && <Badge tone="warning" className="ml-2">Modified</Badge>}</p><p className="text-micro text-fg-muted">{t.description}</p></div>
+                  <div><p className="text-small text-fg"><span className="mr-2 font-mono text-micro text-fg-muted">{showCode(t.id)}</span>{t.label}{modified && <Badge tone="warning" className="ml-2">Modified</Badge>}</p><p className="text-micro text-fg-muted">{t.description}</p></div>
                   <NumberInput key={`${t.id}-${t.value}`} aria-label={t.label} kind={t.unit === "percent" ? "percent" : "plain"} decimals={t.unit === "percent" ? 1 : 0} defaultValue={t.value} disabled={!canEdit} trailing={t.unit === "months" ? "mo" : undefined}
                     onValueChange={(v) => v != null && v >= 0 && setVals((a) => a.map((x, j) => (j === i ? { ...x, value: v } : x)))} />
                   <span className="flex items-center gap-2"><Badge>Default {fmtT(t, t.def)}</Badge><Button size="sm" variant="ghost" disabled={!modified} onClick={() => setVals((a) => a.map((x, j) => (j === i ? { ...x, value: x.def } : x)))}>Reset</Button></span>
@@ -192,17 +193,17 @@ export function TemplatesSetup({ admin = true }: { admin?: boolean }) {
         </div>
       </section>
       <section className="rounded-panel border border-line px-6">
-        <FormSection title="Defaults" description="Pre-filled on every new run.">
+        <FormSection title="Defaults" description="Prefilled on every new run.">
           <Field label="Default currency" id="def-cur"><Select value={v.currency} onChange={(e) => setV({ ...v, currency: e.target.value })}>{["USD", "RWF", "KES", "UGX", "EUR"].map((c) => <option key={c}>{c}</option>)}</Select></Field>
           <div className="flex flex-col gap-1.5">
             <span className="text-small text-fg-body">Engine version</span>
             <Tooltip content={admin ? undefined : "Only administrators can change the engine pin"}>
               <span className="flex h-control items-center gap-2 rounded-input border border-line bg-surface px-3 text-small text-fg-body"><Lock aria-hidden className="size-4 text-fg-muted" /><span className="font-mono">v1.3.0</span> · pinned by workspace</span>
             </Tooltip>
-            <span className="text-micro text-fg-muted">New engine versions are opt-in. Pinned runs stay reproducible.</span>
+            <span className="text-micro text-fg-muted">New engine versions are opt in. Pinned runs stay reproducible.</span>
           </div>
           <Field label="Default reviewer" id="def-rev"><Select value={v.reviewer} onChange={(e) => setV({ ...v, reviewer: e.target.value })}>{["Jean Habimana", "Aline Mugisha"].map((c) => <option key={c}>{c}</option>)}</Select></Field>
-          <Switch disabled checked={false} label="Self-approval" description="Allowed only for single-user workspaces." />
+          <Switch disabled checked={false} label="Self-approval" description="Allowed only for single user workspaces." />
         </FormSection>
       </section>
       <SaveBar changes={changes} onDiscard={() => setV(init)} onSave={() => toast.success("Defaults saved")} />

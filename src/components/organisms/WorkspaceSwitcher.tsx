@@ -23,7 +23,7 @@ export function WorkspaceSwitcher({ current, workspaces, roles = ROLES, staff }:
     if (w.id === current.id) return;
     const r = await switchWorkspace(w.id);
     if (!r.ok) { toast.error(`Couldn't open ${w.name}`, { description: "You may no longer be a member." }); return; }
-    toast.success(`Switched to ${w.name}`, { description: "No new sign-in needed." });
+    toast.success(`Switched to ${w.name}`, { description: "No new sign in needed." });
     router.push("/home");
     router.refresh();
   };

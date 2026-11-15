@@ -14,9 +14,9 @@ export type OutputFile = { kind: string; sha256: string; size: number; at: strin
 const OUTPUT_LABEL: Record<string, [string, string]> = {
   LOAN_DETAIL: ["Loan detail.xlsx", "Every loan: stage, EAD, PD, LGD, ECL (Step 11)"], PORTFOLIO_SUMMARY: ["Portfolio summary.xlsx", "Totals by segment and stage"],
   PD_CALCS: ["PD calculations.xlsx", "Transition matrices and term structures"], LGD: ["LGD.xlsx", "Collateral allocation and discounting"],
-  RUNDOWN: ["EAD rundown.xlsx", "Month-by-month projections"], ECL_SUMMARY: ["ECL summary.xlsx", "Headline figures"],
+  RUNDOWN: ["EAD rundown.xlsx", "Month by month projections"], ECL_SUMMARY: ["ECL summary.xlsx", "Headline figures"],
 };
-const fmt = (v: unknown) => (typeof v === "number" ? v.toLocaleString("en-US", { maximumFractionDigits: 2 }) : String(v ?? "-"));
+const fmt = (v: unknown) => (typeof v === "number" ? v.toLocaleString("en-US", { maximumFractionDigits: 2 }) : String(v ?? "No data"));
 
 /** R4 reconciliation: 7 checks, expandable calculations, example failed-check style. */
 export function ReconciliationTab({ run, checks }: { run: Run; checks: ReconCheck[] }) {
@@ -53,13 +53,13 @@ export function InputsTab({ run, files }: { run: Run; files: InputFile[] }) {
       <section className="rounded-panel border border-line p-5"><h3 className="mb-4 text-h4">Run settings</h3>
         <KeyValue columns={2} items={[["Engine", run.engine], ["Currency", run.currency], ["Reporting date", run.reportingDate || "From the EAD file"], ["Created by", run.createdBy]]} />
       </section>
-      {run.status === "signed-off" && <p className="flex items-center gap-2 text-small text-fg-muted"><Lock className="size-4" />Inputs are immutable for signed-off runs.</p>}
+      {run.status === "signed-off" && <p className="flex items-center gap-2 text-small text-fg-muted"><Lock className="size-4" />Inputs are immutable for signed off runs.</p>}
     </div>
   );
 }
 
 const FORMULAS = [
-  ["PD: Markov transition matrix", "Money-weighted matrix per segment, pooled and row-normalised; cure rate; S1 → S3 folded into S1 → S2; S3 absorbing; term structure Mⁿ for n = 1…299; marginal PD = (S3(n) − S3(n − 1)) / (1 − S3(n − 1))."],
+  ["PD: Markov transition matrix", "Money weighted matrix per segment, pooled and row-normalised; cure rate; S1 → S3 folded into S1 → S2; S3 absorbing; term structure Mⁿ for n = 1…299; marginal PD = (S3(n) − S3(n − 1)) / (1 − S3(n − 1))."],
   ["LGD: Collateral discounting", "Allocated = share × collateral; Discounted = Allocated × (1 − haircut) × (1 + EIR)^−years; LGW = max(0, 1 − discounted / EAD); LGD = LGW × (1 − cure rate)."],
   ["EAD: Projection", "Level payment PMT; balance = max(0, bal × (1 + r/12) − pmt); EAD includes up to 3 missed payments; Stage 1 12 months, Stage 2 to maturity, Stage 3 single row."],
   ["ECL", "Σ EAD × PD × LGD × (1 + EIR/12)^−t, capped at outstanding."],

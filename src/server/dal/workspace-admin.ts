@@ -4,11 +4,12 @@ import { db, schema } from "@/server/db/client";
 import { listAudit } from "@/server/dal/audit";
 import { ago, listMembers } from "@/server/dal/members";
 import type { Tone } from "@/types/ui";
+import { days as dayCount } from "@/lib/format";
 
 export interface ServiceCard { id: "ecl" | "leases"; name: string; state: string; tone: Tone; dates: string; meters: [string, number, number][] }
 const NAME = { ecl: "Expected Credit Loss (IFRS 9)", leases: "Lease Accounting (IFRS 16)" } as const;
 const TONE: Record<string, Tone> = { active: "positive", trial: "warning", suspended: "negative", expired: "neutral", "trial-expired": "neutral", requested: "info" };
-const d = (x: Date | null) => (x ? x.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }) : "-");
+const d = (x: Date | null) => (x ? x.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }) : "Not set");
 
 /** CA4/CA1: entitlements as cards. shortcut: usage "used" is 0 until read from the engine (Phase 5). */
 export async function serviceCards(tenantId: string): Promise<ServiceCard[]> {
@@ -18,7 +19,7 @@ export async function serviceCards(tenantId: string): Promise<ServiceCard[]> {
     const days = e.trialEndsAt ? Math.ceil((e.trialEndsAt.getTime() - Date.now()) / 864e5) : null;
     return {
       id: svc, name: NAME[svc], state: e.state === "trial" ? "Trial" : e.state[0].toUpperCase() + e.state.slice(1), tone: TONE[e.state] ?? "neutral",
-      dates: e.state === "trial" ? `Trial ends ${d(e.trialEndsAt)}${days !== null ? ` (${Math.max(0, days)} days left)` : ""}` : `Contract ${d(e.startsAt)} to ${d(e.endsAt)}${e.contractRef ? ` · Ref ${e.contractRef}` : ""}`,
+      dates: e.state === "trial" ? `Trial ends ${d(e.trialEndsAt)}${days !== null ? ` (${dayCount(Math.max(0, days))} left)` : ""}` : `Contract ${d(e.startsAt)} to ${d(e.endsAt)}${e.contractRef ? ` · Ref ${e.contractRef}` : ""}`,
       meters: svc === "ecl" ? [["Runs this month", 0, lim.runs_month ?? 0], ["Loans per run limit", lim.loans_run ?? 0, 0]] : [["Active leases", 0, lim.active_leases ?? 0], ["Entities", 0, lim.entities ?? 0]],
     };
   });

@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "Reports" };
 export default function ReportsPage() {
   return (
     <>
-      <PageHeader crumbs={[{ label: "Expected Credit Loss", href: "/ecl" }, { label: "Reports" }]} title="Reports" description="Disclosure-ready packs per signed-off run." />
+      <PageHeader crumbs={[{ label: "Expected Credit Loss", href: "/ecl" }, { label: "Reports" }]} title="Reports" description="Disclosure ready packs per signed off run." />
       <Suspense fallback={<div className="skeleton h-96 rounded-panel" />}><Body /></Suspense>
     </>
   );

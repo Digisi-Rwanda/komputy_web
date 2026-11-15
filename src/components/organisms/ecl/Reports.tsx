@@ -14,7 +14,7 @@ import type { Run } from "@/types/domain";
 
 const REPORTS = [
   { id: "stage", icon: BarChart3, name: "Stage movement", desc: "IFRS 7 35H style: stage summary and migration", formats: ["XLSX", "CSV"] },
-  { id: "rollforward", icon: TrendingUp, name: "ECL roll-forward", desc: "Opening → closing between two runs", formats: ["XLSX", "CSV"], twoRuns: true },
+  { id: "rollforward", icon: TrendingUp, name: "ECL roll forward", desc: "Opening → closing between two runs", formats: ["XLSX", "CSV"], twoRuns: true },
   { id: "coverage", icon: PieChart, name: "Coverage by stage and segment", desc: "Exposure, ECL and coverage", formats: ["XLSX", "CSV"] },
   { id: "exceptions", icon: TriangleAlert, name: "Exceptions register", desc: "All exceptions with the action taken", formats: ["XLSX", "CSV"] },
   { id: "recon", icon: ShieldCheck, name: "Reconciliation certificate", desc: "Every check, expected vs actual", formats: ["XLSX", "CSV"] },

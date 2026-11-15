@@ -29,7 +29,7 @@ export function ExceptionsTab({ rows, runId }: { rows: Exception[]; runId: strin
           <thead><tr className="border-b border-line text-fg-muted">{["Category", "Loan", "Rule", "Detail", "Impact", "Amount · USD"].map((h, i) => <th key={h} scope="col" className={`px-4 py-2 font-normal ${i === 5 ? "text-right" : "text-left"}`}>{h}</th>)}</tr></thead>
           <tbody>
             {list.map((r) => (
-              <tr key={r.id} onClick={() => setOpen(r)} className="cursor-pointer border-b border-line last:border-0 hover:bg-surface/60">
+              <tr key={r.id} onClick={() => setOpen(r)} className="cursor-pointer border-b border-line last:border-0 hover:bg-surface-hover">
                 <td className="px-4 py-3"><Badge tone={TONE[r.category]}>{r.category}</Badge></td>
                 <td className="px-4"><button type="button" onClick={(e) => { e.stopPropagation(); setOpen(r); }} className="font-mono text-micro text-fg hover:underline">{r.loan}</button></td>
                 <td className="px-4 font-mono text-micro">{r.rule}</td><td className="px-4 text-fg-body">{r.detail}</td><td className="px-4 text-fg-body">{r.impact}</td>

@@ -62,7 +62,7 @@ export function SecurityPanel({ mfa, passwordChanged, mfaRequired, sessions }: S
 
   return (
     <div className="flex max-w-3xl flex-col gap-5">
-      {mfaRequired && !mfa && <Banner tone="warning">Your workspace requires two-factor authentication. Set it up to continue using Komputy.</Banner>}
+      {mfaRequired && !mfa && <Banner tone="warning">Your workspace requires two factor authentication. Set it up to continue using Komputy.</Banner>}
       <section className="flex flex-wrap items-center gap-4 rounded-panel border border-line p-5"><div className="flex-1"><h2 className="text-h4">Password</h2><p className="text-small text-fg-muted">Last changed {passwordChanged}</p></div>
         <Modal open={pwOpen} onOpenChange={setPwOpen} title="Change password" size="sm" trigger={<Button variant="secondary">Change password</Button>}
           footer={<Button loading={busy} disabled={!pw.cur || !passwordOk(pw.next)} disabledReason={!passwordOk(pw.next) ? "Choose a stronger password" : undefined} onClick={async () => {
@@ -74,12 +74,12 @@ export function SecurityPanel({ mfa, passwordChanged, mfaRequired, sessions }: S
             <label className="flex flex-col gap-1.5 text-small text-fg-body">New password<PasswordField id="pw-new" name="next" meter autoComplete="new-password" onValueChange={(v) => setPw((x) => ({ ...x, next: v }))} /></label></div>
         </Modal></section>
 
-      <section className="flex flex-wrap items-center gap-4 rounded-panel border border-line p-5"><div className="flex-1"><h2 className="flex items-center gap-2 text-h4">Two-factor authentication <StatusPill tone={mfa ? "positive" : "warning"}>{mfa ? "On" : "Off"}</StatusPill></h2><p className="text-small text-fg-muted">{mfa ? "Authenticator app · backup codes saved" : mfaRequired ? "Required by your workspace" : "Recommended for every account"}</p></div>
+      <section className="flex flex-wrap items-center gap-4 rounded-panel border border-line p-5"><div className="flex-1"><h2 className="flex items-center gap-2 text-h4">Two factor authentication <StatusPill tone={mfa ? "positive" : "warning"}>{mfa ? "On" : "Off"}</StatusPill></h2><p className="text-small text-fg-muted">{mfa ? "Authenticator app · backup codes saved" : mfaRequired ? "Required by your workspace" : "Recommended for every account"}</p></div>
         {/* Keep the setup modal mounted while open: verifying refreshes props (mfa → true) before the codes step. */}
         {mfa && !open ? (
-          <Modal open={offOpen} onOpenChange={(v) => { setOffOpen(v); if (!v) setPassword(""); }} title="Turn off two-factor authentication?" size="sm" description={mfaRequired ? "Your workspace requires MFA, so you'll be asked to set it up again straight away." : "Your account will be protected by your password only."}
+          <Modal open={offOpen} onOpenChange={(v) => { setOffOpen(v); if (!v) setPassword(""); }} title="Turn off two factor authentication?" size="sm" description={mfaRequired ? "Your workspace requires MFA, so you'll be asked to set it up again straight away." : "Your account will be protected by your password only."}
             trigger={<Button variant="secondary">Turn off</Button>}
-            footer={<Button variant="danger" loading={busy} disabled={!password} onClick={async () => { setBusy(true); const r = await disableMfa(password); setBusy(false); if (!r.ok) { toast.error(r.error); return; } setOffOpen(false); setPassword(""); done("Two-factor authentication is off"); }}>Turn off</Button>}>
+            footer={<Button variant="danger" loading={busy} disabled={!password} onClick={async () => { setBusy(true); const r = await disableMfa(password); setBusy(false); if (!r.ok) { toast.error(r.error); return; } setOffOpen(false); setPassword(""); done("Two factor authentication is off"); }}>Turn off</Button>}>
             <label className="flex flex-col gap-1.5 text-small text-fg-body">Confirm your password<Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" /></label>
           </Modal>
         ) : (
@@ -87,12 +87,12 @@ export function SecurityPanel({ mfa, passwordChanged, mfaRequired, sessions }: S
             footer={step === 0 ? <Button loading={busy} disabled={!password} onClick={begin}>Continue</Button>
               : step === 1 ? <Button onClick={() => setStep(2)}>Next</Button>
               : step === 2 ? <Button variant="ghost" onClick={() => setStep(1)}>Back</Button>
-              : <Button disabled={!stored} disabledReason={!stored ? "Confirm you've stored the codes" : undefined} onClick={() => { setOpen(false); reset(); done("Two-factor authentication is on"); }}>Finish</Button>}>
+              : <Button disabled={!stored} disabledReason={!stored ? "Confirm you've stored the codes" : undefined} onClick={() => { setOpen(false); reset(); done("Two factor authentication is on"); }}>Finish</Button>}>
             <div className="flex flex-col gap-5">
               <Stepper current={step} steps={steps} />
               {step === 0 && <label className="flex flex-col gap-1.5 text-small text-fg-body">Confirm your password<Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && password && begin()} autoComplete="current-password" autoFocus />{bad && <span role="alert" className="text-micro text-negative">{bad}</span>}</label>}
               {step === 1 && setup && <div className="flex flex-wrap items-center gap-5"><Qr uri={setup.uri} /><div className="flex flex-col gap-2 text-small text-fg-body"><p>Scan with Google Authenticator, 1Password or Authy.</p><p className="text-micro text-fg-muted">Can&apos;t scan? Enter this key:</p><p className="flex items-center gap-2 break-all font-mono text-fg">{setup.secret.replace(/(.{4})/g, "$1 ").trim()}<CopyButton value={setup.secret} label="Copy secret" /></p></div></div>}
-              {step === 2 && <div className="flex flex-col items-center gap-3"><p className="text-small text-fg-body">Enter the 6-digit code from your app.</p><OtpInput invalid={Boolean(bad)} onComplete={verify} />{busy && <p className="text-micro text-fg-muted">Checking…</p>}{bad && <p role="alert" className="text-micro text-negative">{bad}</p>}</div>}
+              {step === 2 && <div className="flex flex-col items-center gap-3"><p className="text-small text-fg-body">Enter the 6 digit code from your app.</p><OtpInput invalid={Boolean(bad)} onComplete={verify} />{busy && <p className="text-micro text-fg-muted">Checking…</p>}{bad && <p role="alert" className="text-micro text-negative">{bad}</p>}</div>}
               {step === 3 && setup && <div className="flex flex-col gap-4"><p className="text-small text-fg-body">Each code works once. Store them somewhere safe, like your password manager.</p>
                 <ol className="grid grid-cols-2 gap-x-6 gap-y-1.5 rounded-card bg-raised p-4 font-mono text-small text-fg">{setup.backupCodes.map((c) => <li key={c}>{c}</li>)}</ol>
                 <div className="flex gap-2"><Button size="sm" variant="secondary" icon={<Download />} onClick={() => download("komputy-backup-codes.txt", setup.backupCodes.join("\n"), "text/plain")}>Download</Button><Button size="sm" variant="secondary" icon={<Copy />} onClick={() => { navigator.clipboard?.writeText(setup.backupCodes.join("\n")).catch(() => {}); toast.success("Codes copied"); }}>Copy</Button></div>

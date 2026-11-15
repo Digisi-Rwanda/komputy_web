@@ -8,7 +8,7 @@ const STEPS = ["Set up segments and collateral", "Upload PD, LGD and EAD", "Comp
 export function FirstRun() {
   return (
     <section aria-labelledby="first-run" className="flex flex-col gap-8">
-      <div><h1 id="first-run" className="text-[32px] leading-tight tracking-[-0.03em] md:text-h1">Let&apos;s get your first provision computed</h1><p className="mt-2 text-body text-fg-muted">Three workbooks in, a signed-off ECL out.</p></div>
+      <div><h1 id="first-run" className="text-[32px] leading-tight tracking-[-0.03em] md:text-h1">Let&apos;s get your first provision computed</h1><p className="mt-2 text-body text-fg-muted">Three workbooks in, a signed off ECL out.</p></div>
       <ol className="bg-blueprint grid gap-px overflow-hidden rounded-panel border border-line bg-line md:grid-cols-3">
         {STEPS.map((s, i) => <li key={s} className="flex flex-col gap-2 bg-canvas p-6"><span className="font-mono text-h3 text-fg-muted">{i + 1}</span><span className="text-small text-fg">{s}</span></li>)}
       </ol>

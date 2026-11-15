@@ -84,7 +84,7 @@ const runCols: ColumnDef<Run, unknown>[] = [
   { id: "run", header: "Run", meta: { label: "Run" }, accessorFn: (r) => r.name, cell: ({ row }) => <TwoLine lead={<Icon name="ecl" />} title={row.original.name} meta={`${row.original.id} · ${date(row.original.reportingDate)}`} /> },
   { id: "status", header: "Status", meta: { label: "Status" }, accessorFn: (r) => r.status, cell: ({ row }) => <RunStatusPill status={row.original.status} /> },
   { id: "engine", header: "Engine", meta: { label: "Engine" }, accessorFn: (r) => r.engine, cell: ({ row }) => <MonoId>{row.original.engine}</MonoId> },
-  { id: "ecl", header: "Total ECL · USD", meta: { align: "right", label: "Total ECL" }, accessorFn: (r) => r.totalEcl, cell: ({ row }) => (row.original.totalEcl ? <Money value={row.original.totalEcl} /> : "-") },
+  { id: "ecl", header: "Total ECL · USD", meta: { align: "right", label: "Total ECL" }, accessorFn: (r) => r.totalEcl, cell: ({ row }) => (row.original.totalEcl ? <Money value={row.original.totalEcl} /> : "No data") },
 ];
 
 export default function UiGallery() {
@@ -108,7 +108,7 @@ export default function UiGallery() {
 
   return (
     <main id="main" className="mx-auto flex w-full max-w-site flex-col gap-10 px-4 py-10 lg:px-6">
-      <header className="glass sticky top-0 z-[var(--z-sticky)] -mx-4 flex items-center gap-4 border-b border-line px-4 py-3 lg:-mx-6 lg:px-6">
+      <header className="bg-canvas sticky top-0 z-[var(--z-sticky)] -mx-4 flex items-center gap-4 border-b border-line px-4 py-3 lg:-mx-6 lg:px-6">
         <Logo />
         <span className="label-mono hidden sm:inline">Phase 0 · component gallery</span>
         <a href="/dev/tokens" className="ml-auto text-small text-link hover:underline">Tokens →</a>
@@ -149,7 +149,7 @@ export default function UiGallery() {
         <Row>
           <Badge>Soon</Badge><Badge tone="warning">Trial</Badge><Badge tone="info" mono>New</Badge><Badge tone="inverse">12</Badge><Badge mono>Staff</Badge>
           <MetaChip>v1.3.0</MetaChip><MetaChip icon={<Icon name="calendar" />}>30 Sep 2026</MetaChip>
-          <MonoId copy>RUN-0142</MonoId><MonoId copy>9f2c…a71</MonoId><CopyButton value="LSE-0087" />
+          <MonoId copy>RUN 0142</MonoId><MonoId copy>9f2c…a71</MonoId><CopyButton value="LSE-0087" />
           <Avatar initials="AM" /><Avatar initials="K" square className="bg-accent text-white" /><AvatarStack people={members} />
           <LiveDot /><LiveDot tone="warning" pulse /><Kbd>⌘K</Kbd><Spinner /><LoadingDots />
         </Row>
@@ -168,7 +168,7 @@ export default function UiGallery() {
           <Field label="Collateral haircut" id="f-hair" error="Did you mean 50 %?"><NumberInput kind="percent" defaultValue={0.005} /></Field>
           <Field label="Loan amount · USD" id="f-amt"><NumberInput kind="money" defaultValue={25412.1} /></Field>
           <Field label="Currency" id="f-cur"><Select defaultValue="USD"><option>USD</option><option>RWF</option><option>KES</option></Select></Field>
-          <Field label="Reporting date" id="f-date" help="Month-ends only."><DatePicker value={day} onChange={setDay} monthEndOnly /></Field>
+          <Field label="Reporting date" id="f-date" help="Month ends only."><DatePicker value={day} onChange={setDay} monthEndOnly /></Field>
           <Field label="Audit period" id="f-range"><DateRangePicker value={range} onChange={setRange} today={new Date("2026-11-12")} /></Field>
           <Field label="Reviewer" id="f-rev"><Combobox value={combo} onChange={setCombo} options={members.map((m) => ({ value: m.id, label: m.name, meta: m.ecl }))} /></Field>
           <Field label="Services" id="f-svc" optional><Combobox multiple value={multi} onChange={setMulti} options={[{ value: "ecl", label: "Expected Credit Loss" }, { value: "leases", label: "Lease Accounting" }]} /></Field>
@@ -179,12 +179,12 @@ export default function UiGallery() {
         <div className="grid gap-6 md:grid-cols-3">
           <div className="flex flex-col gap-3">
             <Checkbox label="I have reviewed the exceptions" defaultChecked />
-            <Checkbox label="Keep data read-only" description="Recommended when suspending." />
+            <Checkbox label="Keep data view only" description="Recommended when suspending." />
             <Checkbox label="Disabled option" disabled />
           </div>
           <RadioGroup name="support" defaultValue="ask" options={[{ value: "ask", label: "Ask an administrator every time", description: "Recommended" }, { value: "auto", label: "Allow automatically for up to 1 hour" }, { value: "never", label: "Never allow" }]} />
           <div className="flex flex-col gap-4">
-            <Switch checked={sw} onCheckedChange={setSw} label="Require MFA for all members" description="2 members will be asked at next sign-in." />
+            <Switch checked={sw} onCheckedChange={setSw} label="Require MFA for all members" description="2 members will be asked at next sign in." />
             <Switch label="Disabled switch" disabled />
             <Slider label="Materiality" defaultValue={[0.5]} min={0} max={2} step={0.1} />
           </div>
@@ -207,14 +207,14 @@ export default function UiGallery() {
             { code: "PD-02", title: "Staging values are 1, 2 or 3", status: "error", detail: 'Found values: 4, "S2"', rows: 18 },
             { code: "EA-11", title: "Reporting date matches the run (30 Sep 2026)", status: "warning", rows: 12 },
             { code: "EA-14", title: "First payment after reporting date", status: "warning", rows: 6 },
-            ...["Required fields", "Duplicate Loan IDs", "Stage values valid", "EIR between 0 and 1"].map((t, i) => ({ code: `EA-0${i + 1}`, title: t, status: "passed" as const })),
+            ...["Required fields", "Duplicate Loan IDs", "Stage values valid", "EIR between 0 and 1"].map((t, i) => ({ code: `EA 0${i + 1}`, title: t, status: "passed" as const })),
           ]}
         />
       </Block>
 
       <Block title="Data display" board="DS5">
         <PageHeader crumbs={[{ label: "Expected Credit Loss", href: "#" }, { label: "Runs", href: "#" }, { label: "RUN-0142" }]} title="Q3 2026 provisioning" status={<RunStatusPill status="signed-off" />} meta={<><MetaChip>v1.3.0</MetaChip><MetaChip>30 Sep 2026</MetaChip></>} actions={<><Button variant="secondary" icon={<Icon name="download" />}>Download bundle</Button><Button>Compare with…</Button><IconButton label="More" variant="secondary"><Icon name="more" /></IconButton></>} tabs={<SegmentedTabs active="#summary" items={["Summary", "Results", "Exceptions", "Reconciliation", "Inputs", "Methodology", "Outputs", "Audit"].map((l) => ({ label: l, href: `#${l.toLowerCase()}`, count: l === "Exceptions" ? 64 : undefined }))} />} />
-        <HeroMetric label="Total ECL · 30 Sep 2026" currency="USD" value={<NumberTicker value={12846210.55} />} delta={<Delta value={0.042} suffix=" vs Aug (RUN-0137)" />} sub="Coverage 2.31 % of USD 556.1M exposure" />
+        <HeroMetric label="Total ECL · 30 Sep 2026" currency="USD" value={<NumberTicker value={12846210.55} />} delta={<Delta value={0.042} suffix=" vs Aug (RUN 0137)" />} sub="Coverage 2.31 % of USD 556.1M exposure" />
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard dot="bg-stage-1" label="Stage 1" value={<Money value={2104880.12} />} meta="71.4 % of exposure"><Sparkline values={[1.98, 2.01, 2.05, 2.07, 2.09, 2.1]} className="h-8 w-full" /></StatCard>
           <StatCard label="Runs this month" value="7 / 20" action={<Badge tone="positive">Active</Badge>}><ProgressBar value={7} max={20} label="Runs used" /></StatCard>
@@ -256,11 +256,11 @@ export default function UiGallery() {
           <Banner tone="positive">7 of 7 reconciliation checks passed.</Banner>
         </div>
         <Row>
-          <Button variant="secondary" onClick={() => toast.success("RUN-0142 signed off")}>Success toast</Button>
+          <Button variant="secondary" onClick={() => toast.success("RUN 0142 signed off")}>Success toast</Button>
           <Button variant="secondary" onClick={() => toast.warning("2 warnings to review")}>Warning toast</Button>
           <Button variant="secondary" onClick={() => toast.error("Compute failed at EAD & ECL", { action: { label: "View", onClick: () => {} } })}>Error toast</Button>
           <Button variant="secondary" onClick={() => toast.promise(new Promise((r) => setTimeout(r, 1500)), { loading: "Exporting…", success: "Export ready", error: "Export failed" })}>Promise toast</Button>
-          <Modal trigger={<Button variant="secondary">Modal</Button>} title="Submit RUN-0142?" description="The run will be locked." footer={<><Button variant="secondary">Cancel</Button><Button>Submit</Button></>}><p className="text-small text-fg-muted">Jean Habimana will be notified.</p></Modal>
+          <Modal trigger={<Button variant="secondary">Modal</Button>} title="Submit RUN 0142?" description="The run will be locked." footer={<><Button variant="secondary">Cancel</Button><Button>Submit</Button></>}><p className="text-small text-fg-muted">Jean Habimana will be notified.</p></Modal>
           <ConfirmDialog trigger={<Button variant="danger-outline">Close workspace</Button>} title="Close workspace?" description="All runs, leases and files are deleted 30 days after closing." confirmText="Kivu Commercial Bank" confirmLabel="Close workspace" onConfirm={() => toast("Workspace closing on 11 Dec 2026")} />
           <Sheet trigger={<Button variant="secondary">Sheet</Button>} title="Exception details" footer={<Button variant="secondary">Close</Button>}><KeyValue columns={1} items={[["Category", "Input validation"], ["Loan", "LN-118802"], ["Rule", "EA-11"], ["Impact", "0.00"]]} /></Sheet>
           <Popover trigger={<Button variant="secondary">Popover</Button>}><p className="max-w-56 p-2 text-small">Glass popover with a hairline and inner ring.</p></Popover>
@@ -279,7 +279,7 @@ export default function UiGallery() {
       </Block>
 
       <Block title="Motion" board="DS10">
-        <WordReveal as="h2" text="IFRS reporting, from upload to sign-off." className="text-h2" />
+        <WordReveal as="h2" text="IFRS reporting, from upload to sign off." className="text-h2" />
         <FadeIn><p className="text-small text-fg-muted">This line fades and rises in when scrolled into view.</p></FadeIn>
         <div className="max-w-md rounded-card border border-line p-4">
           <Button size="sm" variant="secondary" onClick={() => setMore((v) => !v)}>{more ? "Show less" : "Show more"}</Button>

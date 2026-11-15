@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://komputy.com"),
   applicationName: "Komputy",
   title: { default: "Komputy", template: "%s · Komputy" },
-  description: "IFRS 9 expected credit loss and IFRS 16 lease accounting for banks and finance teams, from upload to sign-off.",
+  description: "IFRS 9 expected credit loss and IFRS 16 lease accounting for banks and finance teams, from upload to sign off.",
   openGraph: { siteName: "Komputy", type: "website", locale: "en" },
   twitter: { card: "summary_large_image" },
 };

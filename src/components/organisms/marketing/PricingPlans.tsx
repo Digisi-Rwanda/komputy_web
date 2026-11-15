@@ -27,7 +27,7 @@ export function PlanCards() {
         ))}
       </ul>
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-card border border-line px-5 py-4 text-small">
-        <span className="text-fg">Add-ons</span>
+        <span className="text-fg">Add ons</span>
         {ADDONS.map((a) => <span key={a.name} className="text-fg-muted"><span className="text-fg-body">{a.name}</span> · {a.note}</span>)}
       </div>
     </div>

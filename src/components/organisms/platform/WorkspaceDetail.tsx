@@ -24,6 +24,7 @@ import { addWorkspaceNote, endMySupport, requestSupport, resetUserMfa, setAccoun
 import type { platformWorkspaceDetail } from "@/server/dal/platform";
 import type { ActionResult } from "@/server/mutate";
 import type { Lead, PWorkspace, ServiceState } from "@/types/domain";
+import { showCode } from "@/lib/code";
 
 type Detail = Awaited<ReturnType<typeof platformWorkspaceDetail>>;
 const LABEL: Record<string, string> = { summary: "Summary", services: "Services", members: "Members", usage: "Usage", requests: "Requests", "support-access": "Support access", audit: "Audit" };
@@ -69,7 +70,7 @@ export function WorkspaceDetail({ ws, tab, tabs, detail, leads, staff, me }: { w
       {tab === "usage" && <div className="grid gap-6 lg:grid-cols-2"><KeyValue columns={1} items={[["Members", String(detail.members.length)], ["Members with MFA", String(detail.members.filter((m) => m.mfa).length)], ...ws.usage.map(([u, , lim]) => [`${u} limit`, String(lim)] as [string, string]), ["Last activity", ws.last]]} className="h-fit rounded-panel border border-line p-5" />
         {/* shortcut: run / lease counts and storage come from the engine usage endpoints (plan Phase 5). */}
         <p className="h-fit rounded-panel border border-line p-5 text-small text-fg-muted">Run, lease and storage usage appear here once the engine connection is live. Staff only ever see counts, never client figures.</p></div>}
-      {tab === "requests" && <ul className="divide-y divide-line rounded-panel border border-line">{leads.map((l) => <li key={l.id} className="flex flex-wrap items-center gap-3 px-4 py-3 text-small"><span className="font-mono text-micro text-fg-muted">{l.code}</span><span className="flex-1 text-fg">{l.type} · {l.services.join(", ")}{l.size && ` · ${l.size}`}</span><StatusPill tone={l.stage === "won" ? "positive" : l.stage === "lost" ? "neutral" : "info"}>{l.stage[0].toUpperCase() + l.stage.slice(1)}</StatusPill><span className="text-micro text-fg-muted">{l.age}</span></li>)}
+      {tab === "requests" && <ul className="divide-y divide-line rounded-panel border border-line">{leads.map((l) => <li key={l.id} className="flex flex-wrap items-center gap-3 px-4 py-3 text-small"><span className="font-mono text-micro text-fg-muted">{showCode(l.code)}</span><span className="flex-1 text-fg">{l.type} · {l.services.join(", ")}{l.size && ` · ${l.size}`}</span><StatusPill tone={l.stage === "won" ? "positive" : l.stage === "lost" ? "neutral" : "info"}>{l.stage[0].toUpperCase() + l.stage.slice(1)}</StatusPill><span className="text-micro text-fg-muted">{l.age}</span></li>)}
         {!leads.length && <li className="px-4 py-6 text-center text-small text-fg-muted">No requests from this workspace.</li>}</ul>}
       {tab === "support-access" && <SupportAccess ws={ws} policy={detail.tenant.supportPolicy} mine={detail.sessions.filter((s) => s.staffId === me)} run={run} />}
       {tab === "audit" && <ul className="divide-y divide-line rounded-panel border border-line">{detail.audit.length ? detail.audit.map((a, i) => <li key={i} className="flex flex-wrap items-center gap-3 px-4 py-3 text-small"><span className="w-28 font-mono text-micro text-fg-muted">{day(a.at)}</span><span className="text-fg">{a.actor}</span><span className="flex-1 text-fg-body">{a.action.replace(/_/g, " ")}{a.detail && ` · ${a.detail}`}</span>{a.reason && <span className="text-micro text-fg-muted">“{a.reason}”</span>}</li>) : <li className="px-4 py-6 text-center text-small text-fg-muted">No platform actions on this workspace yet.</li>}</ul>}
@@ -82,7 +83,7 @@ type Run = <T>(call: Promise<ActionResult<T>>, ok: string) => Promise<boolean>;
 function ResetMfa({ userId, name, run }: { userId: string; name: string; run: Run }) {
   const [open, setOpen] = useState(false), [note, setNote] = useState("");
   return (
-    <Modal open={open} onOpenChange={setOpen} size="sm" title={`Reset MFA for ${name}?`} description="They'll set up a new authenticator at next sign-in. All their sessions end now." trigger={<Button size="sm" variant="ghost">Reset MFA…</Button>}
+    <Modal open={open} onOpenChange={setOpen} size="sm" title={`Reset MFA for ${name}?`} description="They'll set up a new authenticator at next sign in. All their sessions end now." trigger={<Button size="sm" variant="ghost">Reset MFA…</Button>}
       footer={<Button variant="danger" disabled={note.trim().length < 10} disabledReason={note.trim().length < 10 ? "Describe how you verified the person" : undefined} onClick={async () => { if (await run(resetUserMfa({ userId, note }), `MFA reset for ${name} · logged`)) { setOpen(false); setNote(""); } }}>Reset MFA</Button>}>
       <label className="flex flex-col gap-1.5 text-small text-fg-body">Verification note (required, logged)<Textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} placeholder="Verified by video call, ticket SUP-…" /></label>
     </Modal>
@@ -96,7 +97,7 @@ function Summary({ ws, detail, staff, run }: { ws: PWorkspace; detail: Detail; s
       <section className="flex flex-col gap-4 rounded-panel border border-line p-5"><h2 className="text-h4">Owner</h2>
         <div className="flex items-center gap-3"><Avatar initials={initials(ws.owner)} /><span><span className="block text-small text-fg">{ws.owner}</span><span className="block text-micro text-fg-muted">{ws.email || "Owner hasn't joined yet"}</span></span></div>
         <label className="flex flex-col gap-1.5 text-small text-fg-body">Account manager<Select defaultValue={detail.tenant.accountManagerId ?? ""} onChange={(e) => run(setAccountManager({ tenantId: ws.id, userId: e.target.value || null }), `Account manager: ${e.target.selectedOptions[0].text}`)} wrapperClassName="w-60"><option value="">Unassigned</option>{staff.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select></label>
-        <KeyValue columns={2} items={[["Country", ws.country || "-"], ["Plan", detail.tenant.plan], ["Last activity", ws.last], ["Created", day(detail.tenant.createdAt.toISOString())]]} />
+        <KeyValue columns={2} items={[["Country", ws.country || "Not set"], ["Plan", detail.tenant.plan], ["Last activity", ws.last], ["Created", day(detail.tenant.createdAt.toISOString())]]} />
       </section>
       <section className="flex flex-col gap-3 rounded-panel border border-line p-5"><h2 className="text-h4">Internal notes</h2><p className="text-micro text-fg-muted">Staff only. Never shown to the client.</p>
         <Textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={2000} />
@@ -126,10 +127,10 @@ function SupportAccess({ ws, policy, mine, run }: { ws: PWorkspace; policy: stri
   return (
     <div className="flex flex-col gap-4">
       {live && <Banner tone="info" action={<Button size="sm" variant="secondary" onClick={() => run(endMySupport({ tenantId: ws.id }), "Session ended · logged")}>End session</Button>}>
-        <span className="flex flex-wrap items-center gap-2">Support session · {ws.name} · <span className="font-mono">{fmt(left)}</span> left · Read-only · All actions are logged <Badge mono tone="info">STAFF VIEW</Badge></span></Banner>}
+        <span className="flex flex-wrap items-center gap-2">Support session · {ws.name} · <span className="font-mono">{fmt(left)}</span> left · View only · All actions are logged <Badge mono tone="info">STAFF VIEW</Badge></span></Banner>}
       <section className="flex max-w-2xl flex-col gap-4 rounded-panel border border-line p-5">
         <h2 className="text-h4">Request support access</h2>
-        <p className="text-small text-fg-muted">{policy === "never" ? "This workspace doesn't allow support access." : policy === "auto" ? "This workspace allows sessions of up to 1 hour automatically; longer ones need an administrator." : "A workspace administrator must approve. Sessions are read-only, time-boxed and fully logged."}</p>
+        <p className="text-small text-fg-muted">{policy === "never" ? "This workspace doesn't allow support access." : policy === "auto" ? "This workspace allows sessions of up to 1 hour automatically; longer ones need an administrator." : "A workspace administrator must approve. Sessions are view only, time limited and fully logged."}</p>
         {open?.status === "requested" ? <div className="flex flex-wrap items-center gap-3"><StatusPill tone="info">Waiting for client approval…</StatusPill><span className="text-micro text-fg-muted">“{open.reason}” · {open.minutes} min</span><Button size="sm" variant="ghost" onClick={() => run(endMySupport({ tenantId: ws.id }), "Request cancelled")}>Cancel request</Button></div>
           : live ? <p className="text-small text-fg-body">Session active: “{live.reason}”.</p>
           : <>

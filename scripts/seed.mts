@@ -60,7 +60,7 @@ await db.transaction(async (tx) => {
         trialEndsAt: st === "trial" && w.trialEnds ? new Date(`${w.trialEnds}T23:59:59Z`) : null,
         startsAt: st === "active" ? new Date("2026-01-01T00:00:00Z") : null, endsAt: st === "active" ? new Date("2026-12-31T23:59:59Z") : null,
         limits: svc === "ecl" ? { runs_month: usage?.[2] ?? 20, loans_run: 250_000 } : { active_leases: usage?.[2] ?? 10, entities: 1 },
-        watermark: st === "trial", contractRef: st === "active" ? `${w.id.slice(3, 6).toUpperCase()}-2026-${svc.toUpperCase()}` : null,
+        watermark: st === "trial", contractRef: st === "active" ? `${w.id.slice(3, 6).toUpperCase()} 2026 ${svc.toUpperCase()}` : null,
       });
     }
   }

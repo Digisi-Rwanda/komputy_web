@@ -3,6 +3,7 @@ import { and, desc, eq, gte, inArray, isNull, like, or, sql } from "drizzle-orm"
 import { db, schema } from "@/server/db/client";
 import { ago } from "@/server/dal/members";
 import type { Lead, LeadStage, PWorkspace, ServiceState } from "@/types/domain";
+import { codesInText } from "@/lib/code";
 
 // Staff console reads (PA1-PA9). Counts and metadata only: never client figures (plan §1.1, PA1 note).
 
@@ -27,7 +28,7 @@ export async function listPlatformWorkspaces(ids?: string[]): Promise<PWorkspace
     const trial = mine.find((e) => e.state === "trial");
     const owner = owners.find((o) => o.tenantId === t.id);
     return {
-      id: t.id, name: t.name, country: t.country ?? "", owner: owner?.name ?? "-", email: owner?.email ?? "",
+      id: t.id, name: t.name, country: t.country ?? "", owner: owner?.name ?? "No owner", email: owner?.email ?? "",
       services: mine.map((e) => [SVC_LABEL[e.service], (t.status === "closing" || t.status === "suspended" ? "suspended" : e.state) as ServiceState]),
       trialEnds: day(trial?.trialEndsAt ?? null),
       // shortcut: usage "used" comes from the engine (Phase 5); limits are real.
@@ -75,7 +76,7 @@ export async function listLeads(tenantId?: string): Promise<(Lead & { timeline: 
     const d = r.details as Record<string, unknown>;
     return {
       id: r.id, code: r.code, stage: r.status as LeadStage, type: (d.type as Lead["type"]) ?? KIND_LABEL[r.kind] ?? "Quote", company: String(d.company ?? "Unknown"),
-      services: (d.services as string[] | undefined) ?? [r.service ?? "-"], size: String(d.size ?? ""), source: r.source ?? "-", age: ago(r.createdAt).replace(" ago", ""),
+      services: (d.services as string[] | undefined) ?? [r.service ?? "None"], size: String(d.size ?? ""), source: r.source ?? "Unknown", age: ago(r.createdAt).replace(" ago", ""),
       assignee: assignee ?? undefined, workspace: r.tenantId ?? undefined, contact: d.contact as string | undefined, message: d.message as string | undefined,
       timeline: events.filter((e) => e.e.requestId === r.id).map((e) => `${e.e.note ?? e.e.kind}${e.actor ? ` · ${e.actor}` : ""} · ${e.e.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}`),
     };
@@ -96,7 +97,7 @@ export async function platformWorkspaceDetail(tenantId: string) {
     notes: notes.map((n) => ({ body: n.n.body, by: `${n.author ?? "Staff"} · ${ago(n.n.createdAt)}` })),
     members: members.map((m) => ({ id: m.u.id, name: m.u.name, email: m.u.email, role: m.role, mfa: m.u.totpEnabled, last: ago(m.u.lastLoginAt), verified: m.u.isEmailVerified, active: m.status === "active" && m.u.isActive })),
     sessions: sessions.map((s) => ({ id: s.s.id, staff: s.staff, staffId: s.s.staffId, reason: s.s.reason, minutes: s.s.minutes, status: s.s.status, endsAt: s.s.endsAt?.toISOString() ?? null })),
-    audit: audit.map((x) => { const d = (x.a.details ?? {}) as Record<string, string>; return { at: x.a.createdAt.toISOString(), actor: x.actor ?? "System", action: x.a.eventType.replace(/^platform\./, ""), detail: d.detail ?? d.service ?? "", reason: d.reason ?? "" }; }),
+    audit: audit.map((x) => { const d = (x.a.details ?? {}) as Record<string, string>; return { at: x.a.createdAt.toISOString(), actor: x.actor ?? "System", action: x.a.eventType.replace(/^platform\./, ""), detail: codesInText(String(d.detail ?? d.service ?? "")), reason: d.reason ?? "" }; }),
   };
 }
 
@@ -118,7 +119,7 @@ export async function platformAudit(limit = 300) {
   const rows = await db.select({ a: schema.auditLogs, actor: schema.users.name, tenant: schema.tenants.name }).from(schema.auditLogs)
     .leftJoin(schema.users, eq(schema.users.id, schema.auditLogs.userId)).leftJoin(schema.tenants, eq(schema.tenants.id, schema.auditLogs.tenantId))
     .where(or(like(schema.auditLogs.eventType, "platform.%"), like(schema.auditLogs.eventType, "support.%"))).orderBy(desc(schema.auditLogs.createdAt)).limit(limit);
-  return rows.map(({ a, actor, tenant }) => { const d = (a.details ?? {}) as Record<string, string>; return { at: a.createdAt.toISOString(), actor: actor ?? "System", action: a.eventType.replace(/^platform\./, ""), ws: tenant ?? "-", detail: d.detail ?? d.service ?? "", reason: d.reason ?? "" }; });
+  return rows.map(({ a, actor, tenant }) => { const d = (a.details ?? {}) as Record<string, string>; return { at: a.createdAt.toISOString(), actor: actor ?? "System", action: a.eventType.replace(/^platform\./, ""), ws: tenant ?? "Platform", detail: codesInText(String(d.detail ?? d.service ?? "")), reason: codesInText(String(d.reason ?? "")) }; });
 }
 
 export async function getCatalog() {

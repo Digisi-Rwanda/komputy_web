@@ -5,21 +5,21 @@ import { cn } from "@/lib/cn";
 import { update, useOnboarding } from "@/hooks/useOnboarding";
 
 const STEPS = [
-  { title: "Welcome to the tour", body: "You're in read-only mode until you verify your email. Everything here uses SAMPLE data." },
+  { title: "Welcome to the tour", body: "You're in view only mode until you verify your email. Everything here uses SAMPLE data." },
   { title: "Runs live here", body: "Each run takes three workbooks, validates them and computes ECL by stage." },
   { title: "Results you can trace", body: "Open any run to see stage totals, exceptions and the seven reconciliation checks." },
-  { title: "Lease Accounting", body: "Register leases, approve with maker-checker and close the month with journals." },
-  { title: "Your team", body: "Admin → Members: invite reviewers and analysts with per-service roles." },
+  { title: "Lease Accounting", body: "Register leases, approve with maker and checker and close the month with journals." },
+  { title: "Your team", body: "Admin → Members: invite reviewers and analysts with per service roles." },
 ];
 
-/** O3 guided tour card (glass, bottom-left beside the sidebar). Escape or "Skip tour" ends it. */
+/** O3 guided tour card (solid, bottom-left beside the sidebar). Escape or "Skip tour" ends it. */
 export function Tour() {
   const { tourStep } = useOnboarding();
   if (tourStep == null) return null;
   const s = STEPS[tourStep], last = tourStep === STEPS.length - 1;
   const end = () => update({ tourStep: null });
   return (
-    <div role="dialog" aria-modal="false" aria-labelledby="tour-title" onKeyDown={(e) => e.key === "Escape" && end()} className="glass ring-inner fixed bottom-6 left-4 z-[var(--z-toast)] w-[360px] max-w-[calc(100vw-2rem)] rounded-panel border border-line p-5 animate-slide-up lg:left-[280px]">
+    <div role="dialog" aria-modal="false" aria-labelledby="tour-title" onKeyDown={(e) => e.key === "Escape" && end()} className="bg-raised ring-inner fixed bottom-6 left-4 z-[var(--z-toast)] w-[360px] max-w-[calc(100vw-2rem)] rounded-panel border border-line p-5 animate-slide-up lg:left-[280px]">
       <div className="flex items-start gap-3">
         <p className="label-mono flex-1">Step {tourStep + 1} of {STEPS.length}</p>
         <button type="button" aria-label="Skip tour" onClick={end} className="text-fg-muted hover:text-fg"><X className="size-4" /></button>

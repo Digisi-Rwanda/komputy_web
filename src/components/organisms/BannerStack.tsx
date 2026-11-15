@@ -7,6 +7,7 @@ import { LiveDot } from "@/components/atoms/LiveDot";
 import { daysLeft, quotaLeft } from "@/lib/entitlements";
 import { service } from "@/lib/services";
 import type { Workspace } from "@/types/domain";
+import { days } from "@/lib/format";
 
 interface Item { id: string; tone: "info" | "warning" | "negative" | "positive"; text: React.ReactNode; action?: React.ReactNode; dismissible: boolean; live?: boolean }
 
@@ -21,11 +22,11 @@ export function BannerStack({ workspace, support, unverifiedEmail, suspendedReas
 
   const items: Item[] = [];
   if (!isOnline) items.push({ id: "offline", tone: "warning", live: true, dismissible: false, text: "We can't reach Komputy. Showing the last loaded data.", action: <button type="button" onClick={() => location.reload()} className={link}>Retry</button> });
-  if (suspendedReason) items.push({ id: "suspended", tone: "negative", dismissible: false, text: `This workspace is suspended: ${suspendedReason}. Everything is read-only.`, action: <Link href="/contact" className={link}>Contact us →</Link> });
+  if (suspendedReason) items.push({ id: "suspended", tone: "negative", dismissible: false, text: `This workspace is suspended: ${suspendedReason}. Everything is view only.`, action: <Link href="/contact" className={link}>Contact us →</Link> });
   if (support) items.push({ id: "support", tone: "info", live: true, dismissible: false, text: `Komputy Support (${support.by}) is viewing this workspace until ${support.until}, approved by ${support.approvedBy}.`, action: <Link href="/admin/security" className={link}>End session</Link> });
   for (const e of workspace.entitlements) {
-    if (e.state === "trial") items.push({ id: `trial-${e.service}`, tone: "warning", dismissible: false, text: `${service(e.service).name} trial · ${e.quota ? `${quotaLeft(e)} of ${e.quota.limit} ${e.quota.unit} left · ` : ""}${daysLeft(e)} days remaining`, action: <Link href="/admin/services" className={link}>Request access →</Link> });
-    if (e.state === "suspended" || e.state === "trial-expired") items.push({ id: `blocked-${e.service}`, tone: "negative", dismissible: false, text: `${service(e.service).name} is read-only. You can still export your data.`, action: <Link href="/contact" className={link}>Contact sales →</Link> });
+    if (e.state === "trial") items.push({ id: `trial-${e.service}`, tone: "warning", dismissible: false, text: `${service(e.service).name} trial · ${e.quota ? `${quotaLeft(e)} of ${e.quota.limit} ${e.quota.unit} left · ` : ""}${days(daysLeft(e) ?? 0)} remaining`, action: <Link href="/admin/services" className={link}>Request access →</Link> });
+    if (e.state === "suspended" || e.state === "trial-expired") items.push({ id: `blocked-${e.service}`, tone: "negative", dismissible: false, text: `${service(e.service).name} is view only. You can still export your data.`, action: <Link href="/contact" className={link}>Contact sales →</Link> });
   }
   if (unverifiedEmail) items.push({ id: "verify", tone: "info", dismissible: true, text: `Verify your email to upload files. We sent a link to ${unverifiedEmail}.`, action: <Link href="/verify-email-pending" className={link}>Resend</Link> });
 

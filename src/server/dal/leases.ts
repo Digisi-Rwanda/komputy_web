@@ -12,13 +12,13 @@ const n = (v: unknown) => (v == null || v === "" ? 0 : Number(v));
 const CLASS: Record<string, AssetClass> = { property: "Property", vehicles: "Vehicles", it: "IT equipment", equipment: "IT equipment", atm: "Branch ATMs" };
 const asClass = (c: string) => (CLASS[c?.toLowerCase?.()] ?? (c ? c.charAt(0).toUpperCase() + c.slice(1) : "Property")) as AssetClass;
 const ago = (iso?: string | null) => {
-  if (!iso) return "-";
+  if (!iso) return "Never";
   const m = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
   return m < 60 ? `${m} min` : m < 1440 ? `${Math.round(m / 60)} h` : `${Math.round(m / 1440)} d`;
 };
 const GL_LABEL: Record<string, string> = {
   rou_cost: "ROU asset: cost", rou_accdep: "ROU asset: accumulated depreciation", lease_liability: "Lease liability", interest_expense: "Interest expense",
-  depreciation_expense: "Depreciation expense", cash_payable: "Cash / payables clearing", lease_expense: "Short-term / low-value expense", modification_gain_loss: "Modification gain / loss",
+  depreciation_expense: "Depreciation expense", cash_payable: "Cash / payables clearing", lease_expense: "Short term / low value expense", modification_gain_loss: "Modification gain / loss",
   restoration_provision: "Restoration provision", idc_clearing: "Initial direct costs clearing", incentive_receivable: "Incentive receivable",
 };
 
@@ -26,7 +26,7 @@ export type LeaseBook = Awaited<ReturnType<typeof buildBook>>;
 
 async function buildBook(state: Any, pf: Any, me: string) {
   const members: Record<string, string> = Object.fromEntries((state.members ?? []).map((m: Any) => [m.id, m.name]));
-  const who = (id?: string | null) => (id ? members[id] ?? "Someone" : "-");
+  const who = (id?: string | null) => (id ? members[id] ?? "Someone" : "Not assigned");
   const ov = pf.overview;
   const register: (Lease & { code: string; leaseId: string; currency: string; verificationFailed: boolean })[] = (pf.register ?? []).map((r: Any) => ({
     id: r.code, leaseId: r.id, code: r.code, name: r.name, counterparty: r.counterparty, assetClass: asClass(r.assetClass), entity: r.entity,
@@ -77,16 +77,16 @@ async function buildBook(state: Any, pf: Any, me: string) {
   for (const l of latestBatch?.lines ?? []) { const c = acct.get(l.account) ?? [0, 0]; acct.set(l.account, [c[0] + n(l.debit), c[1] + n(l.credit)]); }
   const batchAccounts: [string, string, number, number][] = [...acct.entries()].map(([a, [d, c]]) => [a, GL_LABEL[a] ?? a, d, c]);
   const openClose = (state.closes ?? []).find((c: Any) => c.status !== "locked") ?? (state.closes ?? []).at(-1);
-  const payments: { lease: string; name: string; due: string; scheduled: number; actual: number; id: string; match: string }[] = (openClose?.payments ?? []).map((pm: Any) => ({ lease: register.find((r) => r.leaseId === pm.leaseId)?.code ?? "-", name: pm.vendor, due: pm.date, scheduled: n(pm.expected), actual: n(pm.amount), id: pm.id, match: pm.match }));
+  const payments: { lease: string; name: string; due: string; scheduled: number; actual: number; id: string; match: string }[] = (openClose?.payments ?? []).map((pm: Any) => ({ lease: register.find((r) => r.leaseId === pm.leaseId)?.code ?? "None", name: pm.vendor, due: pm.date, scheduled: n(pm.expected), actual: n(pm.amount), id: pm.id, match: pm.match }));
   const rf = Object.fromEntries((ov.rollForward ?? []).map((x: Any) => [x.label, x.value]));
-  // Per-lease timeline, documents and audit (lease detail tabs), keyed by lease code.
+  // Per lease timeline, documents and audit (lease detail tabs), keyed by lease code.
   const audit = state.audit ?? [];
   const details: Record<string, { events: { v: string; title: string; at: string; by: string }[]; docs: [string, string, string, number, string][]; audit: { at: string; actor: string; initials: string; action: string; object: string; service: string }[]; versions: Any[]; leaseId: string; rev: number }> = {};
   for (const l of state.leases ?? []) {
     details[l.code] = {
       leaseId: l.id, rev: l.rev, versions: l.versions ?? [],
       events: [...(l.versions ?? [])].reverse().map((v: Any) => ({ v: `v${v.n}`, title: `${v.n === 1 ? "Draft created" : `Event · ${v.event}`} · ${v.status.replace("_", " ")}`, at: v.decidedAt ?? v.submittedAt ?? v.createdAt, by: who(v.decidedBy ?? v.submittedBy ?? v.createdBy) })),
-      docs: (l.docs ?? []).map((d: Any) => [d.name ?? d.fileName ?? "Document", d.size ? `${Math.max(1, Math.round(n(d.size) / 1024))} KB` : "-", who(d.uploadedBy ?? d.createdBy), d.version ?? 1, d.id] as [string, string, string, number, string]),
+      docs: (l.docs ?? []).map((d: Any) => [d.name ?? d.fileName ?? "Document", d.size ? `${Math.max(1, Math.round(n(d.size) / 1024))} KB` : "Unknown size", who(d.uploadedBy ?? d.createdBy), d.version ?? 1, d.id] as [string, string, string, number, string]),
       audit: audit.filter((a: Any) => String(a.target ?? a.object ?? "").startsWith(l.code)).map((a: Any) => ({ at: a.at, actor: who(a.userId ?? a.by), initials: who(a.userId ?? a.by).split(" ").map((w: string) => w[0]).join("").slice(0, 2), action: a.action ?? a.event ?? "", object: a.detail ?? a.target ?? l.code, service: "Leases" })),
     };
   }

@@ -9,23 +9,23 @@ export const PLANS: Plan[] = [
 ];
 
 export const ADDONS = [
-  { name: "Document Intelligence", note: "Coming soon", price: "Per add-on" },
-  { name: "ERP Connect", note: "Coming soon", price: "Per add-on" },
-  { name: "Extra quota", note: "Runs, loans, leases or entities", price: "Per add-on" },
+  { name: "Document Intelligence", note: "Coming soon", price: "Per add on" },
+  { name: "ERP Connect", note: "Coming soon", price: "Per add on" },
+  { name: "Extra quota", note: "Runs, loans, leases or entities", price: "Per add on" },
 ];
 
 /** Comparison matrix: true = included, false = not, string = detail. Columns follow PLANS order. */
 export const COMPARISON: { group: string; rows: [string, ...(boolean | string)[]][] }[] = [
-  { group: "Services", rows: [["Expected Credit Loss (IFRS 9)", "1 of", "1 of", true, true], ["Lease Accounting (IFRS 16)", "1 of", "1 of", true, true], ["Coming-soon services", false, false, false, "Early access"]] },
+  { group: "Services", rows: [["Expected Credit Loss (IFRS 9)", "1 of", "1 of", true, true], ["Lease Accounting (IFRS 16)", "1 of", "1 of", true, true], ["Coming soon services", false, false, false, "Early access"]] },
   { group: "Limits", rows: [["Users", "Invited team", "10", "25", "Custom"], ["ECL loans per run", "5,000", "Contracted", "Contracted", "Custom"], ["Active leases", "10", "Contracted", "Contracted", "Custom"], ["Legal entities", "1", "Contracted", "Contracted", "Custom"]] },
-  { group: "Controls", rows: [["Maker-checker sign-off", true, true, true, true], ["Audit log export", true, true, true, true], ["Watermark-free outputs", false, true, true, true], ["SSO", false, false, false, true]] },
-  { group: "Support", rows: [["Support", "Email", "Email", "Priority", "Dedicated manager"], ["Onboarding", "Self-serve", "Standard", "Included + methodology review", "Tailored"], ["SLA", false, false, false, true]] },
+  { group: "Controls", rows: [["Maker and checker sign off", true, true, true, true], ["Audit log export", true, true, true, true], ["No watermark outputs", false, true, true, true], ["SSO", false, false, false, true]] },
+  { group: "Support", rows: [["Support", "Email", "Email", "Priority", "Dedicated manager"], ["Onboarding", "Self service", "Standard", "Included + methodology review", "Tailored"], ["SLA", false, false, false, true]] },
 ];
 
 export const PRICING_FAQ = [
   { q: "Why no online checkout?", a: "Every engagement includes onboarding and a methodology review, so we tailor the package to your portfolio and agree it with you. Nothing is charged online." },
   { q: "Can I upgrade my plan later?", a: "Yes. Add a service or more quota at any time, same login, same workspace, history kept." },
-  { q: "Is there a setup fee?", a: "Standard onboarding is included in Dual and above. Single-service onboarding is quoted with your package." },
-  { q: "Do you offer discounts for multi-entity groups?", a: "Yes, entities are priced in tiers. Use the calculator for a range and we'll refine it." },
-  { q: "What happens when the trial ends?", a: "Your data becomes read-only and stays available. Request a quote to continue." },
+  { q: "Is there a setup fee?", a: "Standard onboarding is included in Dual and above. Single service onboarding is quoted with your package." },
+  { q: "Do you offer discounts for multi entity groups?", a: "Yes, entities are priced in tiers. Use the calculator for a range and we'll refine it." },
+  { q: "What happens when the trial ends?", a: "Your data becomes view only and stays available. Request a quote to continue." },
 ];

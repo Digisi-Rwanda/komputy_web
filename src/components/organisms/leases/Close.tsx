@@ -12,12 +12,12 @@ import { KeyValue } from "@/components/molecules/StatCard";
 import { ConfirmDialog, Modal } from "@/components/organisms/Modal";
 import { toast } from "@/components/organisms/Toaster";
 import { cn } from "@/lib/cn";
-import { money } from "@/lib/format";
+import { date, money, month } from "@/lib/format";
 import { closeStep, confirmScheduledPayments, lockPeriod, postBatch, reopenPeriod } from "@/lib/actions/leases";
 import { useLeaseData } from "@/components/organisms/leases/LeaseData";
 
-const STEPS: { id: string; title: string; who: string }[] = [
-  { id: "cutoff", title: "Cut-off: all leases for the month approved", who: "Preparer" },
+export const STEPS: { id: string; title: string; who: string }[] = [
+  { id: "cutoff", title: "Cutoff: all leases for the month approved", who: "Preparer" },
   { id: "rates", title: "Rates and setup current", who: "Preparer" },
   { id: "events", title: "Events in the period recorded", who: "Preparer" },
   { id: "generate", title: "Generate journals", who: "Preparer" },
@@ -45,13 +45,13 @@ export function MonthEndClose() {
   });
   const stepOf = (id: string) => c?.steps.find((s) => s.id === id)?.status ?? "locked";
   const current = STEPS.find((s) => !["done", "warning"].includes(stepOf(s.id)))?.id;
-  const who = (id?: string) => b.members.find((m) => m.id === id)?.name ?? "-";
+  const who = (id?: string) => b.members.find((m) => m.id === id)?.name ?? "Someone";
 
   if (!c) return (
     <div className="flex flex-col gap-4">
       <h2 className="text-h3">{monthLabel(period)} close</h2>
       {!b.setupDone ? <Banner tone="warning">Finish Lease Accounting setup before closing a month.</Banner>
-        : <Banner tone="info" action={<Button size="sm" loading={busy} onClick={() => run(() => closeStep(period, "start"), `${monthLabel(period)} close started`)}>Start the close</Button>}>No close is running for {monthLabel(period)}. Starting it runs the cut-off checks.</Banner>}
+        : <Banner tone="info" action={<Button size="sm" loading={busy} onClick={() => run(() => closeStep(period, "start"), `${monthLabel(period)} close started`)}>Start the close</Button>}>No close is running for {monthLabel(period)}. Starting it runs the cutoff checks.</Banner>}
     </div>
   );
 
@@ -85,9 +85,9 @@ export function MonthEndClose() {
       <div className="flex flex-wrap items-center gap-3">
         <h2 className="text-h3">{monthLabel(period)} close</h2>
         <StatusPill tone={locked ? "positive" : "info"}>{locked ? "Locked" : "In progress"}</StatusPill>
-        <span className="font-mono text-micro text-fg-muted">Started {c.startedAt?.slice(0, 10)} by {who(c.startedBy)}</span>
+        <span className="font-mono text-micro text-fg-muted">Started {date(c.startedAt)} by {who(c.startedBy)}</span>
       </div>
-      <ol className="flex flex-wrap gap-2">{periods.slice(-6).map((p) => <li key={p.key}><StatusPill tone={p.status === "locked" ? "positive" : p.key === period ? "info" : "neutral"}>{p.key} · {p.status}</StatusPill></li>)}</ol>
+      <ol className="flex flex-wrap gap-2">{periods.slice(-6).map((p) => <li key={p.key}><StatusPill tone={p.status === "locked" ? "positive" : p.key === period ? "info" : "neutral"}>{month(p.key)} · {p.status}</StatusPill></li>)}</ol>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
         <ol className="flex flex-col gap-3">
           {STEPS.map((s, i) => {
@@ -99,7 +99,7 @@ export function MonthEndClose() {
                   <span className={cn("inline-flex size-7 items-center justify-center rounded-full font-mono text-micro", isDone ? "bg-positive text-fg-inverse" : cur ? "bg-fg text-fg-inverse" : "border border-line-strong text-fg-muted")}>{isDone ? <Check className="size-3.5" /> : i + 1}</span>
                   <span className="flex-1 text-small text-fg">{s.title}</span>
                   <StatusPill tone={st === "warning" ? "warning" : isDone ? "positive" : cur ? "info" : "neutral"}>{st === "warning" ? "Done with warning" : isDone ? "Done" : cur ? "Ready" : "Waiting"}</StatusPill>
-                  <span className="text-micro text-fg-muted">{isDone ? `${who(meta?.doneBy)} · ${meta?.doneAt?.slice(0, 10)}` : s.who}</span>
+                  <span className="text-micro text-fg-muted">{isDone ? `${who(meta?.doneBy)} · ${meta?.doneAt ? date(meta.doneAt) : ""}` : s.who}</span>
                 </div>
                 {meta?.note && <p className="text-micro text-fg-muted">“{meta.note}”</p>}
                 {cur && body(s.id)}
@@ -108,13 +108,13 @@ export function MonthEndClose() {
           })}
         </ol>
         <aside className="flex h-fit flex-col gap-3 rounded-panel border border-line p-5"><h2 className="text-h4">Close summary</h2><KeyValue columns={1} items={[["Lease liability", <Money key="l" value={S.liability} />], ["Interest (YTD)", <Money key="i" value={S.interest} />], ["Payments (YTD)", <Money key="p" value={S.payments} />]]} />
-          {!locked && !current && <ConfirmDialog danger={false} title={`Lock ${monthLabel(period)}?`} description="Journals and schedules for the period become read-only." confirmLabel="Lock period" onConfirm={() => run(() => lockPeriod(period), `${monthLabel(period)} locked`)} trigger={<Button size="sm" icon={<Lock />}>Lock {monthLabel(period)}</Button>} />}
+          {!locked && !current && <ConfirmDialog danger={false} title={`Lock ${monthLabel(period)}?`} description="Journals and schedules for the period become view only." confirmLabel="Lock period" onConfirm={() => run(() => lockPeriod(period), `${monthLabel(period)} locked`)} trigger={<Button size="sm" icon={<Lock />}>Lock {monthLabel(period)}</Button>} />}
         </aside>
       </div>
       {locked && <Banner tone="info" action={<Modal title={`Reopen ${monthLabel(period)}?`} description="Reopening is audited and reverses the posted batch." size="sm" trigger={<Button size="sm" variant="secondary">Reopen</Button>}
         footer={<Button variant="danger" loading={busy} disabled={reason.trim().length < 10} disabledReason={reason.trim().length < 10 ? "Give a reason (min 10 characters)" : undefined} onClick={() => run(() => reopenPeriod(period, reason), "Period reopened · logged")}>Reopen period</Button>}>
         <label className="flex flex-col gap-1.5 text-small text-fg-body">Reason (logged)<Textarea value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} /></label></Modal>}>
-        {monthLabel(period)} is locked. Journals and schedules are read-only.</Banner>}
+        {monthLabel(period)} is locked. Journals and schedules are view only.</Banner>}
     </div>
   );
 }

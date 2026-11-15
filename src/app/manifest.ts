@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Komputy",
     short_name: "Komputy",
-    description: "IFRS 9 expected credit loss and IFRS 16 lease accounting, from upload to sign-off.",
+    description: "IFRS 9 expected credit loss and IFRS 16 lease accounting, from upload to sign off.",
     start_url: "/home",
     display: "standalone",
     background_color: "#0b0b0b",

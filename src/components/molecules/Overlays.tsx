@@ -9,7 +9,7 @@ import { cn } from "@/lib/cn";
 import { Kbd } from "@/components/atoms/Kbd";
 
 export const floatingPanel =
-  "glass ring-inner z-[var(--z-dropdown)] rounded-card border border-line text-small text-fg-body outline-none data-[side=bottom]:animate-slide-up-fade data-[side=top]:animate-slide-down-fade data-[side=left]:animate-fade-in data-[side=right]:animate-fade-in";
+  "bg-raised ring-inner z-[var(--z-dropdown)] rounded-card border border-line text-small text-fg-body outline-none data-[side=bottom]:animate-slide-up-fade data-[side=top]:animate-slide-down-fade data-[side=left]:animate-fade-in data-[side=right]:animate-fade-in";
 
 export function Tooltip({ content, children, side = "top", shortcut }: { content: ReactNode; children: ReactNode; side?: "top" | "right" | "bottom" | "left"; shortcut?: string }) {
   if (!content) return <>{children}</>;
@@ -18,7 +18,7 @@ export function Tooltip({ content, children, side = "top", shortcut }: { content
       <RTooltip.Root>
         <RTooltip.Trigger asChild>{children}</RTooltip.Trigger>
         <RTooltip.Portal>
-          <RTooltip.Content side={side} sideOffset={6} collisionPadding={8} className="glass z-[var(--z-tooltip)] flex max-w-xs items-center gap-2 rounded-md border border-line px-2 py-1 text-micro text-fg animate-fade-in">
+          <RTooltip.Content side={side} sideOffset={6} collisionPadding={8} className="bg-raised z-[var(--z-tooltip)] flex max-w-xs items-center gap-2 rounded-md border border-line px-2 py-1 text-micro text-fg animate-fade-in">
             {content}
             {shortcut && <Kbd>{shortcut}</Kbd>}
           </RTooltip.Content>

@@ -7,6 +7,7 @@ import { Badge } from "@/components/atoms/Badge";
 import { cn } from "@/lib/cn";
 import { howItWorks } from "@/data/content";
 import { Frame, SectionHeading } from "@/components/organisms/marketing/Frame";
+import { showCode } from "@/lib/code";
 
 const icon = { passed: [CheckCircle2, "text-positive"], warning: [AlertTriangle, "text-warning"], error: [XCircle, "text-negative"] } as const;
 
@@ -48,7 +49,7 @@ export function HowItWorks() {
               return (
                 <li key={r.code} className="flex flex-wrap items-center gap-3 px-5 py-3 text-small">
                   <I aria-hidden className={cn("size-4 shrink-0", c)} />
-                  <span className="font-mono text-micro text-fg-muted">{r.code}</span>
+                  <span className="font-mono text-micro text-fg-muted">{showCode(r.code)}</span>
                   <span className="min-w-0 flex-1 text-fg-body">{r.text}</span>
                   <span className={cn("text-micro", c)}>{r.note}</span>
                 </li>

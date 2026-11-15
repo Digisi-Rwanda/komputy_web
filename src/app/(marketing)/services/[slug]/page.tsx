@@ -46,7 +46,7 @@ function Live({ p }: { p: LiveServicePage }) {
       />
       <Frame id="who" label="Who it's for"><SectionHeading label="Who it's for" title="Built for the teams that sign the numbers." /><div className="mt-10"><FeatureGrid items={p.audiences} /></div></Frame>
       <Frame id="workflow" label="Workflow"><SectionHeading label="Workflow" title="A streamlined workflow." /><div className="mt-12"><WorkflowSteps steps={p.workflow} /></div></Frame>
-      <Frame id="inputs" label="Inputs"><SectionHeading label="Inputs" title="Know exactly what to upload." sub="Download the templates, no sign-up needed." /><div className="mt-10"><InputsTable files={p.inputs} /></div></Frame>
+      <Frame id="inputs" label="Inputs"><SectionHeading label="Inputs" title="Know exactly what to upload." sub="Download the templates, no sign up needed." /><div className="mt-10"><InputsTable files={p.inputs} /></div></Frame>
       <Frame id="outputs" label="Outputs"><SectionHeading label="Outputs" title="Comprehensive outputs." /><div className="mt-10"><FeatureGrid items={p.outputs} /></div></Frame>
       <Frame id="controls" label="Controls"><SectionHeading label="Controls" title="Robust controls." /><div className="mt-10"><FeatureGrid items={p.controls} /></div></Frame>
       <Frame id="pricing" label="Pricing">
@@ -82,7 +82,7 @@ function Soon({ p }: { p: SoonServicePage }) {
       <Frame id="design-partner" label="Design partner">
         <div className="flex flex-wrap items-center gap-6 rounded-panel border border-line bg-raised p-8">
           <Icon name="users" size={28} className="text-fg" />
-          <div className="flex-1"><p className="text-h3 text-fg">Help shape it: 30-minute call, early access.</p><p className="mt-1 text-small text-fg-muted">Be a design partner for {s.name}.</p></div>
+          <div className="flex-1"><p className="text-h3 text-fg">Help shape it: 30 minute call, early access.</p><p className="mt-1 text-small text-fg-muted">Be a design partner for {s.name}.</p></div>
           <Button asChild><Link href={`/contact?topic=design-partner&services=${p.id}`}>Book a call</Link></Button>
         </div>
       </Frame>

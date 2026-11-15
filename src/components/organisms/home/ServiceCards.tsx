@@ -21,7 +21,7 @@ export function EclCard({ e, run, sample }: { e: Entitlement; run?: Run; sample?
       <header className="flex items-center gap-3"><span className="inline-flex size-9 items-center justify-center rounded-card bg-surface"><Icon name="ecl" /></span><h2 id="ecl-card" className="flex-1 text-h4">Expected Credit Loss</h2><ServiceStatePill state={e.state} /></header>
       {run ? (
         <>
-          <p className="text-small text-fg-muted">{run.status === "signed-off" ? "Latest signed-off run" : "Latest run (awaiting sign-off)"} · <span>{run.name}</span>{sample && <Badge mono tone="info" className="ml-2">Sample</Badge>}</p>
+          <p className="text-small text-fg-muted">{run.status === "signed-off" ? "Latest signed off run" : "Latest run (awaiting sign off)"} · <span>{run.name}</span>{sample && <Badge mono tone="info" className="ml-2">Sample</Badge>}</p>
           <p className="flex flex-wrap items-baseline gap-3"><span className="text-h2 tracking-[-0.03em] text-fg tabular-nums">USD {compact(run.totalEcl)}</span><Delta value={run.deltaVsPrior} suffix=" vs Aug" /></p>
           <div role="img" aria-label={run.stages.map((s) => `Stage ${s.stage} ${(s.share * 100).toFixed(0)}%`).join(", ")} className="flex h-2 overflow-hidden rounded-full">
             {run.stages.map((s) => <span key={s.stage} className={`bg-stage-${s.stage}`} style={{ width: `${s.share * 100}%` }} />)}
@@ -60,7 +60,7 @@ export function LockedCard({ id, name, standard, line }: { id: string; name: str
     <section className={`${card} justify-between`}>
       <header className="flex items-center gap-3"><span className="inline-flex size-9 items-center justify-center rounded-card bg-surface text-fg-muted"><Lock className="size-4" /></span><h2 className="flex-1 text-h4">{name} <span className="text-fg-muted">· {standard}</span></h2></header>
       <p className="text-small text-fg-muted">{line}</p>
-      <div className="flex flex-wrap gap-2"><Button asChild size="sm"><Link href={`/locked/${id}`}>Start 14-day trial</Link></Button><Button asChild size="sm" variant="ghost"><Link href={`/services/${id}`}>Learn more</Link></Button></div>
+      <div className="flex flex-wrap gap-2"><Button asChild size="sm"><Link href={`/locked/${id}`}>Start 14 day trial</Link></Button><Button asChild size="sm" variant="ghost"><Link href={`/services/${id}`}>Learn more</Link></Button></div>
     </section>
   );
 }

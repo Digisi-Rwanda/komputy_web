@@ -8,7 +8,7 @@ export function RunPicker({ runs, param, value, label }: { runs: Pick<Run, "id" 
   const router = useRouter(), sp = useSearchParams();
   return (
     <Select aria-label={label} wrapperClassName="w-full sm:w-80" value={value} onChange={(e) => { const q = new URLSearchParams(sp.toString()); q.set(param, e.target.value); q.delete("loan"); router.push(`?${q.toString()}`); }}>
-      {runs.map((r) => <option key={r.id} value={r.id}>{r.name}{r.status === "signed-off" ? " · Signed off" : r.status === "needs-review" ? " · Awaiting sign-off" : ""}</option>)}
+      {runs.map((r) => <option key={r.id} value={r.id}>{r.name}{r.status === "signed-off" ? " · Signed off" : r.status === "needs-review" ? " · Awaiting sign off" : ""}</option>)}
     </Select>
   );
 }

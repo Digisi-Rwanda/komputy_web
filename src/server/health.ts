@@ -32,6 +32,6 @@ export async function probes(): Promise<Probe[]> {
     { name: "Engine API", ok: engine[0] && h.checks?.db === "ok", value: engine[0] ? (h.checks?.db === "ok" ? "Normal" : "Engine database unreachable") : engine[1], ms: engine[2] },
     { name: "Workers", ok: (h.workers ?? 0) > 0, value: engine[0] ? ((h.workers ?? 0) > 0 ? `${h.workers} running` : "No workers running") : "Unknown", ms: null },
     { name: "Storage", ok: storage === "ok", value: storage === "ok" ? "Normal" : storage ?? "Unknown", ms: null },
-    { name: "Email outbox", ok: Boolean(m) && m!.dead === 0, value: m ? `${m.pending} pending · ${m.dead} dead-letter` : mail[1], ms: null },
+    { name: "Email outbox", ok: Boolean(m) && m!.dead === 0, value: m ? `${m.pending} pending · ${m.dead} failed` : mail[1], ms: null },
   ];
 }

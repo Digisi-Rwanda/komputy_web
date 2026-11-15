@@ -10,7 +10,7 @@ export const byState = [
   { m: "Jun", trial: 9, active: 58, suspended: 2, expired: 3 }, { m: "Jul", trial: 11, active: 61, suspended: 2, expired: 4 }, { m: "Aug", trial: 12, active: 64, suspended: 3, expired: 4 },
   { m: "Sep", trial: 14, active: 67, suspended: 2, expired: 5 }, { m: "Oct", trial: 15, active: 71, suspended: 3, expired: 5 }, { m: "Nov", trial: 17, active: 74, suspended: 3, expired: 6 },
 ];
-export const health = [["API", "Normal", "positive"], ["Database", "Normal", "positive"], ["Redis", "Normal", "positive"], ["Storage", "62 % used", "positive"], ["Workers", "2 / 2", "positive"], ["Queue depth", "3", "positive"], ["Email outbox", "0 pending · 0 dead-letter", "positive"]] as const;
+export const health = [["API", "Normal", "positive"], ["Database", "Normal", "positive"], ["Redis", "Normal", "positive"], ["Storage", "62 % used", "positive"], ["Workers", "2 / 2", "positive"], ["Queue depth", "3", "positive"], ["Email outbox", "0 pending · 0 dead letter", "positive"]] as const;
 export const latency = Array.from({ length: 24 }, (_, h) => ({ h: `${String(h).padStart(2, "0")}:00`, p50: 82 + Math.round(18 * Math.sin(h / 3.5)) + (h === 14 ? 40 : 0), p95: 210 + Math.round(40 * Math.sin(h / 3.5)) + (h === 14 ? 260 : 0) }));
 export const incidents = [["11 Nov 14:05", "Elevated API latency (p95 470 ms) · 18 min", "Resolved"], ["29 Oct 02:10", "Email provider delays · 42 min", "Resolved"], ["12 Oct 09:30", "Scheduled database maintenance · 15 min", "Completed"]] as const;
 
@@ -28,8 +28,8 @@ export const AMS = ["M. Achieng", "J. Kamau", "T. Bizimana"];
 
 export const leads: Lead[] = [
   { id: "REQ-0231", stage: "new", type: "Quote", company: "Coastal Credit Ltd", services: ["ECL"], size: "40k loans/run", source: "From pricing calculator", age: "3 d", contact: "Amina Said · a.said@coastalcredit.tz", message: "We report quarterly to the Bank of Tanzania and need IFRS 9 staging." },
-  { id: "REQ-0233", stage: "new", type: "Forwarded", company: "Grace Ineza (Kivu)", services: ["Tax Provision"], size: "Member-forwarded", source: "Kivu admin", age: "1 d", workspace: "ws-kivu" },
-  { id: "REQ-0234", stage: "new", type: "Waitlist", company: "Waitlist: 4 sign-ups", services: ["Document Intelligence"], size: "4 workspaces", source: "Locked screens", age: "2 d" },
+  { id: "REQ-0233", stage: "new", type: "Forwarded", company: "Grace Ineza (Kivu)", services: ["Tax Provision"], size: "Forwarded by a member", source: "Kivu admin", age: "1 d", workspace: "ws-kivu" },
+  { id: "REQ-0234", stage: "new", type: "Waitlist", company: "Waitlist: 4 sign ups", services: ["Document Intelligence"], size: "4 workspaces", source: "Locked screens", age: "2 d" },
   { id: "REQ-0219", stage: "contacted", type: "Full access", company: "Kivu Commercial Bank", services: ["Leases"], size: "250 leases", source: "Trial banner", age: "4 d", assignee: "M. Achieng", workspace: "ws-kivu", contact: "Aline Mugisha · a.mugisha@kivubank.rw · +250 788 000 114", message: "We'd like to move Lease Accounting to full access before our December close." },
   { id: "REQ-0214", stage: "negotiating", type: "Activate", company: "Northgate Leasing", services: ["Leases"], size: "3 entities", source: "Sales call", age: "9 d", assignee: "M. Achieng", workspace: "ws-northgate" },
   { id: "REQ-0205", stage: "won", type: "More capacity", company: "Lakeshore Microfinance", services: ["ECL"], size: "10 → 20 runs", source: "Request more drawer", age: "6 d", assignee: "J. Kamau", workspace: "ws-lakeshore" },
@@ -49,7 +49,7 @@ export const people = [
   { name: "Divine Mukamana", email: "d.mukamana@kivubank.rw", ws: ["Kivu Commercial Bank · Member"], mfa: true, last: "12 Oct", status: "disabled" },
 ];
 export const staff = [["J. Kamau", "j.kamau@komputy.com", "admin"], ["M. Achieng", "m.achieng@komputy.com", "sales"], ["T. Bizimana", "t.bizimana@komputy.com", "support"]] as [string, string, string][];
-export const STAFF_ROLES = [["admin", "Platform admin"], ["sales", "Sales (can propose, not activate)"], ["support", "Support (read-only)"]];
+export const STAFF_ROLES = [["admin", "Platform admin"], ["sales", "Sales (can propose, not activate)"], ["support", "Support (view only)"]];
 
 export const engines = [
   { svc: "ECL", v: "v1.3.0", status: "Default", released: "2 Oct 2026", ws: 112, notes: ["Lifetime PD term structure for Stage 2", "Faster collateral haircut lookups (-38 %)", "Fix: rounding in segment totals"] },
@@ -59,10 +59,10 @@ export const engines = [
 ];
 export const audit = [
   { at: "2026-11-10T16:20:00Z", actor: "M. Achieng", action: "Proposed activation", ws: "Kivu Commercial Bank", detail: "Leases", reason: "REQ-0219" },
-  { at: "2026-11-10T11:47:10Z", actor: "J. Kamau", action: "Support session started", ws: "Kivu Commercial Bank", detail: "2 hours", reason: "Investigate failed run RUN-0136" },
+  { at: "2026-11-10T11:47:10Z", actor: "J. Kamau", action: "Support session started", ws: "Kivu Commercial Bank", detail: "2 hours", reason: "Investigate failed run RUN 0136" },
   { at: "2026-11-09T09:12:00Z", actor: "J. Kamau", action: "Extended trial +7 d", ws: "Northgate Leasing", detail: "Leases", reason: "evaluating with auditors" },
-  { at: "2026-11-08T15:02:00Z", actor: "J. Kamau", action: "Added units", ws: "Lakeshore Microfinance", detail: "ECL 10 → 20 runs", reason: "REQ-0205 won" },
+  { at: "2026-11-08T15:02:00Z", actor: "J. Kamau", action: "Added units", ws: "Lakeshore Microfinance", detail: "ECL 10 → 20 runs", reason: "REQ 0205 won" },
   { at: "2026-11-01T08:00:00Z", actor: "System", action: "Suspended service", ws: "Highland SACCO", detail: "ECL", reason: "Contract expired" },
-  { at: "2026-10-31T10:30:00Z", actor: "T. Bizimana", action: "Reset MFA", ws: "Umoja Savings Bank", detail: "g.wanjiru@umoja.co.ke", reason: "Verified by video call, ticket SUP-882" },
+  { at: "2026-10-31T10:30:00Z", actor: "T. Bizimana", action: "Reset MFA", ws: "Umoja Savings Bank", detail: "g.wanjiru@umoja.co.ke", reason: "Verified by video call, ticket SUP 882" },
 ];
 export const usageSeries = [{ m: "Jun", runs: 9, leases: 0 }, { m: "Jul", runs: 11, leases: 0 }, { m: "Aug", runs: 12, leases: 0 }, { m: "Sep", runs: 10, leases: 0 }, { m: "Oct", runs: 14, leases: 3 }, { m: "Nov", runs: 7, leases: 8 }];

@@ -54,13 +54,13 @@ export function Security({ view }: { view: SecurityView }) {
         <Switch checked={policy.requireMfa} onCheckedChange={(v) => save({ requireMfa: v }, v ? "MFA required for all members" : "MFA no longer required")} label="Require MFA for all members"
           description={policy.requireMfa ? (policy.withoutMfa ? `${policy.withoutMfa} member${policy.withoutMfa > 1 ? "s" : ""} will be asked to set up MFA before they can continue.` : "Everyone already uses MFA.") : "Members choose whether to use MFA."} />
         <label className="flex flex-col gap-1.5 text-small text-fg-body">Session timeout<Select value={String(policy.timeoutHours)} onChange={(e) => save({ timeoutHours: Number(e.target.value) }, "Session timeout updated")} wrapperClassName="w-48"><option value="1">1 hour</option><option value="8">8 hours</option><option value="24">24 hours</option></Select></label>
-        <Switch checked={policy.idleSignout} onCheckedChange={(v) => save({ idleSignout: v }, v ? "Idle sessions sign out after 30 minutes" : "Idle sign-out off")} label="Sign out idle sessions after 30 minutes" />
+        <Switch checked={policy.idleSignout} onCheckedChange={(v) => save({ idleSignout: v }, v ? "Idle sessions sign out after 30 minutes" : "Idle sign out off")} label="Sign out idle sessions after 30 minutes" />
       </FormSection>
       <FormSection title="Allowed email domains" description="Invites to other domains are blocked.">
         <div className="flex flex-wrap items-center gap-2">{policy.domains.map((d) => <span key={d} className="inline-flex h-8 items-center gap-1 rounded-full bg-surface-active pl-3 pr-1 text-small text-fg">{d}<button type="button" aria-label={`Remove ${d}`} disabled={policy.domains.length === 1} onClick={() => save({ domains: policy.domains.filter((x) => x !== d) }, `@${d} removed`)} className="inline-flex size-6 items-center justify-center rounded-full hover:bg-surface disabled:opacity-40"><X className="size-3" /></button></span>)}</div>
         <div className="flex flex-wrap gap-2"><Input aria-label="Add domain" value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addDomain()} placeholder="example.com" className="w-56" /><Button variant="secondary" onClick={addDomain}>+ Add domain</Button></div>
       </FormSection>
-      <FormSection title="Support access" description="Komputy staff can't see your runs, loans or leases. If you need help with your data, approve a time-limited support session.">
+      <FormSection title="Support access" description="Komputy staff can't see your runs, loans or leases. If you need help with your data, approve a time limited support session.">
         <div className="flex flex-col gap-5 rounded-panel border border-line bg-raised p-5">
           <p className="flex items-center gap-2 text-small text-fg"><ShieldCheck className="size-4 text-positive" />Your data stays private by default.</p>
           <RadioGroup value={policy.supportPolicy} onValueChange={(v) => save({ supportPolicy: v as SecurityView["policy"]["supportPolicy"] }, "Support access policy updated")} options={[{ value: "ask", label: "Ask an administrator every time (recommended)" }, { value: "auto", label: "Allow automatically for up to 1 hour" }, { value: "never", label: "Never allow" }]} />
@@ -69,7 +69,7 @@ export function Security({ view }: { view: SecurityView }) {
             <p className="text-micro text-fg-muted">Reason: “{view.pending.reason}” · Duration {view.pending.minutes >= 60 ? `${view.pending.minutes / 60} hour${view.pending.minutes > 60 ? "s" : ""}` : `${view.pending.minutes} minutes`} · Requested {view.pending.age}</p>
             <div className="flex flex-wrap justify-end gap-2">
               <Button variant="secondary" disabled={busy} onClick={() => run(decideSupport({ id: view.pending!.id, approve: false }), "Support request denied · staff notified")}>Deny</Button>
-              <Button loading={busy} onClick={() => run(decideSupport({ id: view.pending!.id, approve: true }), (d) => `${d.minutes >= 60 ? `${d.minutes / 60}-hour` : `${d.minutes}-minute`} support session approved`)}>Approve {view.pending.minutes >= 60 ? `${view.pending.minutes / 60}-hour` : `${view.pending.minutes}-minute`} session</Button>
+              <Button loading={busy} onClick={() => run(decideSupport({ id: view.pending!.id, approve: true }), (d) => `${d.minutes >= 60 ? `${d.minutes / 60} hour` : `${d.minutes} minute`} support session approved`)}>Approve {view.pending.minutes >= 60 ? `${view.pending.minutes / 60} hour` : `${view.pending.minutes} minute`} session</Button>
             </div>
           </div>}
           {policy.supportPolicy === "never" && <p className="text-micro text-fg-muted">Support can still answer questions, but can&apos;t open your workspace.</p>}

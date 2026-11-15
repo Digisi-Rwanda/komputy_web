@@ -31,7 +31,7 @@ sql(`delete from member_service_roles where membership_id='${revMid}' and servic
 
 const { page } = await signIn(OWNER);
 let runId = "";
-const name = `E2E run ${new Date().toISOString().slice(0, 16)}`;
+const name = `E2E run ${new Date().toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "UTC" }).replace(",", "")}`;
 
 await step("create run (setup)", async () => {
   await page.goto(`${BASE}/ecl/runs/new/setup?new=1`, { timeout: 120000 });

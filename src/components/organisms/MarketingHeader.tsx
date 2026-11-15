@@ -34,7 +34,7 @@ function ServicesMenu() {
 export function MarketingHeader() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="glass sticky top-0 z-[var(--z-sticky)] border-b border-line">
+    <header className="bg-canvas sticky top-0 z-[var(--z-sticky)] border-b border-line">
       <div className="mx-auto flex h-marketing-bar max-w-site items-center gap-8 px-4 lg:px-6">
         <Link href="/" aria-label="Komputy home"><Logo /></Link>
         <nav aria-label="Main" className="hidden flex-1 items-center justify-center gap-8 md:flex">
@@ -52,7 +52,7 @@ export function MarketingHeader() {
         </button>
       </div>
       {open && (
-        <nav aria-label="Mobile" className="glass fixed inset-x-0 bottom-0 top-marketing-bar flex flex-col gap-1 overflow-y-auto p-4 md:hidden animate-fade-in">
+        <nav aria-label="Mobile" className="bg-canvas fixed inset-x-0 bottom-0 top-marketing-bar flex flex-col gap-1 overflow-y-auto p-4 md:hidden animate-fade-in">
           {SERVICES.filter((s) => s.live).map((s) => <Link key={s.id} href={`/services/${s.id}`} onClick={() => setOpen(false)} className="rounded-card px-3 py-3 text-h4 text-fg hover:bg-surface">{s.name}</Link>)}
           {MARKETING_NAV.filter((n) => n.label !== "Services").map((n) => <Link key={n.href} href={n.href} onClick={() => setOpen(false)} className="rounded-card px-3 py-3 text-h4 text-fg hover:bg-surface">{n.label}</Link>)}
           <div className="mt-auto flex flex-col gap-2 pt-6">

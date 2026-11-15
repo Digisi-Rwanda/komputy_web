@@ -4,6 +4,7 @@ import { AlertTriangle, CheckCircle2, ChevronDown, XCircle } from "lucide-react"
 import { cn } from "@/lib/cn";
 import { ToggleGroup } from "@/components/molecules/Tabs";
 import { Button } from "@/components/atoms/Button";
+import { showCode } from "@/lib/code";
 
 export interface RuleResult {
   code: string;
@@ -46,7 +47,7 @@ export function ValidationReport({ rules, onDownload }: { rules: RuleResult[]; o
               <button type="button" aria-expanded={expanded} onClick={() => setOpen(expanded ? undefined : r.code)} className="flex w-full items-start gap-3 px-5 py-4 text-left">
                 <I aria-hidden className={cn("mt-0.5 size-4 shrink-0", c)} />
                 <span className="min-w-0 flex-1">
-                  <span className="block text-small text-fg"><span className="font-mono text-micro text-fg-muted">{r.code}</span> · {r.title}</span>
+                  <span className="block text-small text-fg"><span className="font-mono text-micro text-fg-muted">{showCode(r.code)}</span> · {r.title}</span>
                   {r.detail && <span className="block text-micro text-fg-muted">{r.detail}</span>}
                 </span>
                 <span className={cn("text-micro", c)}>{word}</span>

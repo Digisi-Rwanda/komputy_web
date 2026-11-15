@@ -23,11 +23,11 @@ export const TOTAL_LOANS = 48312;
 export const sizeBuckets = [{ bucket: "< 50k", ecl: 1.31e6 }, { bucket: "50k to 250k", ecl: 1.62e6 }, { bucket: "250k to 1M", ecl: 3.04e6 }, { bucket: "1M to 5M", ecl: 4.12e6 }, { bucket: "> 5M", ecl: 2.756e6 }];
 
 export const exceptions: Exception[] = [
-  { id: "x1", category: "Input validation", loan: "LN-118802", rule: "EA-11", detail: "Reporting date 31 Aug 2026 ≠ run 30 Sep 2026", impact: "Excluded", amount: 0, ack: "Eric Uwase: “Legacy loans, see ticket FIN-221”", input: [["Reporting Date", "2026-08-31"], ["Outstanding Amount", "4,210.00"], ["Stage", "1"]] },
+  { id: "x1", category: "Input validation", loan: "LN-118802", rule: "EA-11", detail: "Reporting date 31 Aug 2026 ≠ run 30 Sep 2026", impact: "Excluded", amount: 0, ack: "Eric Uwase: “Legacy loans, see ticket FIN 221”", input: [["Reporting Date", "2026-08-31"], ["Outstanding Amount", "4,210.00"], ["Stage", "1"]] },
   { id: "x2", category: "ECL cap", loan: "LN-007702", rule: "Cap", detail: "ECL before cap 15,204.18 > outstanding 14,300.00", impact: "Capped at 14,300.00", amount: -904.18 },
   { id: "x3", category: "Input validation", loan: "LN-010447", rule: "EA-14", detail: "First payment 15 Jun 2027 after run date 30 Sep 2026", impact: "Excluded", amount: 0 },
   { id: "x4", category: "ECL cap", loan: "LN-012776", rule: "Cap", detail: "ECL before cap 8,750.00 > outstanding 8,200.00", impact: "Capped at 8,200.00", amount: -550 },
-  { id: "x5", category: "Input validation", loan: "LN-016778", rule: "EA-11", detail: "Reporting date 30 Sep 2026 ≠ cut-off 29 Sep 2026", impact: "Excluded", amount: 0 },
+  { id: "x5", category: "Input validation", loan: "LN-016778", rule: "EA-11", detail: "Reporting date 30 Sep 2026 ≠ cutoff 29 Sep 2026", impact: "Excluded", amount: 0 },
   { id: "x6", category: "ECL cap", loan: "LN-017665", rule: "Cap", detail: "ECL before cap 12,620.00 > outstanding 12,000.00", impact: "Capped at 12,000.00", amount: -620 },
   { id: "x7", category: "Input validation", loan: "LN-020114", rule: "EA-14", detail: "First payment after reporting date", impact: "Excluded", amount: 0 },
   { id: "x8", category: "ECL cap", loan: "LN-021902", rule: "Cap", detail: "ECL before cap 5,880.00 > outstanding 5,500.00", impact: "Capped at 5,500.00", amount: -380 },
@@ -40,7 +40,7 @@ export const reconciliation: Check[] = [
   { title: "Outstanding balance", formula: "USD 556,104,882.40 = 556,104,882.40" },
   { title: "Row coverage", formula: "1,148,920 projection rows, every included loan has ≥ 1", detail: [["Total projection rows", "1,148,920"], ["Included loans", "48,312"], ["Loans with ≥ 1 row", "48,312"], ["Coverage", "100.00 %"]] },
   { title: "Collateral allocation", formula: "Allocated 313,302,118.10 = customer collateral 313,302,118.10" },
-  { title: "ECL build-up", formula: "Σ row losses 12,861,414.73 − cap adjustments 15,204.18 = 12,846,210.55", detail: [["Σ row losses", "12,861,414.73"], ["Cap adjustments", "(15,204.18)"], ["Total ECL", "12,846,210.55"]] },
+  { title: "ECL buildup", formula: "Σ row losses 12,861,414.73 − cap adjustments 15,204.18 = 12,846,210.55", detail: [["Σ row losses", "12,861,414.73"], ["Cap adjustments", "(15,204.18)"], ["Total ECL", "12,846,210.55"]] },
   { title: "Summary totals", formula: "Stage + segment summaries equal loan total" },
   { title: "ECL limits", formula: "No loan ECL above outstanding after cap (tolerance 0.01)" },
 ];
@@ -85,7 +85,7 @@ export const loanSchedule = (() => {
 })();
 
 export const recentExports = [
-  { name: "ECL roll-forward Aug→Sep.xlsx", by: "Aline Mugisha", at: "2026-10-03T09:30:00Z", status: "ready" as const, size: "2.4 MB" },
+  { name: "ECL roll forward Aug→Sep.xlsx", by: "Aline Mugisha", at: "2026-10-03T09:30:00Z", status: "ready" as const, size: "2.4 MB" },
   { name: "Stage movement Sep.xlsx", by: "Aline Mugisha", at: "2026-10-02T17:20:00Z", status: "ready" as const, size: "1.1 MB" },
 ];
 

@@ -18,7 +18,7 @@ export async function listMemberRequests(tenantId: string): Promise<AccessReques
     const name = who ?? "Former member";
     return {
       id: r.id, who: name, initials: initials(name), title: d.title ?? `${name} asked for access`, meta: d.meta ?? "", age: ago(r.createdAt),
-      kind: KIND[r.kind] ?? "grant", note: d.note, current: d.current ?? "-", requested: d.requested ?? r.service ?? "-",
+      kind: KIND[r.kind] ?? "grant", note: d.note, current: d.current ?? "None", requested: d.requested ?? r.service ?? "None",
       status: r.status as AccessRequest["status"],
     };
   });

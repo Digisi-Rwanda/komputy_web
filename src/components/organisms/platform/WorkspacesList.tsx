@@ -46,11 +46,11 @@ export function WorkspacesList({ rows }: { rows: PWorkspace[] }) {
           <table className="w-full min-w-[980px] text-small"><caption className="sr-only">Workspaces</caption>
             <thead><tr className="border-b border-line text-fg-muted">{["Workspace", "Services", "Trial ends", "Usage", "Last activity", "Account manager"].map((h) => <th key={h} scope="col" className="px-4 py-2.5 text-left font-normal">{h}</th>)}</tr></thead>
             <tbody>{list.map((w) => (
-              <tr key={w.id} className="border-b border-line last:border-0 hover:bg-surface/40">
+              <tr key={w.id} className="border-b border-line last:border-0 hover:bg-surface-hover">
                 <td className="px-4 py-3"><Link href={`/platform/workspaces/${w.id}/summary`} className="text-fg hover:underline">{w.name}</Link><span className="block text-micro text-fg-muted">{w.country} · {w.owner}</span></td>
                 <td className="px-4"><span className="flex flex-wrap gap-1.5">{w.services.map(([s, st]) => <SvcPill key={s} svc={s} state={st} />)}</span></td>
-                <td className={cn("px-4 font-mono text-micro", soon(w) ? "text-warning" : "text-fg-body")}>{w.trialEnds ? day(w.trialEnds) : "-"}</td>
-                <td className="px-4">{w.usage.length ? <span className="flex flex-col gap-1">{w.usage.map(([u, a, b]) => <span key={u} className="flex items-center gap-2 text-micro text-fg-muted"><span className="h-1.5 w-16 rounded-full bg-surface"><span className={cn("block h-full rounded-full", a / b >= 0.8 ? "bg-warning" : "bg-[var(--chart-1)]")} style={{ width: `${Math.min(100, (a / b) * 100)}%` }} /></span>{u} {a}/{b}</span>)}</span> : <span className="text-fg-subtle">-</span>}</td>
+                <td className={cn("px-4 font-mono text-micro", soon(w) ? "text-warning" : "text-fg-body")}>{w.trialEnds ? day(w.trialEnds) : "None"}</td>
+                <td className="px-4">{w.usage.length ? <span className="flex flex-col gap-1">{w.usage.map(([u, a, b]) => <span key={u} className="flex items-center gap-2 text-micro text-fg-muted"><span className="h-1.5 w-16 rounded-full bg-surface"><span className={cn("block h-full rounded-full", a / b >= 0.8 ? "bg-warning" : "bg-[var(--chart-1)]")} style={{ width: `${Math.min(100, (a / b) * 100)}%` }} /></span>{u} {a}/{b}</span>)}</span> : <span className="text-fg-subtle">None</span>}</td>
                 <td className={cn("px-4", w.inactiveDays > 30 ? "text-warning" : "text-fg-body")}>{w.last}</td>
                 <td className="px-4">{w.am ?? <span className="text-fg-subtle">Unassigned</span>}</td>
               </tr>))}</tbody>

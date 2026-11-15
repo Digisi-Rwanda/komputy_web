@@ -4,7 +4,7 @@ import { AuthCard } from "@/components/organisms/auth/AuthCard";
 import { MfaForm } from "@/components/organisms/auth/MfaForm";
 import { one } from "@/lib/search";
 
-export const metadata: Metadata = { title: "Two-step verification", robots: { index: false } };
+export const metadata: Metadata = { title: "Two step verification", robots: { index: false } };
 
 async function Form({ searchParams }: { searchParams: PageProps<"/sign-in/mfa">["searchParams"] }) {
   return <MfaForm next={one((await searchParams).next)} />;

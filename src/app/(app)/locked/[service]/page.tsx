@@ -28,7 +28,7 @@ async function Actions({ id, searchParams }: { id: ServiceId; searchParams: Page
   const member = p.workspaceRole === "member";
   const [open] = await db.select().from(schema.accessRequests).where(and(eq(schema.accessRequests.tenantId, p.tenantId), eq(schema.accessRequests.service, id), eq(schema.accessRequests.status, member ? "open" : "new")));
   const st = one(sp.state) || (open ? "requested" : entitlement((await getWorkspace(p.tenantId))!, id).state);
-  if (st === "requested") return <AccessNotice state="requested" info={{ requestedAt: open ? open.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "-", ref: open?.code ?? "-" }} />;
+  if (st === "requested") return <AccessNotice state="requested" info={{ requestedAt: open ? open.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "Not yet", ref: open?.code ?? "None" }} />;
   const admins = (await listMembers(p.tenantId)).filter((m) => m.workspaceRole !== "member" && m.status === "active").map((m) => m.name);
   return (
     <>
@@ -45,7 +45,7 @@ export default async function LockedServicePage({ params, searchParams }: PagePr
   const s = service(id);
   const c = LOCKED_COPY[id] ?? {
     eyebrow: `${s.name}${s.standard ? ` · ${s.standard}` : ""}`, title: page.kind === "soon" ? page.title : `${s.name} isn't active yet`, sub: page.sub,
-    ticks: page.kind === "soon" ? page.willDo.map((w) => w.title) : [], price: s.live ? "From USD 1,200 / month" : "Coming soon", trial: s.live ? "14-day trial. No card needed." : "Join the waitlist to hear first.", url: `komputy.com/${id}`,
+    ticks: page.kind === "soon" ? page.willDo.map((w) => w.title) : [], price: s.live ? "From USD 1,200 / month" : "Coming soon", trial: s.live ? "14 day trial. No card needed." : "Join the waitlist to hear first.", url: `komputy.com/${id}`,
   };
   return (
     <section aria-labelledby="locked-title" className="mx-auto flex w-full max-w-[880px] flex-col gap-8 py-4">

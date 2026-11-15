@@ -30,7 +30,7 @@ export function DangerZone({ admins, name, closingOn }: { admins: Member[]; name
   };
   return (
     <div className="flex flex-col gap-6">
-      {closingOn && <Banner tone="negative" action={<Button size="sm" variant="secondary" loading={busy} onClick={() => go(setWorkspaceClosing({ close: false }), "Closure cancelled", () => {})}>Cancel closure</Button>}>Workspace closing on {fmt(closingOn)}. Members keep read-only access until then.</Banner>}
+      {closingOn && <Banner tone="negative" action={<Button size="sm" variant="secondary" loading={busy} onClick={() => go(setWorkspaceClosing({ close: false }), "Closure cancelled", () => {})}>Cancel closure</Button>}>Workspace closing on {fmt(closingOn)}. Members keep view only access until then.</Banner>}
       <section className="flex flex-col gap-4 rounded-panel border border-negative/40 p-5">
         <div><h2 className="text-h4">Transfer ownership</h2><p className="text-small text-fg-muted">The new owner gets full control, including closing the workspace.</p></div>
         {admins.length === 0 ? <p className="text-small text-fg-muted">Make someone an administrator first (Members).</p> : (
