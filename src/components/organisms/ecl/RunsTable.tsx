@@ -45,9 +45,9 @@ export function RunsTable({ runs, loading }: { runs: Run[]; loading?: boolean })
     { key: "creator", label: "Created by", options: [...new Set(runs.map((r) => r.createdBy))].map((c) => ({ value: c, label: c, count: count("createdBy", c) })) },
   ];
 
-  const href = (r: Run) => (r.step && r.status !== "failed" ? `/ecl/runs/new/${STEP_SLUG[r.step - 1]}` : `/ecl/runs/${r.id}/summary`);
+  const href = (r: Run) => (r.status === "computing" ? `/ecl/runs/new/compute?run=${r.id}` : r.step && r.status !== "failed" ? `/ecl/runs/new/${STEP_SLUG[r.step - 1]}?run=${r.id}` : `/ecl/runs/${r.id}/summary`);
   const columns: ColumnDef<Run, unknown>[] = [
-    { id: "run", header: "Run", accessorFn: (r) => r.id, meta: { label: "Run" }, cell: ({ row: { original: r } }) => <Link href={href(r)} className="hover:underline"><TwoLine lead={<Icon name="ecl" />} title={<><MonoId>{r.id}</MonoId> <span className="text-fg">{r.name}</span></>} meta={r.createdBy} /></Link> },
+    { id: "run", header: "Run", accessorFn: (r) => r.id, meta: { label: "Run" }, cell: ({ row: { original: r } }) => <Link href={href(r)} className="hover:underline"><TwoLine lead={<Icon name="ecl" />} title={<><MonoId>{r.id.slice(-6)}</MonoId> <span className="text-fg">{r.name}</span></>} meta={r.createdBy} /></Link> },
     { id: "date", header: "Reporting date", accessorFn: (r) => r.reportingDate, meta: { label: "Reporting date" }, cell: ({ row: { original: r } }) => date(r.reportingDate) },
     { id: "status", header: "Status", accessorFn: (r) => r.status, meta: { label: "Status" }, cell: ({ row: { original: r } }) => <span className="inline-flex items-center gap-2"><RunStatusPill status={r.status} />{r.step && r.status !== "failed" && <span className="text-micro text-fg-muted">Step {r.step}/7</span>}</span> },
     { id: "loans", header: "Loans", accessorFn: (r) => r.loans, meta: { align: "right", label: "Loans" }, cell: ({ row: { original: r } }) => r.loans.toLocaleString("en-US") },
