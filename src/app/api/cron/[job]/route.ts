@@ -101,7 +101,11 @@ async function digests(now: Date) {
 /** Every minute: engine notices → people, queued emails → Resend. */
 async function events() {
   const { consumeEngineEvents, dispatchEmails } = await import("@/server/engine/events");
-  return { notices: await consumeEngineEvents(), emails: await dispatchEmails() };
+  // Independent: a failure turning engine events into notices must never stop queued emails (sign up, resets).
+  const notices = await consumeEngineEvents().catch((e: unknown) => { console.error("engine events failed", e); return -1; });
+  const emails = await dispatchEmails();
+  if (notices < 0) throw new Error(`engine events failed; emails still dispatched: ${JSON.stringify(emails)}`);
+  return { notices, emails };
 }
 
 const JOBS: Record<string, () => Promise<unknown>> = { expire, daily, events };

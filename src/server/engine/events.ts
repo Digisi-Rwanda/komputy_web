@@ -37,7 +37,8 @@ export async function consumeEngineEvents(limit = 200): Promise<number> {
         }, tx);
       }
     }
-    if (rows.length) await tx.execute(dsql`UPDATE engine.outbox_events SET consumed_at = now() WHERE id = ANY(${rows.map((r) => r.id)}::text[])`);
+    // One text parameter split in SQL: a JS array in this template expands to a row ($1, $2), which Postgres can't cast to text[].
+    if (rows.length) await tx.execute(dsql`UPDATE engine.outbox_events SET consumed_at = now() WHERE id = ANY(string_to_array(${rows.map((r) => r.id).join(",")}, ','))`);
     return rows.length;
   });
 }
