@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
-import { Check, Lock } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { Check, Plus, Trash2 } from "lucide-react";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
+import { IconButton } from "@/components/atoms/IconButton";
 import { Input } from "@/components/atoms/Input";
-import { NumberInput } from "@/components/atoms/NumberInput";
 import { Select } from "@/components/atoms/Select";
 import { Switch } from "@/components/atoms/Switch";
 import { StatusPill } from "@/components/atoms/StatusPill";
@@ -15,27 +16,61 @@ import { ToggleGroup } from "@/components/molecules/Tabs";
 import { TimeSeries } from "@/components/organisms/TimeSeries";
 import { toast } from "@/components/organisms/Toaster";
 import { cn } from "@/lib/cn";
-import { leaseData } from "@/data/mock/index";
-import type { SetupStatus } from "@/data/mock/leases";
+import { openPeriod, saveEntity, saveSetup } from "@/lib/actions/leases";
+import { useLeaseData } from "@/components/organisms/leases/LeaseData";
 
+type SetupStatus = "approved" | "pending" | "draft" | "not-started";
 const PILL: Record<SetupStatus, ["positive" | "warning" | "neutral", string]> = { approved: ["positive", "Approved"], pending: ["warning", "Pending approval"], draft: ["neutral", "Draft"], "not-started": ["neutral", "Not started"] };
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+/** Accounts the lease engine posts to (journal lines reference these keys). */
+export const GL_KEYS: [string, string][] = [
+  ["rou_cost", "ROU asset — cost"], ["rou_accdep", "ROU asset — accumulated depreciation"], ["lease_liability", "Lease liability"], ["interest_expense", "Interest expense"],
+  ["depreciation_expense", "Depreciation expense"], ["cash_payable", "Cash / payables clearing"], ["restoration_provision", "Restoration provision"], ["idc_clearing", "Initial direct costs clearing"],
+  ["incentive_receivable", "Lease incentive receivable"], ["modification_gain_loss", "Modification gain / loss"], ["lease_expense", "Short-term / low-value lease expense"],
+];
+const CLASSES = [["property", "Property"], ["vehicles", "Vehicles"], ["equipment", "Equipment / IT"], ["atm", "Branch ATMs"]];
+const today = () => new Date().toISOString().slice(0, 10);
 
-/** LA-01 setup gate: five maker-checker steps (entity, GL, periods, policies, rates). */
-export function SetupGate({ initialStep = "policies" }: { initialStep?: string }) {
-  const [steps, setSteps] = useState(leaseData.setupSteps);
-  const [cur, setCur] = useState(leaseData.setupSteps.some((s) => s.id === initialStep) ? initialStep : "policies");
-  const [gl, setGl] = useState(leaseData.glMapping.map((r) => r[1]));
-  const [lowValue, setLowValue] = useState(true), [shortTerm, setShortTerm] = useState(true), [nonLease, setNonLease] = useState(false), [dayCount, setDayCount] = useState("periodic"), [mode, setMode] = useState("lessee");
+/** LA-01 setup gate: entity, GL, periods, policies, rates. Setup versions are approved by a second person (engine-enforced). */
+export function SetupGate({ initialStep = "entity" }: { initialStep?: string }) {
+  const b = useLeaseData(), router = useRouter();
+  const [busy, start] = useTransition();
+  const st = b.state;
+  const steps = b.setupSteps;
+  const [cur, setCur] = useState(steps.some((s) => s.id === initialStep) ? initialStep : (steps.find((s) => s.status !== "approved")?.id ?? "entity"));
   const step = steps.find((s) => s.id === cur)!;
   const approved = steps.filter((s) => s.status === "approved").length;
-  const dupe = gl.findIndex((g, i) => gl.indexOf(g) !== i);
-  const submit = () => { setSteps((x) => x.map((s) => (s.id === cur ? { ...s, status: "pending" } : s))); toast.success(`${step.label} submitted for approval`, { description: "Jean Habimana will review it." }); };
+  const ent = st.entity ?? {};
+  const [entity, setEntity] = useState({ name: ent.name ?? "", currency: ent.currency ?? b.currency ?? "USD", country: ent.country ?? "Rwanda", fyStartMonth: ent.fyStartMonth ?? 1, bookName: ent.bookName ?? "IFRS 16 book" });
+  const lastGl = (st.gl ?? []).at(-1)?.accounts ?? {};
+  const [gl, setGl] = useState<Record<string, string>>(Object.fromEntries(GL_KEYS.map(([k]) => [k, String(lastGl[k] ?? "")])));
+  const lastPol = (st.policies ?? []).at(-1) ?? {};
+  const [pol, setPol] = useState({ dayCount: lastPol.dayCount ?? "periodic", shortTermClasses: (lastPol.shortTermClasses ?? []) as string[], lowValueElection: lastPol.lowValueElection ?? true, lowValueThreshold: String(lastPol.lowValueThreshold ?? "5000"), separateNonLeaseClasses: (lastPol.separateNonLeaseClasses ?? []) as string[], capitalisationThreshold: String(lastPol.capitalisationThreshold ?? "0") });
+  const lastCurve = (st.curves ?? []).at(-1) ?? {};
+  const [curve, setCurve] = useState<{ termYears: string; rate: string }[]>((lastCurve.points ?? [{ termYears: 1, rate: "0.08" }, { termYears: 3, rate: "0.10" }, { termYears: 5, rate: "0.11" }]).map((p: { termYears: number; rate: string }) => ({ termYears: String(p.termYears), rate: String(p.rate) })));
+  const [source, setSource] = useState(String(lastCurve.source ?? ""));
+  const [from, setFrom] = useState(today());
+  const [period, setPeriod] = useState(new Date().toISOString().slice(0, 7));
+  const codes = Object.values(gl).filter(Boolean);
+  const dupe = codes.find((c, i) => codes.indexOf(c) !== i);
+  const curveOk = curve.length > 0 && curve.every((p) => Number(p.termYears) > 0 && Number(p.rate) > 0 && Number(p.rate) < 0.4);
+  const blocked = (cur === "gl" && (Boolean(dupe) || codes.length < GL_KEYS.length)) || (cur === "rates" && !curveOk) || (cur === "entity" && entity.name.trim().length < 2);
+  const done = (ok: string) => { toast.success(ok); router.refresh(); };
+  const save = () => start(async () => {
+    let r: { ok: boolean; error?: string };
+    if (cur === "entity") r = await saveEntity({ ...entity, fyStartMonth: Number(entity.fyStartMonth) });
+    else if (cur === "periods") r = await openPeriod(period);
+    else if (cur === "gl") r = await saveSetup("gl", from, { accounts: gl });
+    else if (cur === "policies") r = await saveSetup("policies", from, pol);
+    else r = await saveSetup("curves", from, { source, points: curve.map((p) => ({ currency: entity.currency, termYears: Number(p.termYears), rate: p.rate })) });
+    if (!r.ok) { toast.error(r.error ?? "Couldn't save."); return; }
+    done(cur === "entity" || cur === "periods" ? `${step.label} saved` : `${step.label} submitted for approval`);
+  });
+  const toggle = (list: string[], v: string) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-start gap-4">
-        <div className="flex-1"><h1 className="text-h2 tracking-[-0.03em]">Set up Lease Accounting</h1><p className="text-small text-fg-muted">Complete these five steps before adding leases. Every change is approved by a second person.</p></div>
+        <div className="flex-1"><h1 className="text-h2 tracking-[-0.03em]">Set up Lease Accounting</h1><p className="text-small text-fg-muted">Complete these five steps before adding leases. Policies, rates and GL changes are approved by a second person.</p></div>
         <Badge tone={approved === 5 ? "positive" : "neutral"}>{approved} of 5 approved</Badge>
       </div>
       <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
@@ -45,55 +80,60 @@ export function SetupGate({ initialStep = "policies" }: { initialStep?: string }
               <button type="button" aria-current={s.id === cur ? "step" : undefined} onClick={() => setCur(s.id)} className={cn("flex w-full items-center gap-3 rounded-card px-3 py-2.5 text-left", s.id === cur ? "bg-surface" : "hover:bg-surface/60")}>
                 <span className={cn("inline-flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-micro", s.status === "approved" ? "bg-positive text-fg-inverse" : s.id === cur ? "bg-fg text-fg-inverse" : "border border-line-strong text-fg-muted")}>{s.status === "approved" ? <Check className="size-3.5" /> : i + 1}</span>
                 <span className="flex-1 text-small text-fg">{s.label}</span>
-                <StatusPill tone={PILL[s.status][0]}>{PILL[s.status][1]}</StatusPill>
+                <StatusPill tone={PILL[s.status as SetupStatus][0]}>{PILL[s.status as SetupStatus][1]}</StatusPill>
               </button>
             </li>
           ))}
         </ol>
         <section className="flex flex-col gap-5 rounded-panel border border-line p-6">
           <h2 className="text-h4">{step.label}</h2>
-          {step.status === "pending" && <Banner tone="warning">Submitted by Eric Uwase · waiting for a reviewer. You can&apos;t approve your own change.</Banner>}
+          {step.status === "pending" && <Banner tone="warning">Waiting for a reviewer in the Inbox. You can&apos;t approve your own change.</Banner>}
           {cur === "entity" && <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Legal entity name" id="le-name" className="sm:col-span-2"><Input defaultValue="Kivu Commercial Bank Plc" /></Field>
-            <Field label="Country" id="le-country"><Select defaultValue="Rwanda"><option>Rwanda</option><option>Kenya</option></Select></Field>
-            <Field label="Financial year end" id="le-fye"><Select defaultValue="31 December"><option>31 December</option><option>30 June</option></Select></Field>
-            <Field label="Functional currency" id="le-fc"><Select defaultValue="USD"><option>USD</option><option>RWF</option></Select></Field>
-            <Field label="Presentation currency" id="le-pc"><Select defaultValue="USD"><option>USD</option><option>RWF</option></Select></Field>
-            <Field label="Framework" id="le-fw" help="Other frameworks are coming soon."><Select defaultValue="ifrs16"><option value="ifrs16">IFRS 16 (2019 edition)</option></Select></Field>
-            <div className="flex flex-col gap-1.5"><span className="text-small text-fg-body">Lessee / lessor</span><ToggleGroup label="Lessee or lessor" value={mode} onChange={setMode} options={[{ value: "lessee", label: "Lessee" }, { value: "lessor", label: "Lessor (soon)" }]} /></div>
+            <Field label="Legal entity name" id="le-name" className="sm:col-span-2"><Input value={entity.name} maxLength={200} onChange={(e) => setEntity({ ...entity, name: e.target.value })} /></Field>
+            <Field label="Country" id="le-country"><Input value={entity.country} maxLength={64} onChange={(e) => setEntity({ ...entity, country: e.target.value })} /></Field>
+            <Field label="Financial year starts" id="le-fy"><Select value={String(entity.fyStartMonth)} onChange={(e) => setEntity({ ...entity, fyStartMonth: Number(e.target.value) })}>{["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((m, i) => <option key={m} value={i + 1}>{m}</option>)}</Select></Field>
+            <Field label="Functional currency" id="le-fc"><Select value={entity.currency} onChange={(e) => setEntity({ ...entity, currency: e.target.value })}>{["USD", "RWF", "KES", "UGX", "TZS", "EUR"].map((c) => <option key={c}>{c}</option>)}</Select></Field>
+            <Field label="Ledger / book name" id="le-book"><Input value={entity.bookName} maxLength={100} onChange={(e) => setEntity({ ...entity, bookName: e.target.value })} /></Field>
+            <Field label="Framework" id="le-fw" help="Lessee accounting under IFRS 16."><Select defaultValue="ifrs16" disabled><option value="ifrs16">IFRS 16</option></Select></Field>
           </div>}
           {cur === "gl" && <>
             <div className="relative overflow-x-auto rounded-card border border-line"><table className="w-full min-w-[520px] text-small"><caption className="sr-only">Account mapping</caption>
-              <thead><tr className="border-b border-line text-fg-muted">{["Purpose", "GL account", "Name"].map((h) => <th key={h} scope="col" className="px-4 py-2 text-left font-normal">{h}</th>)}</tr></thead>
-              <tbody>{leaseData.glMapping.map(([p, , n], i) => <tr key={p} className="border-b border-line last:border-0"><td className="px-4 py-2 text-fg-body">{p}</td><td className="px-4 py-2"><Input aria-label={`GL account for ${p}`} value={gl[i]} invalid={i === dupe} onChange={(e) => setGl((g) => g.map((x, j) => (j === i ? e.target.value : x)))} className="h-8 font-mono" />{i === dupe && <p className="mt-1 text-micro text-negative">Account {gl[i]} is already used for {leaseData.glMapping[gl.indexOf(gl[i])][0]}</p>}</td><td className="px-4 py-2 text-fg-muted">{n}</td></tr>)}</tbody>
+              <thead><tr className="border-b border-line text-fg-muted">{["Purpose", "GL account"].map((h) => <th key={h} scope="col" className="px-4 py-2 text-left font-normal">{h}</th>)}</tr></thead>
+              <tbody>{GL_KEYS.map(([k, label]) => <tr key={k} className="border-b border-line last:border-0"><td className="px-4 py-2 text-fg-body">{label}</td><td className="px-4 py-2"><Input aria-label={`GL account for ${label}`} value={gl[k]} maxLength={40} invalid={Boolean(gl[k]) && gl[k] === dupe} onChange={(e) => setGl({ ...gl, [k]: e.target.value.trim() })} className="h-8 font-mono" /></td></tr>)}</tbody>
             </table></div>
-            <Button variant="link" size="sm" className="self-start" onClick={() => toast("Chart of accounts import opens here")}>Import chart of accounts (CSV)</Button>
+            {dupe && <p className="text-micro text-negative">Account {dupe} is used for more than one purpose.</p>}
           </>}
           {cur === "periods" && <>
-            <ol className="flex flex-wrap gap-2">{MONTHS.map((m, i) => <li key={m} className={cn("inline-flex items-center gap-1 rounded-full border px-3 py-1 text-micro", i < 9 ? "border-line text-fg-muted" : i === 9 ? "border-positive/50 bg-positive-tint text-fg" : "border-line text-fg-subtle")}>{i < 9 && <Lock className="size-3" />}{m}{i === 9 && " · Open"}</li>)}</ol>
-            <div className="grid gap-4 sm:grid-cols-2"><Field label="First period to open" id="pe-first"><Select defaultValue="Oct 2026"><option>Oct 2026</option></Select></Field><Field label="Opening balances as of" id="pe-ob"><Input defaultValue="30 Sep 2026" /></Field></div>
+            <p className="text-small text-fg-body">Open the first accounting period. Leases post into open periods; closed periods are locked.</p>
+            <Field label="First period to open" id="pe-first" className="max-w-xs"><Input type="month" value={period} onChange={(e) => setPeriod(e.target.value)} /></Field>
+            {(st.periods ?? []).length > 0 && <p className="text-micro text-fg-muted">Open periods: {(st.periods as { key: string; status: string }[]).map((x) => `${x.key} (${x.status})`).join(", ")}</p>}
             <Banner tone="info">Locked periods cannot change. Reopening needs a reason and is logged.</Banner>
           </>}
           {cur === "policies" && <div className="flex flex-col gap-4">
-            <Switch checked={shortTerm} onCheckedChange={setShortTerm} label="Apply short-term exemption (≤ 12 months)" description="Expense the payments; no ROU or liability." />
-            <Switch checked={lowValue} onCheckedChange={setLowValue} label="Apply low-value exemption" />
-            {lowValue && <Field label="Low-value threshold · USD" id="po-th" className="max-w-xs"><NumberInput kind="money" defaultValue={5000} /></Field>}
-            <Switch checked={nonLease} onCheckedChange={setNonLease} label="Separate non-lease components" />
-            <div className="grid gap-4 sm:grid-cols-2"><Field label="Depreciation method" id="po-dep"><Select defaultValue="sl"><option value="sl">Straight-line</option></Select></Field><Field label="Rounding" id="po-r"><Select defaultValue="2"><option value="2">2 decimals, last period absorbs residual</option></Select></Field></div>
-            <div className="flex flex-col gap-1.5"><span className="text-small text-fg-body">Day-count convention</span><ToggleGroup label="Day count" value={dayCount} onChange={setDayCount} options={[{ value: "periodic", label: "Periodic" }, { value: "act365", label: "Actual/365" }]} /></div>
+            <fieldset className="flex flex-col gap-2"><legend className="mb-1 text-small text-fg-body">Short-term exemption (≤ 12 months) applies to</legend>
+              <div className="flex flex-wrap gap-2">{CLASSES.map(([v, l]) => <Button key={v} size="sm" variant={pol.shortTermClasses.includes(v) ? "primary" : "secondary"} onClick={() => setPol({ ...pol, shortTermClasses: toggle(pol.shortTermClasses, v) })}>{l}</Button>)}</div></fieldset>
+            <Switch checked={pol.lowValueElection} onCheckedChange={(v) => setPol({ ...pol, lowValueElection: v })} label="Apply the low-value exemption" />
+            {pol.lowValueElection && <Field label={`Low-value threshold · ${entity.currency}`} id="po-th" className="max-w-xs"><Input numeric value={pol.lowValueThreshold} onChange={(e) => setPol({ ...pol, lowValueThreshold: e.target.value })} /></Field>}
+            <fieldset className="flex flex-col gap-2"><legend className="mb-1 text-small text-fg-body">Separate non-lease components for</legend>
+              <div className="flex flex-wrap gap-2">{CLASSES.map(([v, l]) => <Button key={v} size="sm" variant={pol.separateNonLeaseClasses.includes(v) ? "primary" : "secondary"} onClick={() => setPol({ ...pol, separateNonLeaseClasses: toggle(pol.separateNonLeaseClasses, v) })}>{l}</Button>)}</div></fieldset>
+            <Field label={`Capitalisation threshold · ${entity.currency}`} id="po-cap" className="max-w-xs"><Input numeric value={pol.capitalisationThreshold} onChange={(e) => setPol({ ...pol, capitalisationThreshold: e.target.value })} /></Field>
+            <div className="flex flex-col gap-1.5"><span className="text-small text-fg-body">Day-count convention</span><ToggleGroup label="Day count" value={pol.dayCount} onChange={(v) => setPol({ ...pol, dayCount: v })} options={[{ value: "periodic", label: "Periodic" }, { value: "act365", label: "Actual/365" }]} /></div>
           </div>}
           {cur === "rates" && <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-            <div className="flex flex-col gap-3"><p className="text-small text-fg">USD incremental borrowing rate — Oct 2026</p>
-              <table className="text-small tabular-nums"><caption className="sr-only">Rate curve</caption><thead><tr className="text-fg-muted"><th scope="col" className="py-1 text-left font-normal">Term</th><th scope="col" className="py-1 text-right font-normal">Rate</th></tr></thead><tbody>{leaseData.rateCurve.map(([y, r]) => <tr key={y} className="border-t border-line"><td className="py-1.5">{y} yr{y > 1 ? "s" : ""}</td><td className="py-1.5 text-right">{(r * 100).toFixed(2)} %</td></tr>)}</tbody></table>
-              <p className="text-micro text-fg-muted">Effective from 1 Oct 2026</p>
-              {step.status === "pending" && <div className="rounded-card border border-line p-3 text-micro"><p className="mb-1 text-fg">3 values changed</p>{[["3 yrs", "9.25 %", "9.50 %"], ["5 yrs", "9.80 %", "10.00 %"], ["7 yrs", "10.10 %", "10.40 %"]].map(([t, a, b]) => <p key={t} className="font-mono"><span className="text-fg-muted">{t} </span><span className="text-fg-subtle line-through">{a}</span> → <span className="text-fg">{b}</span></p>)}</div>}
+            <div className="flex flex-col gap-3">
+              <Field label="Source" id="rc-src" help="e.g. treasury memo reference"><Input value={source} maxLength={200} onChange={(e) => setSource(e.target.value)} /></Field>
+              <table className="text-small tabular-nums"><caption className="sr-only">Rate curve</caption><thead><tr className="text-fg-muted"><th scope="col" className="py-1 text-left font-normal">Term (years)</th><th scope="col" className="py-1 text-left font-normal">Rate (decimal)</th><th /></tr></thead>
+                <tbody>{curve.map((p, i) => <tr key={i} className="border-t border-line"><td className="py-1.5 pr-2"><Input aria-label="Term in years" numeric value={p.termYears} onChange={(e) => setCurve(curve.map((x, j) => (j === i ? { ...x, termYears: e.target.value } : x)))} className="h-8" /></td><td className="py-1.5 pr-2"><Input aria-label="Rate" numeric value={p.rate} onChange={(e) => setCurve(curve.map((x, j) => (j === i ? { ...x, rate: e.target.value } : x)))} className="h-8 font-mono" /></td><td><IconButton size="sm" label="Remove tenor" onClick={() => setCurve(curve.filter((_, j) => j !== i))}><Trash2 /></IconButton></td></tr>)}</tbody></table>
+              <Button size="sm" variant="secondary" icon={<Plus />} className="w-fit" onClick={() => setCurve([...curve, { termYears: "", rate: "" }])}>Add tenor</Button>
+              {!curveOk && <p className="text-micro text-negative">Each tenor needs years &gt; 0 and a rate between 0 and 0.40 (e.g. 0.095 = 9.5 %).</p>}
             </div>
-            <TimeSeries title="Rate curve" data={leaseData.rateCurve.map(([y, r]) => ({ term: `${y}y`, rate: r * 100 }))} x="term" format={(v) => `${v.toFixed(1)} %`} series={[{ key: "rate", label: "IBR", color: "var(--chart-1)", value: "rate" }]} height={180} />
+            <TimeSeries title="Rate curve" data={curve.filter((p) => Number(p.termYears) > 0).sort((a, z) => Number(a.termYears) - Number(z.termYears)).map((p) => ({ term: `${p.termYears}y`, rate: Number(p.rate) * 100 }))} x="term" format={(v) => `${v.toFixed(2)} %`} series={[{ key: "rate", label: "IBR", color: "var(--chart-1)", value: "rate" }]} height={180} />
           </div>}
+          {(cur === "gl" || cur === "policies" || cur === "rates") && <Field label="Effective from" id="eff" className="max-w-xs"><Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></Field>}
           <div className="mt-2 flex flex-wrap justify-end gap-2 border-t border-line pt-4">
-            {step.status === "pending" ? <Button variant="ghost" onClick={() => { setSteps((x) => x.map((s) => (s.id === cur ? { ...s, status: "draft" } : s))); toast("Submission withdrawn"); }}>Withdraw submission</Button>
-              : step.status === "approved" ? <p className="text-small text-fg-muted">Approved. Changes create a new version for approval.</p>
-              : <><Button variant="ghost" onClick={() => toast.success("Draft saved")}>Save draft</Button><Button disabled={cur === "gl" && dupe >= 0} disabledReason={cur === "gl" && dupe >= 0 ? "Fix the duplicate account first" : undefined} onClick={submit}>Submit for approval</Button></>}
+            {step.status === "pending" ? <p className="text-small text-fg-muted">Submitted. A reviewer approves it in the Inbox.</p>
+              : <Button loading={busy} disabled={blocked} disabledReason={blocked ? (cur === "gl" ? "Map every purpose to a unique account" : cur === "rates" ? "Fix the curve" : "Enter the entity name") : undefined} onClick={save}>
+                  {cur === "entity" || cur === "periods" ? (step.status === "approved" ? "Save changes" : "Save") : step.status === "approved" ? "Submit a new version" : "Submit for approval"}</Button>}
           </div>
         </section>
       </div>
