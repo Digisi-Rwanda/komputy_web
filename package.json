@@ -1,5 +1,5 @@
 {
-  "name": "redesign",
+  "name": "komputy-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -12,7 +12,7 @@
     "check": "npm run typecheck && npm run lint && npm test && npm run build",
     "db:pull": "drizzle-kit pull && mv src/server/db/introspect/schema.ts src/server/db/schema.ts && mv src/server/db/introspect/relations.ts src/server/db/relations.ts && rm -rf src/server/db/introspect && sed -i -e \"/timestamp(/s/mode: 'string'/mode: 'date'/\" -e \"s/\\.default(')/.default('')/g\" src/server/db/schema.ts",
     "spike": "tsx --conditions=react-server --env-file=.env.local scripts/spike.mts",
-    "engine:types": "cd ../ECL-Server && .venv/bin/python -c 'import json; from app.main import app; print(json.dumps(app.openapi()))' > ../redesign/src/server/engine/openapi.json && cd ../redesign && openapi-typescript src/server/engine/openapi.json -o src/server/engine/schema.d.ts && rm src/server/engine/openapi.json",
+    "engine:types": "openapi-typescript ../komputy_server/contracts/openapi.json -o src/server/engine/schema.d.ts",
     "db:seed": "tsx --conditions=react-server --env-file=.env.local scripts/seed.mts"
   },
   "dependencies": {
