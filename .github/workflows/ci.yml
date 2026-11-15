@@ -30,7 +30,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      - name: Migrations apply to an empty database (twice: idempotent)
+      - name: "Migrations apply to an empty database, twice (idempotent)"
         run: npm run db:migrate && npm run db:migrate
       - uses: actions/cache@v4
         with: { path: .next/cache, key: "next-${{ hashFiles('package-lock.json') }}-${{ github.sha }}", restore-keys: "next-${{ hashFiles('package-lock.json') }}-" }
