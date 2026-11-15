@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/atoms/Checkbox";
 import { Field } from "@/components/molecules/Field";
 import { Stepper } from "@/components/molecules/Stepper";
 import { ToggleGroup } from "@/components/molecules/Tabs";
-import { CardSelector } from "@/components/molecules/CardSelector";
+import { CardMultiSelector } from "@/components/molecules/CardSelector";
 import { Icon } from "@/components/atoms/Icon";
 import { Badge } from "@/components/atoms/Badge";
 import { signUp, type FormState } from "@/lib/actions/auth";
@@ -28,7 +28,7 @@ export function SignUpForm({ preselect }: { preselect?: string }) {
   const submit = useKeepValuesSubmit(action);
   const [step, setStep] = useState(0);
   const [local, setLocal] = useState<Record<string, string>>({});
-  const [service, setService] = useState(preselect === "leases" ? "leases" : "ecl");
+  const [services, setServices] = useState<string[]>([preselect === "leases" ? "leases" : "ecl"]);
   const [size, setSize] = useState("");
   const form = useRef<HTMLFormElement>(null);
   const server = state && !state.ok ? state.fields ?? {} : {};
@@ -78,14 +78,14 @@ export function SignUpForm({ preselect }: { preselect?: string }) {
         <div className="flex justify-between"><Button variant="ghost" onClick={() => setStep(0)}>Back</Button><Button onClick={next}>Continue</Button></div>
       </div>
       <div className={`${hide(2)} flex-col gap-4`}>
-        <h2 className="text-h4">What do you want to try first?</h2>
-        <input type="hidden" name="service" value={service} />
-        <CardSelector label="Service to try" value={service} onChange={setService} options={[
+        <h2 className="text-h4">Which services do you want to try?</h2>
+        {services.map((s) => <input key={s} type="hidden" name="service" value={s} />)}
+        <CardMultiSelector label="Services to try" value={services} onChange={setServices} options={[
           { value: "ecl", title: "Expected Credit Loss", description: "IFRS 9", icon: <Icon name="ecl" /> },
           { value: "leases", title: "Lease Accounting", description: "IFRS 16", icon: <Icon name="leases" /> },
           { value: "tax", title: "Tax Provision", description: "IAS 12", icon: <Icon name="tax" />, badge: <Badge>Soon</Badge>, disabled: true },
         ]} />
-        <p className="text-micro text-fg-muted">Not sure? Pick one. You can add the other later.</p>
+        <p className="text-micro text-fg-muted">Choose one or more. You can add others later.</p>
         {err.service && <p role="alert" className="text-micro text-negative">{err.service}</p>}
         <Checkbox name="terms" label={<>I agree to the <Link href="/legal/terms" className="text-link underline" target="_blank">Terms</Link> and <Link href="/legal/privacy" className="text-link underline" target="_blank">Privacy Policy</Link></>} aria-invalid={Boolean(err.terms) || undefined} />
         {err.terms && <p role="alert" className="text-micro text-negative">{err.terms}</p>}

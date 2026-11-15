@@ -79,14 +79,14 @@ export async function signOut(reason?: unknown) {
 
 export async function signUp(_: FormState, f: FormData): Promise<FormState> {
   const name = str(f, "name"), email = str(f, "email").toLowerCase(), password = String(f.get("password") ?? ""), company = str(f, "company");
-  const service = str(f, "service") as TrialService;
+  const services = [...new Set(f.getAll("service").map(String))].filter((s): s is TrialService => s === "ecl" || s === "leases");
   const fields: Record<string, string> = {};
   if (name.length < 2) fields.name = "Enter your full name.";
   if (!isEmail(email)) fields.email = "Enter a valid email address.";
   if (!passwordOk(password)) fields.password = "Use 12+ characters that aren't in known breaches.";
   if (company.length < 2) fields.company = "Enter your company name.";
   if (!str(f, "country")) fields.country = "Choose your country.";
-  if (!["ecl", "leases"].includes(service)) fields.service = "Pick a service to try.";
+  if (!services.length) fields.service = "Choose at least one service to try.";
   if (f.get("terms") !== "on") fields.terms = "You must agree to the Terms and Privacy Policy.";
   if (Object.keys(fields).length) return { ok: false, fields };
   const pending = `/verify-email-pending?email=${encodeURIComponent(email)}`;
@@ -99,8 +99,8 @@ export async function signUp(_: FormState, f: FormData): Promise<FormState> {
   try {
     const r = await auth.api.signUpEmail({ body: { name, email, password, callbackURL: "/verify-email?verified=1" } });
     await db.transaction(async (tx) => {
-      const ws = await provisionWorkspace(tx, { userId: r.user.id, name: company, country: str(f, "country"), currency: str(f, "currency") || "USD", fiscalYearEnd: str(f, "fye") || "12-31", services: [service], emailDomain: email.split("@")[1] });
-      await audit({ event: "workspace.created", userId: r.user.id, tenantId: ws.tenantId, details: { via: "sign-up", service, size: str(f, "size") } }, tx);
+      const ws = await provisionWorkspace(tx, { userId: r.user.id, name: company, country: str(f, "country"), currency: str(f, "currency") || "USD", fiscalYearEnd: str(f, "fye") || "12-31", services, emailDomain: email.split("@")[1] });
+      await audit({ event: "workspace.created", userId: r.user.id, tenantId: ws.tenantId, details: { via: "sign-up", services, size: str(f, "size") } }, tx);
     });
   } catch (e) {
     if (code(e).includes("PASSWORD_COMPROMISED") || (e instanceof APIError && /breach/i.test(e.message))) return { ok: false, fields: { password: "This password appeared in a data breach. Choose a different one." } };
