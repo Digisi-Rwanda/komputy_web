@@ -11,6 +11,10 @@ const schema = z.object({
   IP_HASH_SALT: z.string().min(16),
   CRON_SECRET: z.string().min(16),
   EMAIL_FROM: z.string().default("Ledgerline <no-reply@ledgerline.app>"),
+  // Email delivery (the web app dispatches the outbox itself). Unset in dev: emails stay queued and are logged.
+  RESEND_API_KEY: z.string().optional(),
+  // Shared secret for ops calls to the engine (tenant purge). Must match the engine's SERVICE_TOKEN.
+  ENGINE_SERVICE_TOKEN: z.string().min(16).default("dev-service-token-change-me"),
   // Same argon2id parameters as ECL-Server so existing password hashes verify unchanged.
   ARGON2_MEMORY_COST: z.coerce.number().default(65536),
   ARGON2_TIME_COST: z.coerce.number().default(3),
