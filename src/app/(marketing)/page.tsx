@@ -28,7 +28,7 @@ const orgJsonLd = {
   operatingSystem: "Web",
   description: hero.sub,
   offers: { "@type": "AggregateOffer", priceCurrency: "USD", lowPrice: "1200", offerCount: 3 },
-  publisher: { "@type": "Organization", name: "Ledgerline", url: "https://ledgerline.app" },
+  publisher: { "@type": "Organization", name: "Ledgerline", url: "https://komputy.com" },
 };
 
 // Landing `/` — section order per REDESIGN_UX_BLUEPRINT §6.1, visuals per inspiration/to_build/phase-01-landing (L0–L9).
