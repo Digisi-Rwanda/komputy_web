@@ -11,6 +11,10 @@ import { FirstRun } from "@/components/organisms/home/FirstRun";
 import { daysLeft, entitlement } from "@/lib/entitlements";
 import { listAudit } from "@/server/dal/audit";
 import { homeAttention } from "@/server/dal/home";
+import { listRuns } from "@/server/dal/engine";
+import { getLeaseBook } from "@/server/dal/leases";
+import { can } from "@/server/policy";
+import { isComputed } from "@/lib/entitlements";
 import { getOnboarding } from "@/server/dal/onboarding";
 import { getWorkspace } from "@/server/dal/workspace";
 import { requireMember } from "@/server/session";
@@ -31,6 +35,16 @@ async function Body({ searchParams }: { searchParams: PageProps<"/home">["search
     leases = { service: "leases", state: "locked" };
   }
   const usable = (e: Entitlement) => e.state === "active" || e.state === "trial";
+  const [runs, book] = await Promise.all([
+    usable(ecl) && can(p, "ecl.view") ? listRuns(p) : null,
+    usable(leases) && can(p, "leases.view") ? getLeaseBook(p) : null,
+  ]);
+  const computed = runs?.ok ? runs.data.filter(isComputed) : [];
+  const latestRun = computed.find((r) => r.status === "signed-off") ?? computed[0];
+  const lb = book?.ok ? book.data : null;
+  const closeSteps = (lb?.close as { steps?: { status: string }[]; period?: string } | null) ?? null;
+  const leaseSummary = lb && lb.register.length ? { liability: lb.overview.liability, rou: lb.overview.rou,
+    close: { label: closeSteps?.period ?? lb.period, step: (closeSteps?.steps ?? []).filter((x) => x.status === "done" || x.status === "warning").length + 1, of: 8 } } : undefined;
   const isNew = scenario === "new";
   const states = { ecl: ecl.state, leases: leases.state };
   const progress = await getOnboarding(p.tenantId, p.mfa);
@@ -43,13 +57,13 @@ async function Body({ searchParams }: { searchParams: PageProps<"/home">["search
       {!isNew && <div className="max-md:order-last"><Checklist workspace={ws.name} states={states} progress={progress} /></div>}
       <Section title="My services">
         <div className="grid gap-4 md:grid-cols-2">
-          {usable(ecl) && <EclCard e={ecl} run={undefined /* shortcut: latest run comes from the engine (Phase 5) */} sample={scenario === "trial"} />}
-          {usable(leases) ? <LeasesCard e={leases} summary={undefined /* shortcut: lease totals come from the engine (Phase 5) */} /> : <LockedCard id="leases" name="Lease Accounting" standard="IFRS 16" line="Schedules, journals and month-end close in the same workspace." />}
+          {usable(ecl) && <EclCard e={ecl} run={latestRun} sample={scenario === "trial"} />}
+          {usable(leases) ? <LeasesCard e={leases} summary={leaseSummary} /> : <LockedCard id="leases" name="Lease Accounting" standard="IFRS 16" line="Schedules, journals and month-end close in the same workspace." />}
         </div>
         {scenario === "trial" && <ComingSoon />}
       </Section>
       {isNew && <Checklist workspace={ws.name} states={states} progress={progress} />}
-      {!isNew && <Section title="Needs your attention"><Attention items={(await homeAttention(p, ws.entitlements)).filter((a) => usable(leases) || a.service !== "leases")} /></Section>}
+      {!isNew && <Section title="Needs your attention"><Attention items={(await homeAttention(p, ws.entitlements, { runs: runs?.ok ? runs.data : [], leaseInbox: lb?.inbox ?? [], reviewer: can(p, "ecl.review") })).filter((a) => usable(leases) || a.service !== "leases")} /></Section>}
       {!isNew && (
         <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
           <Section title="Recent activity"><RecentActivity events={await listAudit(p.tenantId, 8)} /></Section>
