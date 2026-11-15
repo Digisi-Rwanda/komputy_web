@@ -45,7 +45,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, Va
 export function Button({ variant, size, asChild, loading, icon, right, shortcut, disabledReason, className, children, disabled, onClick, ...rest }: ButtonProps) {
   const classes = cn(buttonVariants({ variant, size }), className);
   if (asChild) return <Slot className={classes} {...rest}>{children}</Slot>;
-  const blocked = Boolean(disabledReason);
+  // A reason blocks the button unless the caller explicitly enables it (disabled={false}).
+  const blocked = Boolean(disabledReason) && disabled !== false;
   return (
     <button
       type="button"
@@ -53,7 +54,7 @@ export function Button({ variant, size, asChild, loading, icon, right, shortcut,
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       aria-disabled={blocked || undefined}
-      title={disabledReason}
+      title={blocked ? disabledReason : undefined}
       onClick={blocked && !disabled ? (e) => e.preventDefault() : onClick}
       {...rest}
     >
