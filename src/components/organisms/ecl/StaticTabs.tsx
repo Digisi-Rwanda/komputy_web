@@ -1,51 +1,57 @@
-import Link from "next/link";
+import { isComputed } from "@/lib/entitlements";
 import { CheckCircle2, FileSpreadsheet, Lock, XCircle } from "lucide-react";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Accordion } from "@/components/molecules/Accordion";
 import { KeyValue } from "@/components/molecules/StatCard";
 import { Banner } from "@/components/molecules/Banner";
-import { REQUIREMENTS } from "@/data/wizard";
-import { getCollateralSetup, getSegmentsSetup, getThresholds } from "@/data/mock/index";
-import { outputs, reconciliation } from "@/data/mock/results";
-import { DownloadButton } from "@/components/organisms/ecl/DownloadButton";
+import { bytes, date } from "@/lib/format";
 import type { Run } from "@/types/domain";
 
+export type ReconCheck = { name: string; expected?: number | string | null; actual?: number | string | null; difference?: number | null; passed: boolean; detail?: string | null };
+export type InputFile = { id: string; kind: string; filename: string; sha256: string; size: number; rows: number | null; sheets: number | null; status: string | null; warningsAccepted: boolean; at: string };
+export type OutputFile = { kind: string; sha256: string; size: number; at: string };
+const OUTPUT_LABEL: Record<string, [string, string]> = {
+  LOAN_DETAIL: ["Loan detail.xlsx", "Every loan: stage, EAD, PD, LGD, ECL (Step 11)"], PORTFOLIO_SUMMARY: ["Portfolio summary.xlsx", "Totals by segment and stage"],
+  PD_CALCS: ["PD calculations.xlsx", "Transition matrices and term structures"], LGD: ["LGD.xlsx", "Collateral allocation and discounting"],
+  RUNDOWN: ["EAD rundown.xlsx", "Month-by-month projections"], ECL_SUMMARY: ["ECL summary.xlsx", "Headline figures"],
+};
+const fmt = (v: unknown) => (typeof v === "number" ? v.toLocaleString("en-US", { maximumFractionDigits: 2 }) : String(v ?? "—"));
+
 /** R4 reconciliation: 7 checks, expandable calculations, example failed-check style. */
-export function ReconciliationTab({ run }: { run: Run }) {
-  if (!run.totalEcl) return <Banner tone="info">Reconciliation runs after compute.</Banner>;
+export function ReconciliationTab({ run, checks }: { run: Run; checks: ReconCheck[] }) {
+  if (!isComputed(run)) return <Banner tone="info">Reconciliation runs after compute.</Banner>;
+  const passed = checks.filter((c) => c.passed).length;
   return (
     <div className="flex flex-col gap-4">
-      <p className="flex items-center gap-2 text-h4 text-fg"><CheckCircle2 className="size-5 text-positive" />7 of 7 checks passed · tolerance 0.01</p>
-      <Accordion defaultValue={["Row coverage"]} items={reconciliation.map((c) => ({
-        value: c.title,
-        title: <span className="flex flex-wrap items-center gap-x-4 gap-y-1"><CheckCircle2 aria-label="Passed" className="size-4 text-positive" /><span className="w-40 text-fg">{c.title}</span><span className="font-mono text-micro text-fg-body">{c.formula}</span></span>,
-        content: c.detail ? <dl className="grid max-w-md grid-cols-2 gap-y-1 font-mono text-micro">{c.detail.map(([k, v]) => <div key={k} className="contents"><dt className="text-fg-muted">{k}</dt><dd className="text-right text-fg">{v}</dd></div>)}</dl> : <p className="text-fg-muted">Both sides match within tolerance.</p>,
+      <p className="flex items-center gap-2 text-h4 text-fg">{passed === checks.length ? <CheckCircle2 className="size-5 text-positive" /> : <XCircle className="size-5 text-negative" />}{passed} of {checks.length} checks passed · tolerance 0.01</p>
+      <Accordion defaultValue={checks.filter((c) => !c.passed).map((c) => c.name)} items={checks.map((c) => ({
+        value: c.name,
+        title: <span className="flex flex-wrap items-center gap-x-4 gap-y-1">{c.passed ? <CheckCircle2 aria-label="Passed" className="size-4 text-positive" /> : <XCircle aria-label="Failed" className="size-4 text-negative" />}<span className="w-56 text-fg">{c.name}</span>{c.difference != null && <span className="font-mono text-micro text-fg-body">Δ {fmt(c.difference)}</span>}</span>,
+        content: <dl className="grid max-w-md grid-cols-2 gap-y-1 font-mono text-micro">{[["Expected", c.expected], ["Actual", c.actual], ["Difference", c.difference]].map(([k, v]) => <div key={String(k)} className="contents"><dt className="text-fg-muted">{String(k)}</dt><dd className="text-right text-fg">{fmt(v)}</dd></div>)}{c.detail && <p className="col-span-2 mt-2 font-sans text-fg-muted">{c.detail}</p>}</dl>,
       }))} />
-      <div className="flex items-center gap-3 rounded-card border border-negative/40 bg-negative-tint px-5 py-3 opacity-70"><XCircle aria-hidden className="size-4 text-negative" /><p className="flex-1 text-small text-fg">Example: failed check <span className="block text-micro text-fg-muted">How a failure would look — ECL cap comparison shows a difference.</span></p><span className="font-mono text-small text-negative">0.42</span></div>
     </div>
   );
 }
 
 /** R5 inputs: three file cards + settings snapshot; immutable once signed off. */
-export function InputsTab({ run }: { run: Run }) {
-  const files = [["pd", "PD", 2], ["lgd", "LGD", 1], ["ead", "EAD", 2]] as const;
-  const col = getCollateralSetup(), th = getThresholds();
+export function InputsTab({ run, files }: { run: Run; files: InputFile[] }) {
+  if (!files.length) return <p className="rounded-panel border border-dashed border-line-strong p-6 text-center text-small text-fg-muted">No files uploaded yet.</p>;
   return (
     <div className="flex flex-col gap-6">
       <div className="grid gap-4 lg:grid-cols-3">
-        {files.map(([k, name, w]) => { const r = REQUIREMENTS[k]; return (
-          <section key={k} className="flex flex-col gap-3 rounded-panel border border-line p-5">
-            <p className="flex items-center gap-2 text-small text-fg"><FileSpreadsheet aria-hidden className="size-4 text-positive" />{r.defaultFile.replace("Nov", "Sep")}</p>
-            <p className="font-mono text-micro text-fg-muted">{r.sizeMb} MB · {r.rows} · SHA {r.sha}</p>
-            <p className="text-micro text-fg-muted">Uploaded by {run.createdBy} · 30 Sep 2026</p>
-            <div className="flex flex-wrap gap-2"><Badge tone="positive">Validation passed</Badge><Badge tone="warning">{w} warning{w > 1 ? "s" : ""}</Badge></div>
-            <div className="mt-auto flex flex-wrap gap-2"><DownloadButton label="Download original" name={`${name} input`} /><Button asChild size="sm" variant="ghost"><Link href={`/ecl/runs/new/${k}`}>View validation report</Link></Button></div>
+        {files.map((f) => (
+          <section key={f.id} className="flex flex-col gap-3 rounded-panel border border-line p-5">
+            <p className="flex items-center gap-2 text-small text-fg"><FileSpreadsheet aria-hidden className="size-4 text-positive" /><Badge>{f.kind}</Badge><span className="truncate">{f.filename}</span></p>
+            <p className="font-mono text-micro text-fg-muted">{bytes(f.size)}{f.rows != null && ` · ${f.rows.toLocaleString("en-US")} rows`}{f.sheets != null && ` · ${f.sheets} sheet${f.sheets === 1 ? "" : "s"}`} · SHA {f.sha256.slice(0, 4)}…{f.sha256.slice(-3)}</p>
+            <p className="text-micro text-fg-muted">Uploaded {date(f.at.slice(0, 10))}</p>
+            <div className="flex flex-wrap gap-2">{f.status === "ok" ? <Badge tone="positive">Validation passed</Badge> : f.status === "warn" ? <Badge tone="warning">Passed with warnings{f.warningsAccepted ? " · accepted" : ""}</Badge> : f.status === "error" ? <Badge tone="negative">Failed validation</Badge> : <Badge>Not validated</Badge>}</div>
+            <div className="mt-auto flex flex-wrap gap-2"><Button asChild size="sm" variant="secondary"><a href={`/api/ecl/runs/${run.id}/inputs/${f.kind.toLowerCase()}`}>Download original</a></Button></div>
           </section>
-        ); })}
+        ))}
       </div>
-      <section className="rounded-panel border border-line p-5"><h3 className="mb-4 text-h4">Settings snapshot</h3>
-        <KeyValue columns={2} items={[["Segments", getSegmentsSetup().filter((s) => s.active).map((s) => s.name).join(", ")], ["Collateral types", col.map((c) => `${c.name} ${Math.round(c.haircut * 100)} % / ${c.months} mo`).join(" · ")], ["Thresholds", `Max month gap ${th[0].value} · min transitions ${th[1].value} · Offbooks ${Math.round(th[2].value * 100)} %`], ["Engine", run.engine]]} />
+      <section className="rounded-panel border border-line p-5"><h3 className="mb-4 text-h4">Run settings</h3>
+        <KeyValue columns={2} items={[["Engine", run.engine], ["Currency", run.currency], ["Reporting date", run.reportingDate || "From the EAD file"], ["Created by", run.createdBy]]} />
       </section>
       {run.status === "signed-off" && <p className="flex items-center gap-2 text-small text-fg-muted"><Lock className="size-4" />Inputs are immutable for signed-off runs.</p>}
     </div>
@@ -75,20 +81,21 @@ export function MethodologyTab({ run }: { run: Run }) {
 }
 
 /** R7 outputs: workbooks + bundle; empty before compute; trial watermark note. */
-export function OutputsTab({ run, trial }: { run: Run; trial?: boolean }) {
-  if (!run.totalEcl) return <p className="rounded-panel border border-dashed border-line-strong p-6 text-center font-mono text-small text-fg-muted">Outputs are generated after compute.</p>;
+export function OutputsTab({ run, files, trial }: { run: Run; files: OutputFile[]; trial?: boolean }) {
+  if (!isComputed(run)) return <p className="rounded-panel border border-dashed border-line-strong p-6 text-center font-mono text-small text-fg-muted">Outputs are generated after compute.</p>;
+  if (!files.length) return <p className="rounded-panel border border-line p-6 text-center text-small text-fg-muted">Building the workbooks… this page updates when they&apos;re ready.</p>;
   return (
     <div className="flex flex-col gap-3">
       <ul className="divide-y divide-line rounded-panel border border-line">
-        {outputs.map(([name, desc, mb]) => (
-          <li key={name} className="flex flex-wrap items-center gap-4 px-5 py-3">
+        {files.map((f) => { const [name, desc] = OUTPUT_LABEL[f.kind] ?? [`${f.kind}.xlsx`, ""]; return (
+          <li key={f.kind} className="flex flex-wrap items-center gap-4 px-5 py-3">
             <FileSpreadsheet aria-hidden className="size-5 text-positive" />
             <span className="min-w-0 flex-1"><span className="block text-small text-fg">{name}</span><span className="block font-mono text-micro text-fg-muted">{desc}</span></span>
-            <span className="font-mono text-micro text-fg-muted">{mb} MB · 30 Sep 2026, 11:10</span>
-            <DownloadButton label="Download" name={name} />
+            <span className="font-mono text-micro text-fg-muted">{bytes(f.size)} · {date(f.at.slice(0, 10))}</span>
+            <Button asChild size="sm" variant="secondary"><a href={`/api/ecl/runs/${run.id}/downloads/${f.kind.toLowerCase()}`}>Download</a></Button>
           </li>
-        ))}
-        <li className="flex flex-wrap items-center gap-4 bg-raised px-5 py-4"><span className="flex-1 text-small text-fg">Download bundle (.zip, 48.2 MB)</span><DownloadButton label="Download bundle" name="Run bundle" primary /></li>
+        ); })}
+        <li className="flex flex-wrap items-center gap-4 bg-raised px-5 py-4"><span className="flex-1 text-small text-fg">Download everything (.zip)</span><Button asChild size="sm"><a href={`/api/ecl/runs/${run.id}/downloads/bundle`}>Download bundle</a></Button></li>
       </ul>
       {trial && <p className="text-micro text-fg-muted">Trial runs include a TRIAL watermark on output files.</p>}
     </div>
