@@ -5,9 +5,10 @@ import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 const require = createRequire(process.env.PLAYWRIGHT_DIR ?? "/home/moses/.npm/_npx/361ceb562f3b3235/node_modules/");
 const { chromium } = require("playwright");
-const BASE = "http://localhost:3300", PW = "Ledgerline-Demo-2026", OWNER = "a.mugisha@kivubank.rw", ADMIN = "j.kamau@ledgerline.app";
+const BASE = process.env.E2E_BASE ?? "http://localhost:3300", PW = "Ledgerline-Demo-2026", OWNER = "a.mugisha@kivubank.rw", ADMIN = "j.kamau@ledgerline.app";
 const PGU = execFileSync("docker", ["exec", "ecl-web-pg", "printenv", "POSTGRES_USER"]).toString().trim();
-const sql = (q) => execFileSync("docker", ["exec", "ecl-web-pg", "psql", "-U", PGU, "-d", "ecl_db", "-tAc", q]).toString().trim();
+// E2E_DATABASE_URL (any reachable Postgres, e.g. Render external URL) or the local dev container.
+const sql = (q) => (process.env.E2E_DATABASE_URL ? execFileSync("psql", [process.env.E2E_DATABASE_URL, "-tAc", q]) : execFileSync("docker", ["exec", "ecl-web-pg", "psql", "-U", PGU, "-d", "ecl_db", "-tAc", q])).toString().trim();
 const results = [];
 const check = (name, ok, info = "") => { results.push(ok); console.log(ok ? "PASS" : "FAIL", name, info); };
 const step = async (name, fn) => { try { await fn(); } catch (e) { check(name, false, String(e.message ?? e).split("\n")[0].slice(0, 200)); } };
@@ -64,7 +65,7 @@ await step("members deep link filters", async () => {
   check("members deep link filters", (await page.locator("tbody tr").count()) === 1, email);
 });
 await step("photo upload persists", async () => {
-  await page.goto(`${BASE}/account/profile`); await page.waitForSelector("input[aria-label='Upload photo']", { state: "attached", timeout: 120000 });
+  await page.goto(`${BASE}/account/profile`); await page.waitForSelector("input[aria-label='Upload photo']", { state: "attached", timeout: 120000 }); await page.waitForLoadState("networkidle"); // React must hydrate before the file event
   const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGklEQVR4nGNk+M9Qz0AEYBxVSF+FAAAKiAH/7oA1qgAAAABJRU5ErkJggg==", "base64");
   await page.setInputFiles("input[aria-label='Upload photo']", { name: "me.png", mimeType: "image/png", buffer: png }); await page.waitForTimeout(4000);
   const img = sql(`select coalesce(image,'') from users where email='${OWNER}'`);
