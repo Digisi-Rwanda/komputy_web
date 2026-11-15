@@ -9,7 +9,7 @@ const googleSansCode = localFont({ src: "./fonts/google-sans-code.woff2", variab
 const coustard = localFont({ src: "./fonts/coustard.woff2", variable: "--font-coustard", weight: "400", display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://ledgerline.app"),
+  metadataBase: new URL("https://komputy.com"),
   title: { default: "Ledgerline", template: "%s · Ledgerline" },
   description: "IFRS 9 and IFRS 16 reporting, from upload to sign-off.",
   openGraph: { images: ["/brand/og-preview.jpg"] },
