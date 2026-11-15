@@ -8,7 +8,7 @@ import { env } from "@/server/env";
 import { notify, workspaceAdmins } from "@/server/notify";
 
 // Scheduled jobs (plan Phase 3/4). Call with `Authorization: Bearer $CRON_SECRET`:
-//   POST /api/cron/expire  every 5 min · POST /api/cron/daily  once a day (08:00 Africa/Kigali; also sends digests). Idempotent: safe to re-run.
+//   POST /api/cron/events every minute · POST /api/cron/expire every 5 min · POST /api/cron/daily once a day (08:00 Africa/Kigali; also sends digests). Idempotent: safe to re-run.
 const link = (path: string) => new URL(path, env.BETTER_AUTH_URL).toString();
 const authorized = (req: Request) => {
   const got = Buffer.from(req.headers.get("authorization") ?? ""), want = Buffer.from(`Bearer ${env.CRON_SECRET}`);
@@ -57,9 +57,14 @@ async function daily() {
     });
     reminded++;
   }
-  // Closing period over → soft-delete the workspace (engine data purge: shortcut, call ECL-Server purge when it exists).
+  // Closing period over → soft-delete the workspace and ask the engine to purge its data and files.
   const closed = await db.update(schema.tenants).set({ status: "closed", deletedAt: now, updatedAt: now }).where(and(eq(schema.tenants.status, "closing"), lt(schema.tenants.closeRequestedAt, new Date(now.getTime() - 30 * 864e5)))).returning({ id: schema.tenants.id });
-  for (const t of closed) await audit({ event: "workspace.closed", userId: null, tenantId: t.id, details: {} });
+  for (const t of closed) {
+    await audit({ event: "workspace.closed", userId: null, tenantId: t.id, details: {} });
+    // Engine data + stored files go too (the engine queues an idempotent purge job).
+    await fetch(new URL(`/api/v1/ops/tenants/${t.id}/purge`, env.ENGINE_URL), { method: "POST", headers: { Authorization: `Bearer ${env.ENGINE_SERVICE_TOKEN}` } })
+      .catch((e: unknown) => console.error("[purge] engine unreachable", t.id, e));
+  }
   return { reminded, closed: closed.length, digests: await digests(now) };
 }
 
@@ -92,7 +97,13 @@ async function digests(now: Date) {
   return sent;
 }
 
-const JOBS: Record<string, () => Promise<unknown>> = { expire, daily };
+/** Every minute: engine notices → people, queued emails → Resend. */
+async function events() {
+  const { consumeEngineEvents, dispatchEmails } = await import("@/server/engine/events");
+  return { notices: await consumeEngineEvents(), emails: await dispatchEmails() };
+}
+
+const JOBS: Record<string, () => Promise<unknown>> = { expire, daily, events };
 
 export async function POST(req: Request, { params }: RouteContext<"/api/cron/[job]">) {
   if (!authorized(req)) return new Response("Unauthorized", { status: 401 });
