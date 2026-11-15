@@ -1,15 +1,16 @@
 // First platform admin for a fresh production database. Idempotent: does nothing once the email exists.
-// Runs in the Render pre-deploy step after migrations when BOOTSTRAP_ADMIN_EMAIL and BOOTSTRAP_ADMIN_PASSWORD are set;
-// remove those two variables after the first sign-in.
+// Runs in the Render pre-deploy step after migrations when BOOTSTRAP_ADMIN_EMAIL is set. Without
+// BOOTSTRAP_ADMIN_PASSWORD the password is random and never shown: the admin sets one via "Forgot password".
+import { randomBytes } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { db, schema } from "@/server/db/client";
 import { ulid } from "@/server/ids";
 import { hashPassword } from "@/server/password";
 
 const email = process.env.BOOTSTRAP_ADMIN_EMAIL?.trim().toLowerCase();
-const password = process.env.BOOTSTRAP_ADMIN_PASSWORD;
-if (!email || !password) {
-  console.log("bootstrap-admin: BOOTSTRAP_ADMIN_EMAIL/PASSWORD not set, skipping");
+const password = process.env.BOOTSTRAP_ADMIN_PASSWORD || randomBytes(32).toString("base64url");
+if (!email) {
+  console.log("bootstrap-admin: BOOTSTRAP_ADMIN_EMAIL not set, skipping");
   process.exit(0);
 }
 if (password.length < 12) throw new Error("bootstrap-admin: password must be at least 12 characters");
