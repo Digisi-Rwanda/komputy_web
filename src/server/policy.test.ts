@@ -14,6 +14,8 @@ const EXPECT: Record<string, Principal[]> = {
   "workspace.update": [admin, owner], "members.view": [admin, owner], "members.manage": [admin, owner], "invites.manage": [admin, owner], "security.manage": [admin, owner],
   "requests.decide": [admin, owner], "audit.view": [admin, owner], "services.request": [admin, owner], "support.decide": [admin, owner],
   "ownership.transfer": [owner], "workspace.close": [owner],
+  "ecl.view": [member, admin, owner], "ecl.prepare": [member, admin, owner], "ecl.review": [admin, owner],
+  "leases.view": [admin, owner], "leases.prepare": [admin, owner], "leases.review": [admin, owner],
   "platform.view": [staff.admin, staff.sales, staff.support], "pipeline.manage": [staff.admin, staff.sales], "entitlements.propose": [staff.admin, staff.sales],
   "entitlements.change": [staff.admin], "tenants.manage": [staff.admin], "users.manage": [staff.admin], "staff.manage": [staff.admin], "catalog.publish": [staff.admin],
   "engine.promote": [staff.admin], "support.request": [staff.admin, staff.support], "notes.write": [staff.admin, staff.sales, staff.support],
@@ -26,6 +28,10 @@ assert.equal(canChangeRole(admin, { workspaceRole: "member", userId: "x" }, "adm
 assert.equal(canChangeRole(admin, { workspaceRole: "owner", userId: "x" }, "member"), false, "owner role is untouchable");
 assert.equal(canChangeRole(owner, { workspaceRole: "admin", userId: "x" }, "owner"), false, "ownership goes through transfer");
 assert.equal(canChangeRole(member, { workspaceRole: "member", userId: "x" }, "admin"), false);
+const eclReviewer = as({ services: { ecl: "reviewer", leases: "poster" } }), viewer = as({ services: { ecl: "viewer", leases: "viewer" } });
+assert.equal(can(eclReviewer, "ecl.review"), true);
+assert.equal(can(eclReviewer, "leases.review"), true);
+assert.equal(can(viewer, "ecl.view") && !can(viewer, "ecl.prepare") && can(viewer, "leases.view") && !can(viewer, "leases.prepare"), true, "viewers read only");
 assert.equal(canApprove(base, "u"), false, "no self-approval");
 assert.equal(canApprove(base, "other"), true);
 console.log(`policy ok (${ACTIONS.length} actions × ${everyone.length} principals)`);
