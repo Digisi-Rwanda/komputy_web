@@ -11,13 +11,13 @@ export const metadata: Metadata = { title: "Engines" };
 async function Body() {
   const p = await requireStaff();
   const r = await engine(p, null).GET("/api/v1/platform/engine-versions").catch(() => null);
-  const data = (r?.data as { data?: { versions?: { version: string; is_current: boolean; release_date: string; tenants_pinned: number; changelog: string[] }[] } } | undefined)?.data?.versions;
+  const data = (r?.data as { data?: { versions?: { version: string; service: string; status: string; notes: string | null; createdAt: string }[] } } | undefined)?.data?.versions;
   if (!data) return <Engines rows={[]} canPromote={false} error="The engine API isn't reachable right now. Check Health." />;
-  const rows: EngineRow[] = data.map((v) => ({ version: v.version, current: v.is_current, released: v.release_date, pinned: v.tenants_pinned, changelog: v.changelog }));
+  const rows: EngineRow[] = data.map((v) => ({ version: `${v.service}@${v.version}`, current: v.status === "promoted", released: v.createdAt.slice(0, 10), pinned: 0, changelog: v.notes ? [v.notes] : [] }));
   return <Engines rows={rows} canPromote={can(p, "engine.promote")} />;
 }
 
-// PA8.1 (source: ECL-Server engine_versions).
+// PA8.1 (source: engine.engine_versions).
 export default function Page() {
   return (
     <>
