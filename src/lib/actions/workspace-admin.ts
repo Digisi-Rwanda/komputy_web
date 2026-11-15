@@ -32,7 +32,7 @@ export const setWorkspaceLogo = mutate({
   },
 });
 
-/** CA4 levers: every change to entitlements is a request to Ledgerline (client entitlements are read-only). */
+/** CA4 levers: every change to entitlements is a request to Komputy (client entitlements are read-only). */
 export const requestService = mutate({
   action: "services.request",
   schema: z.object({ kind: z.enum(["capacity", "access", "extend", "waitlist"]), service: z.enum(["ecl", "leases", "tax", "lease-planning", "doc-intel", "erp"]), need: z.string().max(40).optional(), amount: z.number().int().positive().max(100000).optional(), note: z.string().max(1000).optional() }),
@@ -42,7 +42,7 @@ export const requestService = mutate({
     if (open.length) throw new UserError("You already have an open request for this. We'll be in touch within 1 business day.");
     const title = { capacity: `More capacity (${input.need ?? "runs"}${input.amount ? ` → ${input.amount}` : ""})`, access: "Request full access", extend: "Extend trial", waitlist: "Join waitlist" }[input.kind];
     const id = ulid();
-    await tx.insert(schema.accessRequests).values({ id, code: `REQ-${id.slice(-4)}`, tenantId: p.tenantId!, requesterId: p.userId, kind: input.kind === "extend" ? "trial" : input.kind, scope: "platform", status: "new", service: input.service, source: "Services & usage", details: { title: `${title} — ${input.service}`, company: t.name, type: title, services: [input.service], size: input.amount ? String(input.amount) : "", message: input.note, contact: `${p.name} · ${p.email}` } });
+    await tx.insert(schema.accessRequests).values({ id, code: `REQ-${id.slice(-4)}`, tenantId: p.tenantId!, requesterId: p.userId, kind: input.kind === "extend" ? "trial" : input.kind, scope: "platform", status: "new", service: input.service, source: "Services & usage", details: { title: `${title} · ${input.service}`, company: t.name, type: title, services: [input.service], size: input.amount ? String(input.amount) : "", message: input.note, contact: `${p.name} · ${p.email}` } });
     await tx.insert(schema.requestEvents).values({ id: ulid(), requestId: id, actorId: p.userId, kind: "created", note: `${title} from ${t.name}` });
     await audit("services.requested", { kind: input.kind, service: input.service, requestId: id });
   },
@@ -60,7 +60,7 @@ export const transferOwnership = mutate({
     await tx.update(schema.tenantMemberships).set({ workspaceRole: "admin", updatedAt: new Date() }).where(eq(schema.tenantMemberships.id, p.membershipId!));
     await bumpAuthz(tx, p.tenantId!);
     const [[u], [t]] = await Promise.all([tx.select({ email: schema.users.email, name: schema.users.name }).from(schema.users).where(eq(schema.users.id, to.userId)), tx.select({ name: schema.tenants.name }).from(schema.tenants).where(eq(schema.tenants.id, p.tenantId!))]);
-    await enqueueEmail(u.email, `You're now the owner of ${t.name}`, { preview: "Ownership transferred", headline: `You own ${t.name} now`, paragraphs: [`${p.name} transferred ownership of ${t.name} to you. You have full control, including billing contacts and closing the workspace.`], cta: { label: "Open Ledgerline", href: new URL("/admin/overview", env.BETTER_AUTH_URL).toString() } }, tx);
+    await enqueueEmail(u.email, `You're now the owner of ${t.name}`, { preview: "Ownership transferred", headline: `You own ${t.name} now`, paragraphs: [`${p.name} transferred ownership of ${t.name} to you. You have full control, including billing contacts and closing the workspace.`], cta: { label: "Open Komputy", href: new URL("/admin/overview", env.BETTER_AUTH_URL).toString() } }, tx);
     await audit("workspace.ownership_transferred", { to: to.userId });
   },
 });

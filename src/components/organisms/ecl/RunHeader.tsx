@@ -12,7 +12,7 @@ import type { Run } from "@/types/domain";
 
 const TABS = [["summary", "Summary"], ["results", "Results"], ["exceptions", "Exceptions"], ["reconciliation", "Reconciliation"], ["inputs", "Inputs"], ["methodology", "Methodology"], ["outputs", "Outputs"], ["audit", "Audit"]] as const;
 
-/** R1–R8 header: status, engine/date/currency chips, signed-off by/at, actions, 8 tabs. */
+/** R1-R8 header: status, engine/date/currency chips, signed-off by/at, actions, 8 tabs. */
 export function RunHeader({ run, tab, canDelete = false, canRerun = false }: { run: Run; tab: string; canDelete?: boolean; canRerun?: boolean }) {
   const signed = run.status === "signed-off";
   return (

@@ -74,7 +74,7 @@ export async function requestMore(_: AccessState, f: FormData): Promise<AccessSt
   const [t] = await db.select({ name: schema.tenants.name }).from(schema.tenants).where(eq(schema.tenants.id, p.tenantId));
   const what = { plus20: "+20 runs this quarter", plus50: "+50 runs this quarter", suite: "Move to Suite (unlimited runs)" }[option]!;
   await db.transaction(async (tx) => {
-    await tx.insert(schema.accessRequests).values({ id, code: code(id), tenantId: p.tenantId!, requesterId: p.userId, kind: "capacity", scope: "platform", status: "new", service: "ecl", source: "Request more drawer", details: { title: `More capacity (${what}) — ecl`, company: t.name, type: "More capacity", services: ["ECL"], size: what, message: note || undefined, contact: `${p.name} · ${p.email}` } });
+    await tx.insert(schema.accessRequests).values({ id, code: code(id), tenantId: p.tenantId!, requesterId: p.userId, kind: "capacity", scope: "platform", status: "new", service: "ecl", source: "Request more drawer", details: { title: `More capacity (${what}) · ECL`, company: t.name, type: "More capacity", services: ["ECL"], size: what, message: note || undefined, contact: `${p.name} · ${p.email}` } });
     await tx.insert(schema.requestEvents).values({ id: ulid(), requestId: id, actorId: p.userId, kind: "created", note: `${what} from ${t.name}` });
     await audit({ event: "services.requested", userId: p.userId, tenantId: p.tenantId, details: { kind: "capacity", option } }, tx);
   });

@@ -17,9 +17,9 @@ async function Form({ searchParams }: { searchParams: PageProps<"/contact">["sea
 }
 
 const WAYS = [
-  { icon: Headphones, title: "Sales", body: "Talk to our team about your needs.", contact: "sales@ledgerline.app" },
-  { icon: BookOpen, title: "Support (existing customers)", body: "Open the Help menu in the app.", contact: "support@ledgerline.app" },
-  { icon: ShieldCheck, title: "Security", body: "Report a vulnerability.", contact: "security@ledgerline.app" },
+  { icon: Headphones, title: "Sales", body: "Talk to our team about your needs.", contact: "sales@komputy.com" },
+  { icon: BookOpen, title: "Support (existing customers)", body: "Open the Help menu in the app.", contact: "support@komputy.com" },
+  { icon: ShieldCheck, title: "Security", body: "Report a vulnerability.", contact: "security@komputy.com" },
 ];
 
 export default function ContactPage({ searchParams }: PageProps<"/contact">) {
@@ -29,8 +29,8 @@ export default function ContactPage({ searchParams }: PageProps<"/contact">) {
       <Frame id="form" label="Request form" inner="pt-12">
         <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
           <figure className="bg-blueprint ring-inner flex flex-col justify-end gap-4 rounded-panel border border-line bg-raised p-8 lg:min-h-[420px]">
-            <blockquote className="text-h3 leading-snug text-fg">“Ledgerline replied in four hours and had us on a trial by lunch.”</blockquote>
-            <figcaption className="text-small text-fg-muted">— Lakeshore Microfinance</figcaption>
+            <blockquote className="text-h3 leading-snug text-fg">“Komputy replied in four hours and had us on a trial by lunch.”</blockquote>
+            <figcaption className="text-small text-fg-muted">Lakeshore Microfinance</figcaption>
           </figure>
           <Suspense fallback={<div className="skeleton h-[560px] rounded-panel" />}><Form searchParams={searchParams} /></Suspense>
         </div>

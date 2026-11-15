@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: PageProps<"/account/[tab]">) 
   return { title: `${ACCOUNT_LABEL[(await params).tab as Tab] ?? "Account"} · Account` };
 }
 
-// NA2–NA5. Params are read inside Suspense so navigation stays instant.
+// NA2-NA5. Params are read inside Suspense so navigation stays instant.
 export default function AccountPage({ params }: PageProps<"/account/[tab]">) {
   return <Suspense fallback={<div className="skeleton h-96 rounded-panel" />}><AccountTab params={params} /></Suspense>;
 }

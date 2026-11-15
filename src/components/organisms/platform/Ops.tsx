@@ -14,7 +14,7 @@ import type { Probe } from "@/server/health";
 
 export interface EngineRow { version: string; current: boolean; released: string; pinned: number; changelog: string[] }
 
-/** PA8.1 engine versions (from ECL-Server) with release notes and promote-to-default. */
+/** PA8.1 engine versions (from the engine) with release notes and promote-to-default. */
 export function Engines({ rows, error, canPromote }: { rows: EngineRow[]; error?: string; canPromote: boolean }) {
   const router = useRouter();
   const [notes, setNotes] = useState<EngineRow | null>(null);

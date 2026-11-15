@@ -5,13 +5,13 @@ import { Logo } from "@/components/atoms/Logo";
 function Email({ subject, children, cta, note }: { subject: string; children: ReactNode; cta: string; note?: ReactNode }) {
   return (
     <figure className="flex w-full max-w-[600px] flex-col overflow-hidden rounded-panel border border-line">
-      <figcaption className="border-b border-line bg-raised px-4 py-2.5 text-micro text-fg-muted"><span className="text-fg">Ledgerline</span> &lt;no-reply@ledgerline.app&gt;<span className="mt-0.5 block text-small text-fg">{subject}</span></figcaption>
+      <figcaption className="border-b border-line bg-raised px-4 py-2.5 text-micro text-fg-muted"><span className="text-fg">Komputy</span> &lt;no-reply@komputy.com&gt;<span className="mt-0.5 block text-small text-fg">{subject}</span></figcaption>
       <div className="bg-[#0B0B0B] p-6 sm:p-8"><div className="flex flex-col gap-5 rounded-card bg-[#111111] p-6 sm:p-8 text-[#F0F0F0]">
         <Logo />{children}
         <span className="inline-flex h-11 w-fit items-center rounded-full bg-white px-6 text-small font-medium text-black">{cta}</span>
         {note && <p className="text-small text-[#8A8A8A]">{note}</p>}
         <hr className="border-[#1F1F1F]" />
-        <p className="text-micro text-[#8A8A8A]">Ledgerline · You&apos;re receiving this because you&apos;re a member of Kivu Commercial Bank · <span className="underline">Notification settings</span></p>
+        <p className="text-micro text-[#8A8A8A]">Komputy · You&apos;re receiving this because you&apos;re a member of Kivu Commercial Bank · <span className="underline">Notification settings</span></p>
       </div></div>
     </figure>
   );
@@ -22,7 +22,7 @@ export function EmailTemplates() {
   return (
     <div className="flex flex-col gap-10">
       <section className="flex flex-col gap-3"><p className="font-mono text-micro uppercase tracking-wider text-fg-muted">NA6.1 Welcome</p>
-        <Email subject="Welcome to Ledgerline, Aline" cta="Open Ledgerline" note="Your Expected Credit Loss trial includes 3 runs for 14 days.">
+        <Email subject="Welcome to Komputy, Aline" cta="Open Komputy" note="Your Expected Credit Loss trial includes 3 runs for 14 days.">
           <H>Your workspace is ready</H>
           <ol className="flex flex-col gap-2 text-base">{["Add your segments", "Upload PD, LGD and EAD data", "Compute and sign off"].map((s, i) => <li key={s} className="flex gap-3"><span className="font-mono text-[#8A8A8A]">{i + 1}</span>{s}</li>)}</ol>
         </Email></section>

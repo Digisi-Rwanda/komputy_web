@@ -22,6 +22,6 @@ export async function getAccount(userId: string) {
   const [pw] = await db.select({ updatedAt: schema.authAccounts.updatedAt }).from(schema.authAccounts).where(and(eq(schema.authAccounts.userId, userId), eq(schema.authAccounts.providerId, "credential")));
   return {
     name: u.name, title: u.title ?? "", email: u.email, emailVerified: u.isEmailVerified, phone: u.phone ?? "", locale: u.locale, timeZone: u.timeZone, numberFormat: u.numberFormat,
-    photo: u.image ?? null, mfa: u.totpEnabled, passwordChanged: pw ? ago(pw.updatedAt) : "—",
+    photo: u.image ?? null, mfa: u.totpEnabled, passwordChanged: pw ? ago(pw.updatedAt) : "-",
   };
 }

@@ -8,7 +8,7 @@ import { cn } from "@/lib/cn";
 export function NewsletterForm({ id = "newsletter", className, placeholder = "Work email" }: { id?: string; className?: string; placeholder?: string }) {
   const [state, action, pending] = useActionState<SimpleState, FormData>(subscribe, null);
   if (state?.ok) {
-    return <p role="status" className={cn("flex items-center gap-2 text-small text-fg", className)}><Check aria-hidden className="size-4 text-positive" />Subscribed — we&apos;ll write to {state.email} monthly.</p>;
+    return <p role="status" className={cn("flex items-center gap-2 text-small text-fg", className)}><Check aria-hidden className="size-4 text-positive" />Subscribed. We&apos;ll write to {state.email} monthly.</p>;
   }
   return (
     <form action={action} noValidate className={cn("flex w-full max-w-sm flex-col gap-1.5", className)}>

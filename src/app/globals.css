@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ===== Design tokens ===== */
-/* Ledgerline theme. Layer 1: raw palette (never used directly in components).
+/* Komputy theme. Layer 1: raw palette (never used directly in components).
    Layer 2: semantic tokens (what components use; swapped by [data-theme]).
    Layer 3: scales (type, radius, layout, motion, z-index). Source: DESIGN_LANGUAGE_INSPIRATION.md + LM1 board. */
 

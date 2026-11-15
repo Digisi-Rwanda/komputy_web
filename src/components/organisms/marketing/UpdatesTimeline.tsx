@@ -33,7 +33,7 @@ export function UpdatesTimeline({ updates }: { updates: Update[] }) {
           <li key={u.id} id={u.id} className="relative grid scroll-mt-24 gap-6 md:grid-cols-[200px_1fr]">
             <span aria-hidden className="absolute -left-[37px] top-1.5 size-2.5 rounded-full bg-fg ring-4 ring-canvas" />
             <div className="flex flex-col gap-2">
-              <h2 className="text-h4"><a href={`#${u.id}`} className="hover:underline">{u.version} — {u.title}</a></h2>
+              <h2 className="text-h4"><a href={`#${u.id}`} className="hover:underline">{u.version} · {u.title}</a></h2>
               <time dateTime={u.date} className="text-micro text-fg-muted">{date(u.date)}</time>
               <div className="flex flex-wrap gap-1">{u.tags.map((t) => <Badge key={t} tone="info">{t}</Badge>)}</div>
             </div>

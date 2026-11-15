@@ -5,7 +5,7 @@ import { TopBar } from "@/components/organisms/TopBar";
 
 const Fallback = ({ w }: { w: string }) => <div aria-hidden className={`h-full shrink-0 border-r border-line bg-sidebar ${w}`} />;
 
-/** Signed-in frame (SH1/SH6): desktop sidebar (≥lg), tablet 72px rail (md–lg), phone drawer (<md); glass top bar; content max 1120px.
+/** Signed-in frame (SH1/SH6): desktop sidebar (≥lg), tablet 72px rail (md-lg), phone drawer (<md); glass top bar; content max 1120px.
  *  URL-reading parts sit in Suspense (cacheComponents requirement). */
 export function AppShell({ children, sidebar, notifications, banners }: { children: ReactNode; sidebar: SidebarProps; notifications: boolean; banners?: ReactNode }) {
   return (

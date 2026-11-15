@@ -9,7 +9,7 @@ export const LOCKED_COPY: Partial<Record<ServiceId, { eyebrow: string; title: st
     ticks: ["IFRS 16 schedules, journals and disclosures", "Maker-checker approvals and month-end close", "Same workspace, same team, same audit log"],
     price: "Included in Dual and Suite packages · from USD 450 / month",
     trial: "Trial: 10 active leases, 1 entity, 14 days. No card needed.",
-    url: "app.ledgerline.com/leases",
+    url: "komputy.com/leases",
   },
   ecl: {
     eyebrow: "Expected Credit Loss · IFRS 9",
@@ -18,7 +18,7 @@ export const LOCKED_COPY: Partial<Record<ServiceId, { eyebrow: string; title: st
     ticks: ["PD transition matrices and collateral-aware LGD", "Seven reconciliation checks on every run", "Maker-checker sign-off and full audit trail"],
     price: "Included in Single, Dual and Suite packages · from USD 1,200 / month",
     trial: "Trial: 3 runs, up to 5,000 loans per run, 14 days. No card needed.",
-    url: "app.ledgerline.com/ecl",
+    url: "komputy.com/ecl",
   },
 };
 

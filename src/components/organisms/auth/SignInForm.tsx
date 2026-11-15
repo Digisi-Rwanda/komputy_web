@@ -46,7 +46,7 @@ export function SignInForm({ next, notice }: { next: string; notice?: string }) 
       <Button type="submit" size="lg" loading={pending} disabled={locked} className="w-full">Sign in</Button>
       <div className="flex items-center gap-3 text-micro text-fg-muted"><span className="h-px flex-1 bg-line" />or<span className="h-px flex-1 bg-line" /></div>
       <Button type="button" variant="secondary" size="lg" className="w-full" onClick={() => setSso(true)} right={<Badge>Enterprise</Badge>}>Sign in with SSO</Button>
-      <p className="text-center text-small text-fg-muted">New to Ledgerline? <Link href="/sign-up" className="text-link hover:underline">Start a free trial →</Link></p>
+      <p className="text-center text-small text-fg-muted">New to Komputy? <Link href="/sign-up" className="text-link hover:underline">Start a free trial →</Link></p>
     </form>
   );
 }

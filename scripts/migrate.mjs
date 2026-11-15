@@ -1,6 +1,6 @@
 // Applies db/migrations/*.sql in name order, once each, inside one transaction per file.
 // Runs as the Render pre-deploy step (and `npm run db:migrate` locally). Safe to run concurrently (advisory lock).
-// A database that already has the web tables (created by the old ECL-Server) gets the baseline marked as applied.
+// A database that already has the web tables (created by the previous engine) gets the baseline marked as applied.
 import { readdir, readFile } from "node:fs/promises";
 import postgres from "postgres";
 

@@ -34,7 +34,7 @@ export const SERVICE_PAGES: Record<ServiceId, LiveServicePage | SoonServicePage>
     id: "ecl",
     eyebrow: "IFRS 9",
     title: "Expected credit loss, signed off with evidence.",
-    sub: "Upload PD, LGD and EAD data. Ledgerline validates every row, computes every stage and reconciles the totals seven ways.",
+    sub: "Upload PD, LGD and EAD data. Komputy validates every row, computes every stage and reconciles the totals seven ways.",
     audiences: [
       { icon: "leases", title: "Banks", body: "Loan books across retail, SME and corporate segments." },
       { icon: "users", title: "Microfinance institutions", body: "High-volume portfolios, monthly provisioning." },
@@ -74,14 +74,14 @@ export const SERVICE_PAGES: Record<ServiceId, LiveServicePage | SoonServicePage>
       { q: "Can we reproduce last year's run?", a: "Yes. Each run pins its engine version and input hashes, so a rerun gives the same answer." },
       { q: "Are trial outputs usable?", a: "Trial workbooks are watermarked TRIAL. Activate the service to remove the watermark." },
     ],
-    cta: { title: "Run your next provision on Ledgerline.", sub: "Free for 14 days. Bring your own data or use ours." },
+    cta: { title: "Run your next provision on Komputy.", sub: "Free for 14 days. Bring your own data or use ours." },
   },
   leases: {
     kind: "live",
     id: "leases",
     eyebrow: "IFRS 16",
     title: "Lease accounting that closes on time.",
-    sub: "Register, calculate, approve and post — with every version kept.",
+    sub: "Register, calculate, approve and post, with every version kept.",
     audiences: [
       { icon: "leases", title: "Corporates", body: "Manage complex lease portfolios." },
       { icon: "workspaces", title: "Banks with branch networks", body: "Meet regulatory requirements." },
@@ -103,7 +103,7 @@ export const SERVICE_PAGES: Record<ServiceId, LiveServicePage | SoonServicePage>
       { icon: "journal", title: "Journals", body: "Balanced by entity and currency, ready to post." },
       { icon: "sheet", title: "Liability & ROU roll-forwards", body: "Opening to closing with every movement." },
       { icon: "sheet", title: "Maturity analysis", body: "Undiscounted cash flows by bucket." },
-      { icon: "file", title: "Disclosures", body: "IFRS 16.53–58 note pack." },
+      { icon: "file", title: "Disclosures", body: "IFRS 16.53-58 note pack." },
       { icon: "sheet", title: "Register extract", body: "Saved views to Excel." },
     ],
     controls: [

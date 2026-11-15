@@ -29,7 +29,7 @@ async function expire() {
         email: { subject: `Your ${name} trial ended`, message: { preview: "Trial ended", headline: `Your ${name} trial ended`, paragraphs: ["Your data stays available read-only. Request full access to keep working."], cta: { label: "Request full access", href: link("/admin/services") } } } }, tx);
       await audit({ event: "trial.expired", userId: null, tenantId: t.tenantId, details: { service: t.service } }, tx);
     }
-    for (const t of sessions) await notify(await workspaceAdmins(t.tenantId, tx), { event: "support", kind: "security", tenantId: t.tenantId, title: "Ledgerline Support session ended", body: "Access was removed automatically when the time ran out.", href: "/admin/security" }, tx);
+    for (const t of sessions) await notify(await workspaceAdmins(t.tenantId, tx), { event: "support", kind: "security", tenantId: t.tenantId, title: "Komputy Support session ended", body: "Access was removed automatically when the time ran out.", href: "/admin/security" }, tx);
     return { trialsExpired: trials.length, invitesExpired: invites.length, supportEnded: sessions.length, supportCancelled: stale.length };
   });
 }
@@ -84,10 +84,10 @@ async function digests(now: Date) {
       .where(and(eq(schema.userNotifications.userId, u.userId), eq(schema.userNotifications.isRead, false), gt(schema.userNotifications.createdAt, since))).orderBy(desc(schema.userNotifications.createdAt)).limit(30);
     if (!items.length) continue;
     await db.transaction(async (tx) => {
-      await enqueueEmail(u.email, `Your Ledgerline ${u.digest} digest · ${items.length} update${items.length === 1 ? "" : "s"}`, {
+      await enqueueEmail(u.email, `Your Komputy ${u.digest} digest · ${items.length} update${items.length === 1 ? "" : "s"}`, {
         preview: `${items.length} updates since your last digest`, headline: `${items.length} update${items.length === 1 ? "" : "s"} for you`,
         paragraphs: [`Hi ${u.name.split(" ")[0]}, here's what happened since your last digest.`],
-        details: items.map((i) => [i.ws, `${i.title} — ${i.body}`] as [string, string]),
+        details: items.map((i) => [i.ws, `${i.title}: ${i.body}`] as [string, string]),
         cta: { label: "Open notifications", href: link("/notifications") }, footer: "Change how often you get this in Account › Notifications.",
       }, tx);
       await audit({ event: "digest.sent", userId: u.userId, tenantId: null, details: { count: items.length } }, tx);

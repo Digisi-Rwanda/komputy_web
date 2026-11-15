@@ -49,7 +49,7 @@ export function Security({ view }: { view: SecurityView }) {
   const live = view.sessions.find((s) => s.live);
   return (
     <div className="flex flex-col divide-y divide-line">
-      {live && <Banner tone="info" className="mb-6" action={<Button size="sm" variant="secondary" loading={busy} onClick={() => run(endSupport({ id: live.id }), "Support session ended")}>End now</Button>}>Ledgerline Support ({live.who}) has access until {live.until}. Every action is logged.</Banner>}
+      {live && <Banner tone="info" className="mb-6" action={<Button size="sm" variant="secondary" loading={busy} onClick={() => run(endSupport({ id: live.id }), "Support session ended")}>End now</Button>}>Komputy Support ({live.who}) has access until {live.until}. Every action is logged.</Banner>}
       <FormSection title="Authentication" description="Applies to every member of this workspace.">
         <Switch checked={policy.requireMfa} onCheckedChange={(v) => save({ requireMfa: v }, v ? "MFA required for all members" : "MFA no longer required")} label="Require MFA for all members"
           description={policy.requireMfa ? (policy.withoutMfa ? `${policy.withoutMfa} member${policy.withoutMfa > 1 ? "s" : ""} will be asked to set up MFA before they can continue.` : "Everyone already uses MFA.") : "Members choose whether to use MFA."} />
@@ -60,7 +60,7 @@ export function Security({ view }: { view: SecurityView }) {
         <div className="flex flex-wrap items-center gap-2">{policy.domains.map((d) => <span key={d} className="inline-flex h-8 items-center gap-1 rounded-full bg-surface-active pl-3 pr-1 text-small text-fg">{d}<button type="button" aria-label={`Remove ${d}`} disabled={policy.domains.length === 1} onClick={() => save({ domains: policy.domains.filter((x) => x !== d) }, `@${d} removed`)} className="inline-flex size-6 items-center justify-center rounded-full hover:bg-surface disabled:opacity-40"><X className="size-3" /></button></span>)}</div>
         <div className="flex flex-wrap gap-2"><Input aria-label="Add domain" value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addDomain()} placeholder="example.com" className="w-56" /><Button variant="secondary" onClick={addDomain}>+ Add domain</Button></div>
       </FormSection>
-      <FormSection title="Support access" description="Ledgerline staff can't see your runs, loans or leases. If you need help with your data, approve a time-limited support session.">
+      <FormSection title="Support access" description="Komputy staff can't see your runs, loans or leases. If you need help with your data, approve a time-limited support session.">
         <div className="flex flex-col gap-5 rounded-panel border border-line bg-raised p-5">
           <p className="flex items-center gap-2 text-small text-fg"><ShieldCheck className="size-4 text-positive" />Your data stays private by default.</p>
           <RadioGroup value={policy.supportPolicy} onValueChange={(v) => save({ supportPolicy: v as SecurityView["policy"]["supportPolicy"] }, "Support access policy updated")} options={[{ value: "ask", label: "Ask an administrator every time (recommended)" }, { value: "auto", label: "Allow automatically for up to 1 hour" }, { value: "never", label: "Never allow" }]} />

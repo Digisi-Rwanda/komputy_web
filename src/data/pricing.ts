@@ -24,8 +24,8 @@ export const COMPARISON: { group: string; rows: [string, ...(boolean | string)[]
 
 export const PRICING_FAQ = [
   { q: "Why no online checkout?", a: "Every engagement includes onboarding and a methodology review, so we tailor the package to your portfolio and agree it with you. Nothing is charged online." },
-  { q: "Can I upgrade my plan later?", a: "Yes. Add a service or more quota at any time — same login, same workspace, history kept." },
+  { q: "Can I upgrade my plan later?", a: "Yes. Add a service or more quota at any time, same login, same workspace, history kept." },
   { q: "Is there a setup fee?", a: "Standard onboarding is included in Dual and above. Single-service onboarding is quoted with your package." },
-  { q: "Do you offer discounts for multi-entity groups?", a: "Yes — entities are priced in tiers. Use the calculator for a range and we'll refine it." },
+  { q: "Do you offer discounts for multi-entity groups?", a: "Yes, entities are priced in tiers. Use the calculator for a range and we'll refine it." },
   { q: "What happens when the trial ends?", a: "Your data becomes read-only and stays available. Request a quote to continue." },
 ];

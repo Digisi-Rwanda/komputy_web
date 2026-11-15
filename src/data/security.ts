@@ -12,7 +12,7 @@ export const PRINCIPLES: { icon: IconName; title: string; body: string }[] = [
 
 export const SUPPORT_FLOW = [
   { title: "Support requests access", body: "Reason and duration (max 2 h)." },
-  { title: "Your admin approves", body: "Or denies — you stay in control." },
+  { title: "Your admin approves", body: "Or denies. You stay in control." },
   { title: "Banner on both sides", body: "Everyone sees the session is live." },
   { title: "Session ends, log kept", body: "Every action in your audit log." },
 ];
@@ -27,7 +27,7 @@ export const DATA = [
   ["Region", "EU (Frankfurt) by default; regional hosting on request."],
   ["Backups", "Encrypted daily backups, 30-day retention."],
   ["Retention", "Data kept for the contract term; expired workspaces are read-only for 90 days, then archived."],
-  ["Export", "Everything exportable at any time — runs, leases, journals and the audit log."],
+  ["Export", "Everything exportable at any time: runs, leases, journals and the audit log."],
 ] as const;
 
 export const SUBPROCESSORS = [
@@ -36,4 +36,4 @@ export const SUBPROCESSORS = [
   { provider: "Error monitoring", purpose: "Observability and alerts", region: "EU" },
 ];
 
-export const SECURITY_EMAIL = "security@ledgerline.app";
+export const SECURITY_EMAIL = "security@komputy.com";

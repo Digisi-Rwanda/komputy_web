@@ -26,7 +26,7 @@ export function ValidationReport({ rules, onDownload }: { rules: RuleResult[]; o
   rules.forEach((r) => n[r.status]++);
   const [tab, setTab] = useState<keyof typeof n>(n.error ? "error" : n.warning ? "warning" : "passed");
   const [open, setOpen] = useState<string>();
-  const verdict = n.error ? ["negative", `Cannot continue — fix ${n.error} error${n.error > 1 ? "s" : ""}`] : n.warning ? ["warning", "Passed with warnings"] : ["positive", "All checks passed"];
+  const verdict = n.error ? ["negative", `Cannot continue: fix ${n.error} error${n.error > 1 ? "s" : ""}`] : n.warning ? ["warning", "Passed with warnings"] : ["positive", "All checks passed"];
   return (
     <div className="flex flex-col gap-4">
       <div className={cn("flex flex-wrap items-center gap-x-6 gap-y-2 rounded-card border px-5 py-4", verdict[0] === "negative" ? "border-negative/40 bg-negative-tint" : verdict[0] === "warning" ? "border-warning/40 bg-warning-tint" : "border-positive/40 bg-positive-tint")}>

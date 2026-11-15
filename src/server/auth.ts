@@ -27,7 +27,7 @@ export const redis = env.REDIS_URL
   : null;
 
 export const auth = betterAuth({
-  appName: "Ledgerline",
+  appName: "Komputy",
   baseURL: env.BETTER_AUTH_URL,
   secret: env.BETTER_AUTH_SECRET,
   database: drizzleAdapter(db, {
@@ -65,13 +65,13 @@ export const auth = betterAuth({
     : undefined,
   advanced: {
     database: { generateId: () => ulid() },
-    cookiePrefix: "ledgerline",
+    cookiePrefix: "komputy",
     useSecureCookies: env.BETTER_AUTH_URL.startsWith("https://"),
     // Per-client rate limits: Render's edge (Cloudflare) sends the client IP as a single value in these headers;
     // a multi-hop X-Forwarded-For alone is not trusted, which would put every user in one shared bucket.
     ipAddress: { ipAddressHeaders: ["true-client-ip", "cf-connecting-ip", "x-forwarded-for"] },
   },
-  // Existing ECL-Server tables keep their column names; Better Auth's names are mapped onto them.
+  // Existing the previous engine tables keep their column names; Better Auth's names are mapped onto them.
   user: {
     fields: { emailVerified: "isEmailVerified" }, // `image` = short /api/avatar URL (the photo itself is users.avatar_data, never in the session cookie)
     // NA3 "Change email": confirm from the current inbox, then verify the new one.
@@ -80,7 +80,7 @@ export const auth = betterAuth({
       sendChangeEmailConfirmation: async ({ user, newEmail, url: link }) =>
         enqueueEmail(user.email, "Confirm your new email address", {
           preview: "Confirm the change of email", headline: "Confirm your new email",
-          paragraphs: [`Someone asked to change the email on your Ledgerline account to ${newEmail}.`, "If it was you, confirm below. If not, ignore this email and your address stays the same."],
+          paragraphs: [`Someone asked to change the email on your Komputy account to ${newEmail}.`, "If it was you, confirm below. If not, ignore this email and your address stays the same."],
           cta: { label: "Confirm change", href: link },
         }),
     },
@@ -125,7 +125,7 @@ export const auth = betterAuth({
     revokeSessionsOnPasswordReset: true,
     password: { hash: hashPassword, verify: verifyPassword },
     sendResetPassword: async ({ user, url: link }) =>
-      enqueueEmail(user.email, "Reset your Ledgerline password", {
+      enqueueEmail(user.email, "Reset your Komputy password", {
         preview: "Reset your password",
         headline: "Reset your password",
         paragraphs: [
@@ -135,7 +135,7 @@ export const auth = betterAuth({
         cta: { label: "Choose a new password", href: link },
       }),
     onPasswordReset: async ({ user }) =>
-      enqueueEmail(user.email, "Your Ledgerline password was changed", {
+      enqueueEmail(user.email, "Your Komputy password was changed", {
         preview: "Your password was changed",
         headline: "Your password was changed",
         paragraphs: [
@@ -148,20 +148,20 @@ export const auth = betterAuth({
   emailVerification: {
     // NA6.1 welcome, once the address is proven (invitees skip this: their invite link proves it).
     afterEmailVerification: async (user) =>
-      enqueueEmail(user.email, "Welcome to Ledgerline", {
+      enqueueEmail(user.email, "Welcome to Komputy", {
         preview: "Your account is ready",
         headline: `Welcome, ${user.name.split(" ")[0]}`,
         paragraphs: [
-          "Your Ledgerline account is ready. Create a workspace for your company, or open the invite your administrator sent you.",
+          "Your Komputy account is ready. Create a workspace for your company, or open the invite your administrator sent you.",
           "Tip: turn on two-factor authentication in Account › Security. It takes a minute.",
         ],
-        cta: { label: "Open Ledgerline", href: url("/select-workspace") },
+        cta: { label: "Open Komputy", href: url("/select-workspace") },
       }),
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     expiresIn: 60 * 60 * 24,
     sendVerificationEmail: async ({ user, url: link }) =>
-      enqueueEmail(user.email, "Verify your email for Ledgerline", {
+      enqueueEmail(user.email, "Verify your email for Komputy", {
         preview: "Confirm your email address",
         headline: "Confirm your email",
         paragraphs: [`Hi ${user.name.split(" ")[0]}, confirm this address to finish setting up your account. The link works for 24 hours.`],
@@ -179,7 +179,7 @@ export const auth = betterAuth({
             .where(and(eq(schema.authSessions.userId, session.userId), sql`${schema.authSessions.id} <> ${session.id}`)).limit(50);
           if (!prev.length || prev.some((p) => p.ua === ua)) return;
           const [u] = await db.select({ email: schema.users.email }).from(schema.users).where(eq(schema.users.id, session.userId));
-          if (u) await enqueueEmail(u.email, "New sign-in to your Ledgerline account", {
+          if (u) await enqueueEmail(u.email, "New sign-in to your Komputy account", {
             preview: "New device sign-in", headline: "New sign-in from a new device",
             paragraphs: ["Your account was just used to sign in from a device we haven't seen before.", "If this was you, there's nothing to do. If not, change your password and sign out other sessions now."],
             details: [["Device", ua.slice(0, 120) || "Unknown"], ["IP", (session as { ipAddress?: string | null }).ipAddress || "Unknown"], ["Time", new Date().toISOString().replace("T", " ").slice(0, 16) + " UTC"]],
@@ -211,7 +211,7 @@ export const auth = betterAuth({
     },
   },
   hooks: {
-    // Account lockout (same rule as ECL-Server: 5 failures → 15 minutes). Lookup is by email; response stays generic.
+    // Account lockout (same rule as the previous engine: 5 failures → 15 minutes). Lookup is by email; response stays generic.
     before: createAuthMiddleware(async (ctx) => {
       if (ctx.path !== "/sign-in/email") return;
       const email = String(ctx.body?.email ?? "").toLowerCase();
@@ -236,7 +236,7 @@ export const auth = betterAuth({
     after: createAuthMiddleware(async (ctx) => {
       // Security emails for in-account changes (reset has its own in onPasswordReset). Always on.
       const SEC: Record<string, [string, string]> = {
-        "/change-password": ["Your Ledgerline password was changed", "Your password was just changed from your account settings."],
+        "/change-password": ["Your Komputy password was changed", "Your password was just changed from your account settings."],
         "/two-factor/enable": ["Two-factor authentication turned on", "Two-factor authentication is now protecting your account."],
         "/two-factor/disable": ["Two-factor authentication turned off", "Two-factor authentication was turned off for your account."],
         "/two-factor/generate-backup-codes": ["New backup codes created", "New backup codes were created; the old ones no longer work."],
@@ -308,20 +308,20 @@ export const auth = betterAuth({
       sendInvitationEmail: async ({ email, organization: org, inviter, id }) =>
         enqueueEmail(
           email,
-          `${inviter.user.name} invited you to ${org.name} on Ledgerline`,
+          `${inviter.user.name} invited you to ${org.name} on Komputy`,
           {
-            preview: `Join ${org.name} on Ledgerline`,
+            preview: `Join ${org.name} on Komputy`,
             headline: `Join ${org.name}`,
             paragraphs: [
-              `${inviter.user.name} invited you to ${org.name} on Ledgerline. The invite expires in 7 days.`,
-              "If you already have a Ledgerline account, you'll join with your existing login.",
+              `${inviter.user.name} invited you to ${org.name} on Komputy. The invite expires in 7 days.`,
+              "If you already have a Komputy account, you'll join with your existing login.",
             ],
             cta: { label: "Accept invite", href: url(`/invite/${id}`) },
           },
         ),
     }),
     twoFactor({
-      issuer: "Ledgerline",
+      issuer: "Komputy",
       backupCodeOptions: { storeBackupCodes: "encrypted" }, // never store usable codes in plain text
       schema: { user: { fields: { twoFactorEnabled: "totpEnabled" } } },
     }),
@@ -333,8 +333,8 @@ export const auth = betterAuth({
     jwt({
       jwks: { keyPairConfig: { alg: "RS256", modulusLength: 2048 } },
       jwt: {
-        issuer: "ledgerline-web",
-        audience: "ecl-engine",
+        issuer: "komputy-web",
+        audience: "komputy-engine",
         expirationTime: "5m",
       },
     }),

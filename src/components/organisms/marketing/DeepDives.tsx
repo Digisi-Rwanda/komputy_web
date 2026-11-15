@@ -32,7 +32,7 @@ export function EclDeepDive() {
         <FadeIn className="relative pb-40 sm:pb-36">
           <div aria-hidden className="absolute -inset-10 -z-0 rounded-full bg-accent/10 blur-3xl" />
           <div className={cn(card, "relative p-5")}>
-            <p className="mb-3 text-small text-fg">Retail transition matrix <span className="text-fg-muted">· pooled Jan–Sep 2026</span></p>
+            <p className="mb-3 text-small text-fg">Retail transition matrix <span className="text-fg-muted">· pooled Jan-Sep 2026</span></p>
             <PdMatrix {...pdMatrix} caption="Retail transition matrix, pooled January to September 2026" />
           </div>
           <div className={cn(card, "absolute bottom-0 right-0 w-[min(100%,380px)] p-5 shadow-[0_-24px_48px_-12px_var(--canvas)] sm:-right-4")}>

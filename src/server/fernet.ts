@@ -1,6 +1,6 @@
 import { createDecipheriv, createHmac, timingSafeEqual } from "node:crypto";
 
-/** Decrypts a Python `cryptography.fernet` token (used once, to migrate ECL-Server TOTP secrets). */
+/** Decrypts a Python `cryptography.fernet` token (used once, to migrate the previous engine TOTP secrets). */
 export function fernetDecrypt(token: string, key: string): string {
   const k = Buffer.from(key, "base64url"), t = Buffer.from(token, "base64url");
   if (k.length !== 32 || t[0] !== 0x80 || t.length < 57) throw new Error("Invalid Fernet key or token");

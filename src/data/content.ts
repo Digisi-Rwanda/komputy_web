@@ -3,7 +3,7 @@ import type { IconName } from "@/components/atoms/Icon";
 import type { ServiceId } from "@/types/domain";
 
 export const hero = {
-  announcement: { tag: "NEW", text: "ECL engine v1.3 — seven reconciliation checks on every run", href: "/updates#v1-3" },
+  announcement: { tag: "NEW", text: "ECL engine v1.3: seven reconciliation checks on every run", href: "/updates#v1-3" },
   title: "IFRS reporting, from upload to sign-off.",
   sub: "Expected credit loss and lease accounting for finance and risk teams. Validated inputs, reproducible runs, an audit trail on every number.",
   primary: { label: "Start free trial", href: "/sign-up" },
@@ -21,9 +21,9 @@ export const trust: { icon: IconName; label: string }[] = [
 ];
 
 export const manifesto = {
-  label: "Why Ledgerline",
+  label: "Why Komputy",
   lead: "Provisioning used to take weeks of spreadsheets, emails and late-night reconciliations. Now it takes three uploads.",
-  rest: "Ledgerline validates every row, computes every stage and keeps the evidence your auditors will ask for.",
+  rest: "Komputy validates every row, computes every stage and keeps the evidence your auditors will ask for.",
   stats: [
     { value: 48.3, suffix: "M", decimals: 1, label: "Loans processed" },
     { value: 12400, suffix: "+", decimals: 0, label: "Runs signed off" },
@@ -35,7 +35,7 @@ export const manifesto = {
 export const servicesSection = {
   label: "Services",
   title: "One platform. Every IFRS workflow you run.",
-  sub: "Start with one service, add the next when you're ready — same login, same workspace.",
+  sub: "Start with one service, add the next when you're ready, same login, same workspace.",
 };
 
 export const serviceCards: Record<ServiceId, { icon: IconName; ticks: [string, string]; cta: string }> = {
@@ -76,7 +76,7 @@ export const howItWorks = {
       rows: [
         { code: "LS-01", text: "Required lease fields present", status: "passed" as const, note: "Passed" },
         { code: "LS-07", text: "End date before commencement", status: "error" as const, note: "Error · 1 row" },
-        { code: "LS-11", text: "Unknown counterparty — create or map", status: "warning" as const, note: "Warning · 2 rows" },
+        { code: "LS-11", text: "Unknown counterparty: create or map", status: "warning" as const, note: "Warning · 2 rows" },
         { code: "LS-14", text: "Duplicate of LSE-0076", status: "error" as const, note: "Error · 1 row" },
       ],
       action: "Fix 3 errors to commit",
@@ -87,7 +87,7 @@ export const howItWorks = {
 export const ecl = {
   label: "Expected Credit Loss · IFRS 9",
   title: "Every provision, traceable to the row.",
-  body: "Upload loan-level snapshots. Ledgerline builds money-weighted transition matrices, term structures, collateral-aware LGD and month-by-month EAD — then reconciles the totals seven ways.",
+  body: "Upload loan-level snapshots. Komputy builds money-weighted transition matrices, term structures, collateral-aware LGD and month-by-month EAD, then reconciles the totals seven ways.",
   points: ["Transition matrices per segment", "Cure-rate aware LGD", "Capped at outstanding, with exceptions logged", "Compare runs and explain the movement"],
   link: { label: "See the ECL workflow", href: "/services/ecl" },
   buildUp: [
@@ -102,7 +102,7 @@ export const ecl = {
 export const leases = {
   label: "Lease Accounting · IFRS 16",
   title: "Month-end close without the spreadsheet.",
-  body: "Capture leases, calculate schedules, approve with maker-checker and post balanced journals — every change versioned.",
+  body: "Capture leases, calculate schedules, approve with maker-checker and post balanced journals, every change versioned.",
   points: ["Register with saved views", "Modifications with impact preview", "Close checklist with period lock", "Roll-forwards and maturity analysis"],
   link: { label: "See the Leases workflow", href: "/services/leases" },
   close: [
@@ -129,7 +129,7 @@ export const proof = {
     { icon: "users" as IconName, title: "Maker-checker", body: "The person who submits can't approve. Sign-off locks the run.", chips: ["Signed off · J. Habimana · 2 Oct 2026"] },
     { icon: "file" as IconName, title: "Evidence on tap", body: "Inputs, validation reports, methodology and outputs in one bundle.", link: { label: "View run bundle", href: "/security" } },
   ],
-  security: "MFA, encryption in transit and at rest, data isolated per workspace — and our staff can't see your results without your consent.",
+  security: "MFA, encryption in transit and at rest, data isolated per workspace, and our staff can't see your results without your consent.",
 };
 
 export const pricing = {
@@ -147,7 +147,7 @@ export const pricing = {
 export const testimonials = {
   label: "Testimonials",
   title: "Finance teams that stopped dreading month-end.",
-  featured: { quote: "We closed Q3 provisioning in two days instead of three weeks — and the auditors had nothing to chase.", name: "Grace Mukamana", role: "Head of Credit Risk, Kivu Commercial Bank", initials: "GM" },
+  featured: { quote: "We closed Q3 provisioning in two days instead of three weeks, and the auditors had nothing to chase.", name: "Grace Mukamana", role: "Head of Credit Risk, Kivu Commercial Bank", initials: "GM" },
   others: [
     { quote: "The validation report caught duplicates we'd carried for a year.", name: "Eric Uwase", role: "Risk Analyst", initials: "EU" },
     { quote: "Lease journals finally match the GL on the first try.", name: "Samuel Okello", role: "Financial Controller, Northgate Leasing", initials: "SO" },
@@ -161,15 +161,15 @@ export const faq = {
   items: [
     { q: "How does the free trial work?", a: "Pick a service when you sign up. You get 14 days and 3 ECL runs or 10 leases, with sample data. No card needed. Existing work stays available after the trial." },
     { q: "Can I add a service later without a new account?", a: "Yes. Services are switched on per workspace, so your team, settings and audit history carry over. Ask from Admin → Services and we'll set it up." },
-    { q: "Where is our data stored and who can see it?", a: "Each workspace is isolated. Data is encrypted in transit and at rest. Ledgerline staff see counts and metadata only — never your results — unless an administrator approves a time-limited support session, which is logged." },
+    { q: "Where is our data stored and who can see it?", a: "Each workspace is isolated. Data is encrypted in transit and at rest. Komputy staff see counts and metadata only (never your results) unless an administrator approves a time-limited support session, which is logged." },
     { q: "Do you support SICR rules and macro scenarios?", a: "Stages come from your input file in engine v1.3.0. Configurable SICR rules and forward-looking macro scenarios are on the methodology roadmap." },
-    { q: "How do you price?", a: "Per service, by contract. There's no card payment in the app — we agree a package with you and switch it on. See the pricing page for starting points." },
+    { q: "How do you price?", a: "Per service, by contract. There's no card payment in the app. We agree a package with you and switch it on. See the pricing page for starting points." },
     { q: "Can we export everything?", a: "Yes. Every run has a bundle with inputs, validation reports, methodology and output workbooks, and the full audit log exports to CSV." },
   ],
 };
 
 export const cta = {
-  title: "Run your next provision on Ledgerline.",
+  title: "Run your next provision on Komputy.",
   sub: "Free for 14 days. Bring your own data or use ours.",
   checks: ["Validated inputs before you compute", "Sign-off with a full audit trail", "Add Leases to the same workspace anytime"],
 };

@@ -16,7 +16,7 @@ import type { AccessRequest } from "@/types/domain";
 
 type Decided = AccessRequest & { decision: "approved" | "declined" | "forwarded" };
 
-/** CA5 member requests: list + detail with reply; SoD warning; inactive services forward to Ledgerline sales. */
+/** CA5 member requests: list + detail with reply; SoD warning; inactive services forward to Komputy sales. */
 export function Requests({ initial }: { initial: AccessRequest[] }) {
   const router = useRouter();
   const split = (all: AccessRequest[]) => [all.filter((r) => (r.status ?? "open") === "open"), all.filter((r) => r.status && r.status !== "open").map((r) => ({ ...r, decision: r.status as Decided["decision"] }))] as const;
@@ -35,7 +35,7 @@ export function Requests({ initial }: { initial: AccessRequest[] }) {
     const res = await decideRequest({ id: r.id, decision, reply: reply.trim() || undefined });
     if (!res.ok) { setOpen(prev[0]); setDone(prev[1]); toast.error(res.error); return; }
     setReply("");
-    toast.success(decision === "approved" ? `${r.who} now has ${r.requested}` : decision === "forwarded" ? "Forwarded to Ledgerline sales" : `Declined · ${r.who} was notified`);
+    toast.success(decision === "approved" ? `${r.who} now has ${r.requested}` : decision === "forwarded" ? "Forwarded to Komputy sales" : `Declined · ${r.who} was notified`);
     router.refresh();
   };;
   return (
@@ -47,8 +47,8 @@ export function Requests({ initial }: { initial: AccessRequest[] }) {
             <li key={r.id}><div role="button" tabIndex={0} aria-pressed={cur?.id === r.id} onClick={() => setSel(r.id)} onKeyDown={(e) => e.key === "Enter" && setSel(r.id)} className={cn("flex cursor-pointer flex-col gap-3 rounded-panel border p-4 outline-none focus-visible:ring-2 focus-visible:ring-focus", cur?.id === r.id ? "border-fg" : "border-line hover:border-line-strong")}>
               <div className="flex items-start gap-3"><Avatar initials={r.initials} size="sm" /><span className="min-w-0 flex-1"><span className="block text-small text-fg">{r.title}</span><span className="block text-micro text-fg-muted">{r.meta}</span></span><span className="text-micro text-fg-muted">{r.age}</span></div>
               {r.note && <p className="flex items-start gap-2 rounded-card bg-warning-tint px-3 py-2 text-micro text-fg"><AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-warning" />{r.note}</p>}
-              {"decision" in r ? <StatusPill tone={r.decision === "declined" ? "neutral" : "positive"} className="w-fit">{r.decision === "forwarded" ? "Forwarded to Ledgerline" : r.decision === "approved" ? "Approved" : "Declined"}</StatusPill>
-                : <div className="flex flex-wrap items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>{r.kind === "service" ? <><span className="mr-auto text-micro text-fg-muted">Creates a request to our sales team.</span><Button size="sm" onClick={() => decide(r, "forwarded")}>Forward to Ledgerline</Button></> : <><Button size="sm" variant="secondary" onClick={() => decide(r, "declined")}>Decline</Button><Button size="sm" onClick={() => decide(r, "approved")}>Approve</Button></>}</div>}
+              {"decision" in r ? <StatusPill tone={r.decision === "declined" ? "neutral" : "positive"} className="w-fit">{r.decision === "forwarded" ? "Forwarded to Komputy" : r.decision === "approved" ? "Approved" : "Declined"}</StatusPill>
+                : <div className="flex flex-wrap items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>{r.kind === "service" ? <><span className="mr-auto text-micro text-fg-muted">Creates a request to our sales team.</span><Button size="sm" onClick={() => decide(r, "forwarded")}>Forward to Komputy</Button></> : <><Button size="sm" variant="secondary" onClick={() => decide(r, "declined")}>Decline</Button><Button size="sm" onClick={() => decide(r, "approved")}>Approve</Button></>}</div>}
             </div></li>))}
           </ul>
           {cur && <aside className="flex h-fit flex-col gap-4 rounded-panel border border-line p-5 lg:sticky lg:top-20">

@@ -45,7 +45,7 @@ export function MonthEndClose() {
   });
   const stepOf = (id: string) => c?.steps.find((s) => s.id === id)?.status ?? "locked";
   const current = STEPS.find((s) => !["done", "warning"].includes(stepOf(s.id)))?.id;
-  const who = (id?: string) => b.members.find((m) => m.id === id)?.name ?? "—";
+  const who = (id?: string) => b.members.find((m) => m.id === id)?.name ?? "-";
 
   if (!c) return (
     <div className="flex flex-col gap-4">

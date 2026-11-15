@@ -62,7 +62,7 @@ export function Journals() {
         </div>
         <div className="relative overflow-x-auto"><table className="w-full min-w-[520px] text-small tabular-nums"><caption className="sr-only">Batch {b.id} by account</caption>
           <thead><tr className="text-fg-muted">{["Account", "Name", "Debit", "Credit"].map((h, k) => <th key={h} scope="col" className={`py-1.5 font-normal ${k > 1 ? "text-right" : "text-left"}`}>{h}</th>)}</tr></thead>
-          <tbody>{A.map(([a, n, d, c]) => <tr key={a} className="border-t border-line"><td className="py-2 font-mono text-micro text-fg">{a}</td><td className="text-fg-body">{n}</td><td className="text-right">{d ? money(d) : "—"}</td><td className="text-right">{c ? money(c) : "—"}</td></tr>)}</tbody>
+          <tbody>{A.map(([a, n, d, c]) => <tr key={a} className="border-t border-line"><td className="py-2 font-mono text-micro text-fg">{a}</td><td className="text-fg-body">{n}</td><td className="text-right">{d ? money(d) : "-"}</td><td className="text-right">{c ? money(c) : "-"}</td></tr>)}</tbody>
           <tfoot><tr className="border-t border-line-strong text-fg"><td colSpan={2} className="py-2">Total</td><td className="text-right">{money(dr)}</td><td className="text-right">{money(cr)}</td></tr></tfoot></table></div>
         <p className={cn("flex items-center gap-2 text-small", Math.abs(dr - cr) < 0.005 ? "text-positive" : "text-negative")}><CheckCircle2 className="size-4" />{Math.abs(dr - cr) < 0.005 ? "Balanced · debits equal credits" : `Out of balance by ${money(dr - cr)}`}</p>
       </section>

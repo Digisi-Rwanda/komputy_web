@@ -1,4 +1,4 @@
-// IFRS 16 lessee calculator (client-side preview, mirrors ECL-Server leases engine "leases-1.0.0").
+// IFRS 16 lessee calculator (client-side preview, mirrors the engine leases engine "leases-1.0.0").
 // shortcut: annual/quarterly/monthly fixed payments only; irregular schedules and escalations come from the backend engine when wired.
 export type Frequency = "annual" | "quarterly" | "monthly";
 export interface LeaseTerms { commencement: string; end: string; payment: number; frequency: Frequency; timing: "arrears" | "advance"; rate: number; idc?: number; incentives?: number; restoration?: number }

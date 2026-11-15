@@ -16,7 +16,7 @@ export function LeaseReports() {
   const O = leaseData.overview, M = leaseData.maturity, D = leaseData.disclosure;
   const mTotal = M.reduce((s, [, v]) => s + v, 0);
   const [ticked, setTicked] = useState<string[]>([]);
-  const span = `${D.fyFrom} – ${leaseData.period}`, cur = leaseData.currency;
+  const span = `${D.fyFrom} to ${leaseData.period}`, cur = leaseData.currency;
   const exportPack = () => download(`lease-disclosure-${leaseData.period}.csv`, toCsv([
     [`IFRS 16 disclosure · ${span} · ${cur}`], [],
     ["ROU assets by class", "Carrying amount", "Depreciation"], ...D.rouByClass.map(([c, a, d]) => [c, a.toFixed(2), d.toFixed(2)]), [],

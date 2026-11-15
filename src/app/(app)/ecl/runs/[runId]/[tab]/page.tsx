@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps<"/ecl/runs/[runId]/
   return { title: `Run ${(await params).runId.slice(-6)}` };
 }
 
-// Run detail (blueprint §11.5, R1–R8), live from the engine.
+// Run detail (blueprint §11.5, R1-R8), live from the engine.
 async function Body({ params }: { params: PageProps<"/ecl/runs/[runId]/[tab]">["params"] }) {
   const { runId, tab } = await params;
   if (!(TABS.run as readonly string[]).includes(tab)) notFound();

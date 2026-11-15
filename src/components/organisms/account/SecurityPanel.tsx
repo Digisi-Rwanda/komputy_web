@@ -62,7 +62,7 @@ export function SecurityPanel({ mfa, passwordChanged, mfaRequired, sessions }: S
 
   return (
     <div className="flex max-w-3xl flex-col gap-5">
-      {mfaRequired && !mfa && <Banner tone="warning">Your workspace requires two-factor authentication. Set it up to continue using Ledgerline.</Banner>}
+      {mfaRequired && !mfa && <Banner tone="warning">Your workspace requires two-factor authentication. Set it up to continue using Komputy.</Banner>}
       <section className="flex flex-wrap items-center gap-4 rounded-panel border border-line p-5"><div className="flex-1"><h2 className="text-h4">Password</h2><p className="text-small text-fg-muted">Last changed {passwordChanged}</p></div>
         <Modal open={pwOpen} onOpenChange={setPwOpen} title="Change password" size="sm" trigger={<Button variant="secondary">Change password</Button>}
           footer={<Button loading={busy} disabled={!pw.cur || !passwordOk(pw.next)} disabledReason={!passwordOk(pw.next) ? "Choose a stronger password" : undefined} onClick={async () => {
@@ -95,7 +95,7 @@ export function SecurityPanel({ mfa, passwordChanged, mfaRequired, sessions }: S
               {step === 2 && <div className="flex flex-col items-center gap-3"><p className="text-small text-fg-body">Enter the 6-digit code from your app.</p><OtpInput invalid={Boolean(bad)} onComplete={verify} />{busy && <p className="text-micro text-fg-muted">Checking…</p>}{bad && <p role="alert" className="text-micro text-negative">{bad}</p>}</div>}
               {step === 3 && setup && <div className="flex flex-col gap-4"><p className="text-small text-fg-body">Each code works once. Store them somewhere safe, like your password manager.</p>
                 <ol className="grid grid-cols-2 gap-x-6 gap-y-1.5 rounded-card bg-raised p-4 font-mono text-small text-fg">{setup.backupCodes.map((c) => <li key={c}>{c}</li>)}</ol>
-                <div className="flex gap-2"><Button size="sm" variant="secondary" icon={<Download />} onClick={() => download("ledgerline-backup-codes.txt", setup.backupCodes.join("\n"), "text/plain")}>Download</Button><Button size="sm" variant="secondary" icon={<Copy />} onClick={() => { navigator.clipboard?.writeText(setup.backupCodes.join("\n")).catch(() => {}); toast.success("Codes copied"); }}>Copy</Button></div>
+                <div className="flex gap-2"><Button size="sm" variant="secondary" icon={<Download />} onClick={() => download("komputy-backup-codes.txt", setup.backupCodes.join("\n"), "text/plain")}>Download</Button><Button size="sm" variant="secondary" icon={<Copy />} onClick={() => { navigator.clipboard?.writeText(setup.backupCodes.join("\n")).catch(() => {}); toast.success("Codes copied"); }}>Copy</Button></div>
                 <Checkbox checked={stored} onCheckedChange={(v) => setStored(v === true)} label="I've stored these codes safely" /></div>}
             </div>
           </Modal>

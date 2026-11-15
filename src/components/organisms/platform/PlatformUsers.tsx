@@ -41,7 +41,7 @@ export function PlatformUsers({ data, me }: { data: People; me: string }) {
           <thead><tr className="border-b border-line text-fg-muted">{["Person", "Workspaces", "MFA", "Last login", "Status", ""].map((h, i) => <th key={i} scope="col" className="px-4 py-2.5 text-left font-normal">{h}</th>)}</tr></thead>
           <tbody>{data.people.map((p) => <tr key={p.id} className={cn("border-b border-line last:border-0", p.status === "disabled" && "opacity-60")}>
             <td className="px-4 py-3"><span className="flex items-center gap-3"><Avatar initials={ini(p.name)} size="sm" /><span><span className="block text-fg">{p.name}</span><span className="block text-micro text-fg-muted">{p.email}</span></span></span></td>
-            <td className="px-4"><span className="flex flex-wrap gap-1">{p.ws.length ? p.ws.map((w) => <span key={w} className="rounded-full bg-surface px-2 py-0.5 text-micro text-fg-body">{w}</span>) : <span className="text-fg-muted">—</span>}</span></td>
+            <td className="px-4"><span className="flex flex-wrap gap-1">{p.ws.length ? p.ws.map((w) => <span key={w} className="rounded-full bg-surface px-2 py-0.5 text-micro text-fg-body">{w}</span>) : <span className="text-fg-muted">-</span>}</span></td>
             <td className="px-4">{p.mfa ? "On" : <StatusPill tone="warning">Off</StatusPill>}</td><td className="px-4 text-fg-muted">{p.last}</td>
             <td className="px-4"><StatusPill tone={p.status === "active" ? "positive" : "neutral"}>{p.status === "active" ? "Active" : "Disabled"}</StatusPill></td>
             <td className="px-4 text-right"><DropdownMenu trigger={<IconButton label={`Actions for ${p.name}`} size="sm"><Icon name="more" /></IconButton>} items={[

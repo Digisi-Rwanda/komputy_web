@@ -73,7 +73,7 @@ export function EclOverviewEmpty() {
         <div className="grid gap-4 md:grid-cols-3">
           {files.map((f) => (
             <div key={f.name} className="flex flex-col gap-3 rounded-panel border border-line p-5">
-              <p className="text-small text-fg">{f.name.replace(" workbook", "")} <span className="text-fg-muted">— {blurb[f.name]}</span></p>
+              <p className="text-small text-fg">{f.name.replace(" workbook", "")} <span className="text-fg-muted">· {blurb[f.name]}</span></p>
               <ul className="flex flex-col gap-1">{f.columns.filter((c) => c.required).slice(0, 4).map((c) => <li key={c.name} className="font-mono text-micro text-fg-body">{c.name}</li>)}</ul>
               <a href={f.template} download className="mt-auto inline-flex items-center gap-1.5 text-small text-link hover:underline"><Download aria-hidden className="size-4" />Template</a>
             </div>

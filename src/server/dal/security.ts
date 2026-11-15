@@ -23,10 +23,10 @@ export async function getSecurity(tenantId: string): Promise<SecurityView> {
   const pending = sessions.find((x) => x.s.status === "requested");
   return {
     policy: { requireMfa: t.requireMfa, timeoutHours: t.sessionTimeoutHours, idleSignout: t.idleSignout, domains: t.allowedDomains, supportPolicy: t.supportPolicy as SecurityView["policy"]["supportPolicy"], withoutMfa: members.filter((m) => !m.mfa).length },
-    pending: pending ? { id: pending.s.id, who: `${pending.staff} (Ledgerline Support)`, reason: pending.s.reason, minutes: pending.s.minutes, age: ago(pending.s.createdAt) } : null,
+    pending: pending ? { id: pending.s.id, who: `${pending.staff} (Komputy Support)`, reason: pending.s.reason, minutes: pending.s.minutes, age: ago(pending.s.createdAt) } : null,
     sessions: sessions.filter((x) => x.s.status !== "requested").map(({ s, staff }) => {
       const live = s.status === "active" && Boolean(s.endsAt && s.endsAt > now);
-      return { id: s.id, who: staff, time: s.startsAt ? `${fmt(s.startsAt)}–${s.endsAt ? fmt(s.endsAt).split(", ").pop() : ""}` : fmt(s.createdAt), status: live ? "Active" : s.status === "denied" ? "Denied" : "Ended", actions: s.actionsLogged, live, until: live ? fmt(s.endsAt!).split(", ").pop()! : null };
+      return { id: s.id, who: staff, time: s.startsAt ? `${fmt(s.startsAt)}-${s.endsAt ? fmt(s.endsAt).split(", ").pop() : ""}` : fmt(s.createdAt), status: live ? "Active" : s.status === "denied" ? "Denied" : "Ended", actions: s.actionsLogged, live, until: live ? fmt(s.endsAt!).split(", ").pop()! : null };
     }),
   };
 }

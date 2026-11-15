@@ -1,3 +1,5 @@
+> Not served: reference material only (moved out of public/). Third-party images here are never used on komputy.com.
+
 # Assets (from inspiration/landing2.html)
 
 Fonts load through next/font in app/layout.tsx (self-hosted at build): Google Sans, Google Sans Code, Geist, Fragment Mono, Coustard.

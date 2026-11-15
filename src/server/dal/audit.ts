@@ -15,9 +15,9 @@ export async function listAudit(tenantId: string, limit = 200): Promise<(AuditEv
   return rows.map(({ a, name, staff }) => {
     const d = (a.details ?? {}) as Record<string, unknown>;
     const actor = name ?? "System";
-    const object = String(d.object ?? d.email ?? d.emails ?? d.detail ?? d.service ?? "—");
+    const object = String(d.object ?? d.email ?? d.emails ?? d.detail ?? d.service ?? "-");
     return {
-      at: a.createdAt.toISOString(), actor: staff ? `${actor} (Ledgerline)` : actor, initials: name ? initials(name) : "SY",
+      at: a.createdAt.toISOString(), actor: staff ? `${actor} (Komputy)` : actor, initials: name ? initials(name) : "SY",
       action: /[A-Z ]/.test(a.eventType) ? a.eventType : human(a.eventType), object: object.length > 60 ? `${object.slice(0, 57)}…` : object,
       service: String(d.service ?? SERVICE[a.eventType.split(".")[0]] ?? "Workspace"), staff: Boolean(staff),
     };

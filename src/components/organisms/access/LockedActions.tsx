@@ -77,7 +77,7 @@ export function LockedActions({ service, name, admin, terms, admins, live, trial
   );
   return (
     <div className="flex flex-wrap items-center gap-3">
-      {trialUsedAt ? <p className="w-full text-small text-fg-muted">Trial used on {trialUsedAt} — request access to continue.</p> : <StartTrialModal service={service} name={name} terms={terms} />}
+      {trialUsedAt ? <p className="w-full text-small text-fg-muted">Trial used on {trialUsedAt} . Request access to continue.</p> : <StartTrialModal service={service} name={name} terms={terms} />}
       <Button asChild variant={trialUsedAt ? "primary" : "secondary"} size="lg"><Link href={`/contact?topic=quote&services=${service}`}>Request access</Link></Button>
       <Link href="/pricing" className="text-small text-link hover:underline">See pricing →</Link>
     </div>

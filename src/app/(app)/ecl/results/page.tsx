@@ -12,7 +12,7 @@ import { one } from "@/lib/search";
 
 export const metadata: Metadata = { title: "Results explorer" };
 
-// Results explorer (blueprint §11.6, R10–R12): Portfolio › Segment › Loan. Defaults to the latest signed-off run.
+// Results explorer (blueprint §11.6, R10-R12): Portfolio › Segment › Loan. Defaults to the latest signed-off run.
 async function Body({ searchParams }: { searchParams: PageProps<"/ecl/results">["searchParams"] }) {
   const sp = await searchParams;
   const p = await requireMember("ecl.view");

@@ -19,11 +19,11 @@ export function WelcomeModal({ name, workspace, trial, force }: { name: string; 
   const open = force ? !s.welcomed || force : !s.welcomed;
   const close = () => update({ welcomed: true });
   return (
-    <Modal open={open && !s.welcomed} onOpenChange={(v) => !v && close()} size="lg" title={`Welcome to Ledgerline, ${name}.`} description={`${workspace} is ready. ${trial}`}
+    <Modal open={open && !s.welcomed} onOpenChange={(v) => !v && close()} size="lg" title={`Welcome to Komputy, ${name}.`} description={`${workspace} is ready. ${trial}`}
       icon={<span className="inline-flex size-12 items-center justify-center rounded-card bg-surface shadow-[0_0_32px_rgb(0_114_245/0.35)]"><Logo wordmark={false} /></span>}
       footer={<span className="mr-auto self-center"><Badge tone="warning">Trial · 3 of 3 runs · 14 days</Badge></span>}>
       <ul className="flex flex-col divide-y divide-line rounded-card border border-line">
-        {ROWS.map((r) => <li key={r.title} className="flex items-center gap-4 p-4"><r.icon aria-hidden className="size-5 text-fg-muted" /><span className="text-small text-fg">{r.title} <span className="text-fg-muted">— {r.body}</span></span></li>)}
+        {ROWS.map((r) => <li key={r.title} className="flex items-center gap-4 p-4"><r.icon aria-hidden className="size-5 text-fg-muted" /><span className="text-small text-fg">{r.title} <span className="text-fg-muted">· {r.body}</span></span></li>)}
       </ul>
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <Button asChild onClick={close}><Link href="/ecl/sample?run=1">Start with sample data</Link></Button>

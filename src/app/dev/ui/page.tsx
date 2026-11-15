@@ -84,7 +84,7 @@ const runCols: ColumnDef<Run, unknown>[] = [
   { id: "run", header: "Run", meta: { label: "Run" }, accessorFn: (r) => r.name, cell: ({ row }) => <TwoLine lead={<Icon name="ecl" />} title={row.original.name} meta={`${row.original.id} · ${date(row.original.reportingDate)}`} /> },
   { id: "status", header: "Status", meta: { label: "Status" }, accessorFn: (r) => r.status, cell: ({ row }) => <RunStatusPill status={row.original.status} /> },
   { id: "engine", header: "Engine", meta: { label: "Engine" }, accessorFn: (r) => r.engine, cell: ({ row }) => <MonoId>{row.original.engine}</MonoId> },
-  { id: "ecl", header: "Total ECL · USD", meta: { align: "right", label: "Total ECL" }, accessorFn: (r) => r.totalEcl, cell: ({ row }) => (row.original.totalEcl ? <Money value={row.original.totalEcl} /> : "—") },
+  { id: "ecl", header: "Total ECL · USD", meta: { align: "right", label: "Total ECL" }, accessorFn: (r) => r.totalEcl, cell: ({ row }) => (row.original.totalEcl ? <Money value={row.original.totalEcl} /> : "-") },
 ];
 
 export default function UiGallery() {
@@ -174,7 +174,7 @@ export default function UiGallery() {
           <Field label="Services" id="f-svc" optional><Combobox multiple value={multi} onChange={setMulti} options={[{ value: "ecl", label: "Expected Credit Loss" }, { value: "leases", label: "Lease Accounting" }]} /></Field>
           <Field label="Search" id="f-search"><Input leading={<Icon name="search" />} placeholder="Find loan" trailing={<Kbd>/</Kbd>} /></Field>
           <Field label="Invite by email" id="f-inv" help="Only @kivubank.rw addresses are allowed." className="md:col-span-2"><MultiEmailInput value={emails} onChange={setEmails} allowedDomains={["kivubank.rw"]} /></Field>
-          <Field label="Note for reviewer" id="f-note"><Textarea maxLength={500} placeholder="Provision up 4.2 % — driven by SME Stage 2 migration." /></Field>
+          <Field label="Note for reviewer" id="f-note"><Textarea maxLength={500} placeholder="Provision up 4.2 %, driven by SME Stage 2 migration." /></Field>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           <div className="flex flex-col gap-3">
@@ -231,7 +231,7 @@ export default function UiGallery() {
       <Block title="Navigation" board="DS7">
         <Breadcrumb items={[{ label: "Expected Credit Loss", href: "#" }, { label: "Runs", href: "#" }, { label: "RUN-0142" }]} />
         <SegmentedTabs variant="underline" active="#profile" items={["Profile", "Security", "Notifications", "Appearance", "My workspaces"].map((l) => ({ label: l, href: `#${l.toLowerCase()}` }))} />
-        <Row><ToggleGroup label="Schedule view" value={tab} onChange={setTab} options={[{ value: "annual", label: "Annual" }, { value: "monthly", label: "Monthly" }]} /><SearchPill className="max-w-sm" /><AnnouncementPill href="#">v1.3.0 — Reconciliation checks</AnnouncementPill></Row>
+        <Row><ToggleGroup label="Schedule view" value={tab} onChange={setTab} options={[{ value: "annual", label: "Annual" }, { value: "monthly", label: "Monthly" }]} /><SearchPill className="max-w-sm" /><AnnouncementPill href="#">v1.3.0: Reconciliation checks</AnnouncementPill></Row>
         <Stepper current={3} note="Validating…" steps={[{ label: "Setup" }, { label: "PD data", warn: true }, { label: "LGD data" }, { label: "EAD data" }, { label: "Review" }, { label: "Compute" }, { label: "Sign-off" }]} />
         <div className="max-w-xl"><Stepper orientation="vertical" current={1} steps={[{ label: "Start close", meta: "Aline Mugisha", status: <StatusPill tone="positive">Done</StatusPill> }, { label: "Resolve issues", status: <StatusPill tone="warning">2 issues</StatusPill> }, { label: "Generate journals", meta: "142 leases · est. 1,284 lines" }, { label: "Lock period", meta: "Administrator only" }]} /></div>
       </Block>
@@ -267,7 +267,7 @@ export default function UiGallery() {
           <DropdownMenu trigger={<IconButton label="Row actions" variant="secondary"><Icon name="more" /></IconButton>} items={[{ label: "Change roles", icon: <Icon name="users" /> }, { label: "Require MFA", icon: <Icon name="security" />, shortcut: "⌘M" }, { label: "Remove from workspace", icon: <Icon name="trash" />, danger: true, separatorBefore: true }]} />
           <Tooltip content="Results" shortcut="G R"><IconButton label="Results"><Icon name="ecl" /></IconButton></Tooltip>
         </Row>
-        <Accordion defaultValue={["pd"]} items={[{ value: "pd", title: "PD — Markov transition matrix", content: <code className="font-mono text-micro">marginal PD = (S3(n) − S3(n − 1)) / (1 − S3(n − 1))</code> }, { value: "lgd", title: "LGD — Collateral discounting", content: "Discounted = Allocated × (1 − haircut) × (1 + EIR)^−years" }]} />
+        <Accordion defaultValue={["pd"]} items={[{ value: "pd", title: "PD: Markov transition matrix", content: <code className="font-mono text-micro">marginal PD = (S3(n) − S3(n − 1)) / (1 − S3(n − 1))</code> }, { value: "lgd", title: "LGD: Collateral discounting", content: "Discounted = Allocated × (1 − haircut) × (1 + EIR)^−years" }]} />
       </Block>
 
       <Block title="States" board="DS9">

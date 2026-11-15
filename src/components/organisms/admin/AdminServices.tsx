@@ -15,7 +15,7 @@ import { requestService } from "@/lib/actions/workspace-admin";
 import type { ServiceCard } from "@/server/dal/workspace-admin";
 import type { Tone } from "@/types/ui";
 
-/** CA4: entitlements are read-only for the client; every lever is a request to Ledgerline. */
+/** CA4: entitlements are read-only for the client; every lever is a request to Komputy. */
 const WAITLIST: [string, "tax" | "lease-planning" | "doc-intel" | "erp"][] = [["Lease Planning & Analytics", "lease-planning"], ["Document Intelligence", "doc-intel"], ["ERP Connect", "erp"]];
 
 export function Services({ cards, history, accountManager }: { cards: ServiceCard[]; history: [string, Tone, string, string][]; accountManager?: { name: string; email: string } }) {
@@ -26,8 +26,8 @@ export function Services({ cards, history, accountManager }: { cards: ServiceCar
   const [svc, setSvc] = useState<"ecl" | "leases">("ecl");
   const [amount, setAmount] = useState<number | null>(30);
   const [note, setNote] = useState("");
-  /** Every lever is a request to Ledgerline; the history list refreshes from the server. */
-  const ask = async (input: Parameters<typeof requestService>[0], ok = "Request sent to Ledgerline") => {
+  /** Every lever is a request to Komputy; the history list refreshes from the server. */
+  const ask = async (input: Parameters<typeof requestService>[0], ok = "Request sent to Komputy") => {
     const r = await requestService(input);
     if (!r.ok) { toast.error(r.error); return false; }
     toast.success(ok, { description: "We reply within 1 business day." }); router.refresh(); return true;
@@ -35,7 +35,7 @@ export function Services({ cards, history, accountManager }: { cards: ServiceCar
   const join = async (name: string, service: Parameters<typeof requestService>[0]["service"]) => { if (await ask({ kind: "waitlist", service }, `You're on the ${name} waitlist`)) setWaitlist((w) => [...w, name]); };
   return (
     <div className="flex flex-col gap-8">
-      <p className="text-small text-fg-muted">Services are enabled by Ledgerline. Request changes and our team will get back to you within 1 business day.</p>
+      <p className="text-small text-fg-muted">Services are enabled by Komputy. Request changes and our team will get back to you within 1 business day.</p>
       <div className="grid gap-4 lg:grid-cols-2">
         {cards.map((s) => (
           <section key={s.id} className="flex flex-col gap-4 rounded-panel border border-line p-5">

@@ -1,4 +1,4 @@
--- Baseline: the 57 web tables as they stood on 2026-11-15 (previously created by ECL-Server Alembic).
+-- Baseline: the 57 web tables as they stood on 2026-11-15 (previously created by the previous engine's Alembic migrations).
 -- Generated with pg_dump --schema-only; do not edit. New changes go in later numbered files.
 CREATE OR REPLACE FUNCTION public.set_updated_at()
  RETURNS trigger

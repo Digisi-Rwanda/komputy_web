@@ -27,7 +27,7 @@ export default function SecurityPage() {
           <div className="flex min-w-0 flex-col gap-16">
             <section className="flex flex-col gap-6"><H id="principles">Our principles</H>
               <ul className="divide-y divide-line rounded-panel border border-line">
-                {PRINCIPLES.map((p) => <li key={p.title} className="flex gap-4 p-5"><Icon name={p.icon} className="mt-0.5 shrink-0 text-fg-muted" /><p className="text-small text-fg-body"><span className="text-fg">{p.title}</span> — {p.body}</p></li>)}
+                {PRINCIPLES.map((p) => <li key={p.title} className="flex gap-4 p-5"><Icon name={p.icon} className="mt-0.5 shrink-0 text-fg-muted" /><p className="text-small text-fg-body"><span className="text-fg">{p.title}</span>: {p.body}</p></li>)}
               </ul>
             </section>
             <section className="flex flex-col gap-6"><H id="support-access">Support access flow</H>
@@ -52,7 +52,7 @@ export default function SecurityPage() {
               <Link href="/legal/dpa" className="inline-flex w-fit items-center gap-1 text-small text-link hover:underline">Data processing agreement<ArrowRight aria-hidden className="size-4" /></Link>
             </section>
             <section className="bg-blueprint flex flex-col gap-3 rounded-panel border border-line bg-raised p-8"><H id="vulnerability">Report a vulnerability</H>
-              <p className="text-small text-fg-muted">Help us keep Ledgerline secure. Report vulnerabilities responsibly to <span className="select-all font-mono text-fg">{SECURITY_EMAIL}</span>. We reply within 2 business days.</p>
+              <p className="text-small text-fg-muted">Help us keep Komputy secure. Report vulnerabilities responsibly to <span className="select-all font-mono text-fg">{SECURITY_EMAIL}</span>. We reply within 2 business days.</p>
             </section>
           </div>
         </div>

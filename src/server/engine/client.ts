@@ -45,7 +45,7 @@ async function tokenFor(p: Principal, tenantId: string | null): Promise<string> 
 /** Drop cached tokens after a role/entitlement change so the next call carries fresh claims. */
 export const forgetEngineTokens = (tenantId: string) => { for (const k of cache.keys()) if (k.endsWith(`:${tenantId}`)) cache.delete(k); };
 
-/** Typed client for ECL-Server, authenticated as `p` in `tenantId` (null = staff platform call). Server-to-server only. */
+/** Typed client for the engine, authenticated as `p` in `tenantId` (null = staff platform call). Server-to-server only. */
 export function engine(p: Principal, tenantId: string | null = p.tenantId) {
   const client = createClient<paths>({ baseUrl: env.ENGINE_URL });
   const authz: Middleware = {

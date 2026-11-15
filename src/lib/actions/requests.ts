@@ -10,7 +10,7 @@ import { ECL_ROLES, LEASES_ROLES } from "@/server/policy";
 
 const ROLE_OF = (requested: string) => requested.split("·").pop()!.trim().toLowerCase();
 
-/** CA5: approve (grants the requested role), decline, or forward a service request to Ledgerline sales. */
+/** CA5: approve (grants the requested role), decline, or forward a service request to Komputy sales. */
 export const decideRequest = mutate({
   action: "requests.decide",
   schema: z.object({ id: z.string().max(26), decision: z.enum(["approved", "declined", "forwarded"]), reply: z.string().max(500).optional() }),
@@ -19,7 +19,7 @@ export const decideRequest = mutate({
     if (!r || r.status !== "open") throw new UserError("This request was already handled.");
     const d = r.details as Record<string, string>;
     if (input.decision === "approved") {
-      if (r.kind === "service") throw new UserError("This service isn't active in the workspace. Forward it to Ledgerline instead.");
+      if (r.kind === "service") throw new UserError("This service isn't active in the workspace. Forward it to Komputy instead.");
       if (r.requesterId === p.userId) throw new UserError("You can't approve your own request.");
       const svc = r.service as "ecl" | "leases", role = ROLE_OF(d.requested ?? "");
       if (!(svc === "ecl" ? ECL_ROLES : LEASES_ROLES).includes(role as never)) throw new UserError("This request doesn't name a valid role.");
@@ -39,7 +39,7 @@ export const decideRequest = mutate({
     await tx.insert(schema.requestEvents).values({ id: ulid(), requestId: r.id, actorId: p.userId, kind: "decided", note: input.reply ?? input.decision });
     if (r.requesterId) await notify([r.requesterId], {
       event: "requests", kind: "access", tenantId: p.tenantId!,
-      title: input.decision === "approved" ? `Your request was approved: ${d.requested}` : input.decision === "declined" ? `Your request was declined: ${d.requested}` : `Your request was forwarded to Ledgerline`,
+      title: input.decision === "approved" ? `Your request was approved: ${d.requested}` : input.decision === "declined" ? `Your request was declined: ${d.requested}` : `Your request was forwarded to Komputy`,
       body: input.reply ? `${p.name}: “${input.reply}”` : `by ${p.name}`, href: "/home",
     }, tx);
     await audit(`request.${input.decision}`, { requestId: r.id, kind: r.kind, service: r.service, requested: d.requested });

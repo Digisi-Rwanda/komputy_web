@@ -1,4 +1,4 @@
-// Phase 0.1 spike: proves Better Auth works on the existing ECL-Server tables. Run: npm run spike
+// Phase 0.1 spike: proves Better Auth works on the existing the previous engine tables. Run: npm run spike
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createRemoteJWKSet, jwtVerify, createLocalJWKSet } from "jose";
@@ -30,7 +30,7 @@ await assert.rejects(auth.api.signInEmail({ body: { email, password: "Correct-Ho
 await db.update(schema.users).set({ isEmailVerified: true }).where(eq(schema.users.id, u.id));
 const si = await auth.api.signInEmail({ body: { email, password: "Correct-Horse-Battery-9" }, asResponse: true });
 const cookie = si.headers.getSetCookie().map((c) => c.split(";")[0]).join("; ");
-assert.ok(cookie.includes("ledgerline"));
+assert.ok(cookie.includes("komputy"));
 const headers = new Headers({ cookie });
 console.log("4 verify-gated sign-in ok");
 // 5. Organization → tenants + tenant_memberships(workspace_role owner)
@@ -47,7 +47,7 @@ console.log("6 lockout ok");
 // 7. Engine JWT: signed with our claims, verifiable from the JWKS
 const { token } = await auth.api.signJWT({ body: { payload: { sub: u.id, tid: org!.id, svc: { ecl: { role: "reviewer" } }, iat: Math.floor(Date.now() / 1000) } } });
 const jwks = await auth.api.getJwks();
-const { payload, protectedHeader } = await jwtVerify(token, createLocalJWKSet(jwks), { issuer: "ledgerline-web", audience: "ecl-engine" });
+const { payload, protectedHeader } = await jwtVerify(token, createLocalJWKSet(jwks), { issuer: "komputy-web", audience: "komputy-engine" });
 assert.equal(protectedHeader.alg, "RS256"); assert.equal(payload.tid, org!.id);
 assert.ok(payload.exp! - payload.iat! <= 300);
 console.log("7 engine jwt ok", protectedHeader.alg, payload.exp! - payload.iat!, "s");

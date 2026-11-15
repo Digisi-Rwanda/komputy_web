@@ -66,7 +66,7 @@ export function Inbox({ waiting, mine, me }: { waiting: InboxItem[]; mine: Inbox
       <Sheet open={open !== null} onOpenChange={(v) => !v && setOpen(null)} width="w-[640px]" title={open ? `Approve ${open.title.toLowerCase()}` : ""}
         footer={<><Button variant="outline" loading={busy} disabled={comment.trim().length < 3} disabledReason={comment.trim().length < 3 ? "A comment is required to return" : undefined} onClick={() => decide(false)}>Return with comments</Button><Button loading={busy} disabled={self} disabledReason={self ? "You can't approve your own submission." : undefined} onClick={() => decide(true)}>Approve</Button></>}>
         {open && <div className="flex flex-col gap-5">
-          {(open.type === "lease" || open.type === "event") && <><KeyValue columns={2} items={[["Lease", open.lease ?? "—"], ["Version", `v${open.version}`], ["Liability", open.liability != null ? money(open.liability) : "Not calculated"], ["ROU asset", open.rou != null ? money(open.rou) : "—"]]} />
+          {(open.type === "lease" || open.type === "event") && <><KeyValue columns={2} items={[["Lease", open.lease ?? "-"], ["Version", `v${open.version}`], ["Liability", open.liability != null ? money(open.liability) : "Not calculated"], ["ROU asset", open.rou != null ? money(open.rou) : "-"]]} />
             <Link href={`/leases/register/${open.lease}/schedule`} className="text-small text-link hover:underline">Open the full schedule →</Link></>}
           <p className="text-small text-fg-body">{open.meta}</p>
           <ul className="flex flex-col gap-1.5"><li className="flex items-center gap-2 text-small text-fg-body"><CheckCircle2 className="size-4 text-positive" />Calculated by the engine; checks run on approval</li></ul>

@@ -1,6 +1,6 @@
 // Password strength (blueprint §7.1). Breach check here is a local common-password list;
 // shortcut: local list only, upgrade to the backend's check_password_pwned (HIBP k-anonymity) when wired.
-const COMMON = new Set(["password", "password1", "password123", "123456789012", "qwertyuiop12", "letmein12345", "welcome12345", "ledgerline", "ledgerline2026", "iloveyou1234", "admin1234567", "passw0rd1234"]);
+const COMMON = new Set(["password", "password1", "password123", "123456789012", "qwertyuiop12", "letmein12345", "welcome12345", "komputy", "komputy2026", "iloveyou1234", "admin1234567", "passw0rd1234"]);
 
 export interface Strength { score: 0 | 1 | 2 | 3 | 4; label: "Too weak" | "Weak" | "Fair" | "Strong" | "Very strong"; checks: { long: boolean; mixed: boolean; notBreached: boolean } }
 

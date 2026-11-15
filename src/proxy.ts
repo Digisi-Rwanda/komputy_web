@@ -18,7 +18,7 @@ export function proxy(request: NextRequest) {
     return;
   }
   // Optimistic only: no session cookie → sign in. Real checks happen in the data layer (server/session.ts).
-  if (!getSessionCookie(request, { cookiePrefix: "ledgerline" })) {
+  if (!getSessionCookie(request, { cookiePrefix: "komputy" })) {
     const to = new URL("/sign-in", request.url);
     to.searchParams.set("next", pathname + search);
     return NextResponse.redirect(to);

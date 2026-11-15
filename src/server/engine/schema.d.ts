@@ -2549,11 +2549,11 @@ export interface components {
             ctx?: Record<string, never>;
         };
         /** SegmentResponse */
-        ledgerline__apps__results__schemas__SegmentResponse: {
+        komputy__apps__results__schemas__SegmentResponse: {
             data: components["schemas"]["SegmentViewOut"];
         };
         /** SegmentResponse */
-        ledgerline__apps__segments__schemas__SegmentResponse: {
+        komputy__apps__segments__schemas__SegmentResponse: {
             data: components["schemas"]["SegmentOut"];
         };
     };
@@ -4014,7 +4014,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ledgerline__apps__results__schemas__SegmentResponse"];
+                    "application/json": components["schemas"]["komputy__apps__results__schemas__SegmentResponse"];
                 };
             };
             /** @description Validation Error */
@@ -4182,7 +4182,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ledgerline__apps__segments__schemas__SegmentResponse"];
+                    "application/json": components["schemas"]["komputy__apps__segments__schemas__SegmentResponse"];
                 };
             };
             /** @description Validation Error */

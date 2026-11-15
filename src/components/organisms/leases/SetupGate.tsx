@@ -23,7 +23,7 @@ type SetupStatus = "approved" | "pending" | "draft" | "not-started";
 const PILL: Record<SetupStatus, ["positive" | "warning" | "neutral", string]> = { approved: ["positive", "Approved"], pending: ["warning", "Pending approval"], draft: ["neutral", "Draft"], "not-started": ["neutral", "Not started"] };
 /** Accounts the lease engine posts to (journal lines reference these keys). */
 export const GL_KEYS: [string, string][] = [
-  ["rou_cost", "ROU asset — cost"], ["rou_accdep", "ROU asset — accumulated depreciation"], ["lease_liability", "Lease liability"], ["interest_expense", "Interest expense"],
+  ["rou_cost", "ROU asset: cost"], ["rou_accdep", "ROU asset: accumulated depreciation"], ["lease_liability", "Lease liability"], ["interest_expense", "Interest expense"],
   ["depreciation_expense", "Depreciation expense"], ["cash_payable", "Cash / payables clearing"], ["restoration_provision", "Restoration provision"], ["idc_clearing", "Initial direct costs clearing"],
   ["incentive_receivable", "Lease incentive receivable"], ["modification_gain_loss", "Modification gain / loss"], ["lease_expense", "Short-term / low-value lease expense"],
 ];

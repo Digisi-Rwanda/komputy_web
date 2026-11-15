@@ -104,7 +104,7 @@ export function CollateralSetup({ initial, canEdit = true }: { initial: Collater
                   <td className="px-4 py-3 text-fg">{c.id === "__new" ? <Input aria-label="Collateral type name" value={name} maxLength={100} onChange={(e) => setName(e.target.value)} placeholder="e.g. Property" /> : c.name}</td>
                   <td className="px-4 py-3"><div className="ml-auto w-28"><Input aria-label="Haircut percent" numeric value={h} onChange={(e) => setH(e.target.value)} trailing="%" invalid={Boolean(guard)} />{guard && <button type="button" onClick={() => setH(String(Math.round(pct * 100)))} className="mt-1 text-micro text-warning underline">{guard}</button>}</div></td>
                   <td className="px-4 py-3"><div className="ml-auto w-28"><Input aria-label="Months to realise" numeric value={m} onChange={(e) => setM(e.target.value)} trailing="mo" /></div></td>
-                  <td className="px-4 py-3 text-right text-fg-muted">—</td>
+                  <td className="px-4 py-3 text-right text-fg-muted">-</td>
                   <td className="px-4 py-3"><StatusPill tone="positive">Active</StatusPill></td>
                   <td className="px-4 py-3"><span className="flex justify-end gap-1"><IconButton size="sm" variant="secondary" label="Save" disabled={invalid || (c.id === "__new" && name.trim().length < 2)} onClick={() => void save()}><Check /></IconButton><IconButton size="sm" label="Cancel" onClick={() => { setEditing(null); setAdding(false); }}><X /></IconButton></span></td>
                 </tr>
@@ -113,7 +113,7 @@ export function CollateralSetup({ initial, canEdit = true }: { initial: Collater
                   <td className="h-row px-4 text-fg">{c.name}</td>
                   <td className="px-4 text-right tabular-nums">{Math.round(c.haircut * 100)} %</td>
                   <td className="px-4 text-right tabular-nums">{c.months} months</td>
-                  <td className="px-4 text-right tabular-nums text-fg-body">{c.usedUsd ? compact(c.usedUsd) : "—"}</td>
+                  <td className="px-4 text-right tabular-nums text-fg-body">{c.usedUsd ? compact(c.usedUsd) : "-"}</td>
                   <td className="px-4"><StatusPill tone={c.active ? "positive" : "neutral"}>{c.active ? "Active" : "Inactive"}</StatusPill></td>
                   <td className="px-4 text-right">{canEdit && <Button size="sm" variant="ghost" onClick={() => start(c)}>Edit</Button>}</td>
                 </tr>

@@ -4,7 +4,7 @@
  * The authoritative validation still runs in the engine (Python); this only catches wrong files in seconds.
  */
 export interface Precheck { ok: boolean; errors: string[]; sheets: { name: string; headers: string[] }[] }
-// Mirrors ECL-Server app/engine/workbook.py HEADER_SCAN_ROWS and pd_criteria._DATA_SHEET_HINT_THRESHOLD.
+// Mirrors the engine app/engine/workbook.py HEADER_SCAN_ROWS and pd_criteria._DATA_SHEET_HINT_THRESHOLD.
 const HEADER_SCAN_ROWS = 20, DATA_SHEET_HINT = 2;
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 

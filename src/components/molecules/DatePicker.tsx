@@ -64,7 +64,7 @@ const PRESETS = (today: Date) => [
 
 /** Range with presets (MTD/QTD/YTD) for reports and audit logs. */
 export function DateRangePicker({ value, onChange, placeholder = "Date range", today = new Date(), id }: { value?: DateRange; onChange: (r?: DateRange) => void; placeholder?: string; today?: Date; id?: string }) {
-  const text = value?.from ? `${fmt(value.from)} – ${fmt(value.to)}` : "";
+  const text = value?.from ? `${fmt(value.from)} to ${fmt(value.to)}` : "";
   return (
     <Popover className="relative flex gap-4 p-3" align="start" trigger={trigger(text, placeholder, id)}>
       <ul className="hidden flex-col gap-1 border-r border-line pr-3 sm:flex">

@@ -66,7 +66,7 @@ function CriterionRow({ c, open, onToggle }: { c: Criterion; open: boolean; onTo
   );
 }
 
-/** W2–W9: requirements → drop zone → upload → validation progress → report (criteria / preview) → accept (with warning acknowledgement). */
+/** W2-W9: requirements → drop zone → upload → validation progress → report (criteria / preview) → accept (with warning acknowledgement). */
 export function DataStep({ k }: { k: Dataset }) {
   const d = useDraft(), f = d.files[k], router = useRouter(), req = REQUIREMENTS[k];
   const [tab, setTab] = useState("criteria");
@@ -161,7 +161,7 @@ export function DataStep({ k }: { k: Dataset }) {
             <section aria-live="polite" className="flex flex-col gap-3 rounded-panel border border-line p-5">
               <p className="text-small text-fg">Validating {NAME[k]} data</p>
               {VALIDATING[k].map((s, i) => <p key={s} className="flex items-center gap-3 text-small">{i < vStage ? <CheckCircle2 className="size-4 text-positive" /> : i === vStage ? <Loader2 className="size-4 text-link motion-safe:animate-spin" /> : <Circle className="size-4 text-fg-subtle" />}<span className={i <= vStage ? "text-fg-body" : "text-fg-muted"}>{s}</span></p>)}
-              <p className="flex items-center gap-2 text-micro text-fg-muted"><Info className="size-3.5" />You can leave this page — we&apos;ll keep validating and notify you when it finishes.</p>
+              <p className="flex items-center gap-2 text-micro text-fg-muted"><Info className="size-3.5" />You can leave this page. We&apos;ll keep validating and notify you when it finishes.</p>
             </section>
           )}
 
@@ -171,7 +171,7 @@ export function DataStep({ k }: { k: Dataset }) {
           {(f.status === "report" || f.status === "accepted") && f.outcome && f.criteria && (
             <>
               <div className={cn("flex flex-wrap items-center gap-x-6 gap-y-2 rounded-panel border px-5 py-4", n.error ? "border-negative/40 bg-negative-tint" : "border-warning/40 bg-warning-tint")}>
-                <p className="flex-1 text-h4 text-fg">{f.status === "accepted" ? "Accepted" : n.error ? `Cannot continue — fix ${n.error} errors` : n.warning ? "Passed with warnings" : "All checks passed"}</p>
+                <p className="flex-1 text-h4 text-fg">{f.status === "accepted" ? "Accepted" : n.error ? `Cannot continue: fix ${n.error} errors` : n.warning ? "Passed with warnings" : "All checks passed"}</p>
                 <Badge tone="positive">{n.passed} passed</Badge><Badge tone="warning">{n.warning} warnings</Badge><Badge tone="negative">{n.error} errors</Badge>
               </div>
               <ToggleGroup label="Report view" value={tab} onChange={setTab} options={[{ value: "criteria", label: "Criteria", count: crit.length }, { value: "preview", label: k === "pd" ? "Data preview" : k === "lgd" ? "Allocation preview" : "Treatment" }]} />
@@ -186,7 +186,7 @@ export function DataStep({ k }: { k: Dataset }) {
               {f.status === "report" && !n.error && n.warning > 0 && (
                 <section className="flex flex-col gap-3 rounded-panel border border-line p-5">
                   <Checkbox checked={Boolean(f.ack)} onCheckedChange={(c) => setFile(k, { ack: c === true })} label={`I've reviewed the ${n.warning} warnings and understand how they affect this run.`} />
-                  <Textarea aria-label="Comment for the audit log" maxLength={500} placeholder="Comment for the audit log (optional) — e.g. missing months are loans sold to Lakeshore MFI in July." value={f.comment ?? ""} onChange={(e) => setFile(k, { comment: e.target.value })} />
+                  <Textarea aria-label="Comment for the audit log" maxLength={500} placeholder="Comment for the audit log (optional), for example: missing months are loans sold to Lakeshore MFI in July." value={f.comment ?? ""} onChange={(e) => setFile(k, { comment: e.target.value })} />
                 </section>
               )}
             </>

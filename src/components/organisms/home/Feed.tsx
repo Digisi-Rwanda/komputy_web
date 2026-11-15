@@ -6,7 +6,7 @@ import { SERVICES } from "@/lib/services";
 import { date } from "@/lib/format";
 import type { AuditEvent } from "@/types/domain";
 
-/** Recent activity (last events) — compact rows with avatar and mono time. */
+/** Recent activity (last events): compact rows with avatar and mono time. */
 export function RecentActivity({ events }: { events: AuditEvent[] }) {
   return (
     <ul className="flex flex-col divide-y divide-line">
@@ -26,7 +26,7 @@ export function WhatsNew() {
   return (
     <ul className="flex flex-col gap-3">
       {UPDATES.slice(0, 2).map((u) => (
-        <li key={u.id}><Link href={`/updates#${u.id}`} className="flex flex-col gap-1 rounded-card border border-line p-4 transition-colors hover:border-line-strong"><span className="flex items-center gap-2 text-small text-fg">{u.version} — {u.title}<Badge tone="info">New</Badge></span><span className="text-micro text-fg-muted">{date(u.date)} · {u.summary}</span></Link></li>
+        <li key={u.id}><Link href={`/updates#${u.id}`} className="flex flex-col gap-1 rounded-card border border-line p-4 transition-colors hover:border-line-strong"><span className="flex items-center gap-2 text-small text-fg">{u.version} · {u.title}<Badge tone="info">New</Badge></span><span className="text-micro text-fg-muted">{date(u.date)} · {u.summary}</span></Link></li>
       ))}
     </ul>
   );

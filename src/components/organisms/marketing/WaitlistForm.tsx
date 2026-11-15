@@ -30,7 +30,7 @@ export function WaitlistForm({ service, serviceName }: { service: ServiceId; ser
         </button>
       </div>
       <p id="waitlist-msg" role={state?.ok === false ? "alert" : undefined} className={state?.ok === false ? "text-micro text-negative" : "text-micro text-fg-muted"}>
-        {state?.ok === false ? state.error : "We'll email you once — when it's ready to try."}
+        {state?.ok === false ? state.error : "We'll email you once, when it's ready to try."}
       </p>
     </form>
   );

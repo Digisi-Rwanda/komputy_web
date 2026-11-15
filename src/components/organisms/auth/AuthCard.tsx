@@ -26,7 +26,7 @@ export function WhatYouGet({ children }: { children: ReactNode }) {
     <div className="flex w-full max-w-[860px] flex-col items-center gap-10 lg:flex-row lg:items-start lg:justify-center">
       <aside className="hidden w-60 shrink-0 flex-col gap-3 pt-10 lg:flex">
         <p className="text-small text-fg">What you get</p>
-        {["14-day free trial", "Sample data to try instantly", "No card required", "Add more services later — same login"].map((t) => (
+        {["14-day free trial", "Sample data to try instantly", "No card required", "Add more services later, same login"].map((t) => (
           <p key={t} className="flex items-start gap-2 text-small text-fg-muted"><Icon name="check" className="mt-0.5 text-positive" />{t}</p>
         ))}
       </aside>

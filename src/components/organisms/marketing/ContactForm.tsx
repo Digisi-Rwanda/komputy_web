@@ -61,7 +61,7 @@ export function ContactForm({ prefill }: { prefill: ContactPrefill }) {
       {(pkg || prefill.range) && (
         <div className="flex flex-wrap gap-2">
           {pkg && <span className="inline-flex h-7 items-center gap-1 rounded-full bg-surface pl-3 pr-1 text-micro text-fg">Package: {PKG[pkg]}<button type="button" aria-label="Remove package" onClick={() => setPkg("")} className="inline-flex size-5 items-center justify-center rounded-full hover:bg-surface-active"><X className="size-3" /></button></span>}
-          {prefill.range && <span className="inline-flex h-7 items-center rounded-full bg-info-tint px-3 text-micro text-link">Indicative USD {prefill.range.replace("-", " – ")} / month</span>}
+          {prefill.range && <span className="inline-flex h-7 items-center rounded-full bg-info-tint px-3 text-micro text-link">Indicative USD {prefill.range.replace("-", " to ")} / month</span>}
         </div>
       )}
       <div className="grid gap-5 sm:grid-cols-2">
@@ -91,12 +91,12 @@ export function ContactForm({ prefill }: { prefill: ContactPrefill }) {
       <div className="flex flex-wrap items-end gap-6">
         <div className="flex flex-col gap-1.5"><span className="text-small text-fg-body">Preferred contact time</span><ToggleGroup label="Preferred contact time" value={time} onChange={setTime} options={[{ value: "Morning", label: "Morning" }, { value: "Afternoon", label: "Afternoon" }]} /></div>
         <div className="flex flex-col gap-1">
-          <Checkbox checked={consent} onCheckedChange={(c) => setConsent(c === true)} aria-invalid={Boolean(err.consent) || undefined} label="I agree to be contacted about Ledgerline services." />
+          <Checkbox checked={consent} onCheckedChange={(c) => setConsent(c === true)} aria-invalid={Boolean(err.consent) || undefined} label="I agree to be contacted about Komputy services." />
           {err.consent && <p role="alert" className="text-micro text-negative">{err.consent}</p>}
         </div>
       </div>
       <Button type="submit" size="lg" loading={pending} className="w-full">Send request</Button>
-      <p className="text-center text-micro text-fg-muted">Or email <span className="font-mono text-fg-body select-all">sales@ledgerline.app</span></p>
+      <p className="text-center text-micro text-fg-muted">Or email <span className="font-mono text-fg-body select-all">sales@komputy.com</span></p>
     </form>
   );
 }

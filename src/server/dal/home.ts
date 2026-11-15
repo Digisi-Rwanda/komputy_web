@@ -22,7 +22,7 @@ export async function homeAttention(p: Principal & { tenantId: string }, ents: E
       db.select().from(schema.accessRequests).where(and(eq(schema.accessRequests.tenantId, p.tenantId), eq(schema.accessRequests.scope, "member"), eq(schema.accessRequests.status, "open"))).limit(3),
       db.select().from(schema.supportSessions).where(and(eq(schema.supportSessions.tenantId, p.tenantId), eq(schema.supportSessions.status, "requested"))).limit(1),
     ]);
-    for (const s of support) items.push({ id: s.id, service: "workspace", title: "Ledgerline support requests access", meta: s.reason, status: ["warning", "Waiting"], age: ago(s.createdAt).replace(" ago", ""), href: "/admin/security", action: "Review" });
+    for (const s of support) items.push({ id: s.id, service: "workspace", title: "Komputy support requests access", meta: s.reason, status: ["warning", "Waiting"], age: ago(s.createdAt).replace(" ago", ""), href: "/admin/security", action: "Review" });
     for (const r of reqs) items.push({ id: r.id, service: "workspace", title: String((r.details as Record<string, string>).title ?? "Access request"), meta: String((r.details as Record<string, string>).requested ?? ""), status: ["info", "Request"], age: ago(r.createdAt).replace(" ago", ""), href: "/admin/requests", action: "Review" });
   }
   for (const e of ents) {

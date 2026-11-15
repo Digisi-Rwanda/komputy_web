@@ -26,7 +26,7 @@ export function AuditLog({ events, initialQuery = "" }: { events: Row[]; initial
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2">
-        <MetaChip>1 Oct – 11 Nov 2026</MetaChip>
+        <MetaChip>1 Oct to 11 Nov 2026</MetaChip>
         <FilterBar value={f} onChange={setF} filters={[{ key: "actor", label: "Person", options: uniq("actor") }, { key: "service", label: "Service", options: uniq("service") }, { key: "action", label: "Action", options: uniq("action") }]} />
         <label className="relative w-full sm:w-56"><span className="sr-only">Search audit log</span><Search className="pointer-events-none absolute left-3 z-10 top-1/2 size-4 -translate-y-1/2 text-fg-muted" /><Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search" className="rounded-full pl-9" /></label>
         <Button variant="secondary" className="ml-auto" icon={<Download />} onClick={() => download("audit-log-2026-11.csv", toCsv([["Timestamp (UTC)", "Actor", "Action", "Object", "Service"], ...list.map((e) => [e.at, e.actor, e.action, e.object, e.service])]))}>Export CSV</Button>

@@ -21,7 +21,7 @@ export function InviteForm({ invitationId, email, existing }: { invitationId: st
       <input type="hidden" name="invitation" value={invitationId} />
       <input type="hidden" name="mode" value={existing ? "existing" : "new"} />
       {existing ? (
-        <p className="text-center text-small text-fg-muted">You already have a Ledgerline account ({email}).</p>
+        <p className="text-center text-small text-fg-muted">You already have a Komputy account ({email}).</p>
       ) : (
         <>
           <Field label="Full name" id="in-name" required error={f.name}><Input name="name" autoComplete="name" /></Field>
@@ -33,7 +33,7 @@ export function InviteForm({ invitationId, email, existing }: { invitationId: st
       )}
       {state && !state.ok && state.error && <FormAlert>{state.error}</FormAlert>}
       <Button type="submit" size="lg" loading={pending} className="w-full">{existing ? "Sign in and join" : "Create account and join"}</Button>
-      {existing ? <Button asChild variant="link" className="self-center"><Link href="/">Decline</Link></Button> : <p className="text-center text-micro text-fg-muted">You&apos;re joining an existing workspace — no new workspace is created.</p>}
+      {existing ? <Button asChild variant="link" className="self-center"><Link href="/">Decline</Link></Button> : <p className="text-center text-micro text-fg-muted">You&apos;re joining an existing workspace: no new workspace is created.</p>}
     </form>
   );
 }

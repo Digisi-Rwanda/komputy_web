@@ -29,7 +29,7 @@ async function Body({ tab }: { tab: string }) {
   );
 }
 
-// ECL Setup (blueprint §11.8, E5–E8), live from the engine.
+// ECL Setup (blueprint §11.8, E5-E8), live from the engine.
 export default async function EclSetupPage({ params }: PageProps<"/ecl/setup/[tab]">) {
   const tab = (await params).tab;
   if (!LABELS[tab]) notFound();

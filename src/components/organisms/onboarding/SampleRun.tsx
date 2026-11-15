@@ -38,7 +38,7 @@ export function SampleChooser() {
       <div className="ring-inner flex flex-col gap-3 rounded-panel border border-line bg-raised p-6">
         <Badge mono tone="info" className="w-fit">Sample</Badge>
         <h3 className="text-h4">Use sample data</h3>
-        <p className="flex-1 text-small text-fg-muted">A small bank portfolio (Jan–Apr 2025, three segments). You validate and compute it like real data. It doesn&apos;t use a trial run.</p>
+        <p className="flex-1 text-small text-fg-muted">A small bank portfolio (Jan-Apr 2025, three segments). You validate and compute it like real data. It doesn&apos;t use a trial run.</p>
         <Button asChild className="w-fit"><Link href="/ecl/sample?run=1">Run sample</Link></Button>
       </div>
       <div className="flex flex-col gap-3 rounded-panel border border-line p-6">

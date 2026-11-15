@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 const require = createRequire(process.env.PLAYWRIGHT_DIR ?? "/home/moses/.npm/_npx/361ceb562f3b3235/node_modules/");
 const { chromium } = require("playwright");
-const BASE = process.env.E2E_BASE ?? "http://localhost:3300", PW = "Ledgerline-Demo-2026", OWNER = "a.mugisha@kivubank.rw";
+const BASE = process.env.E2E_BASE ?? "http://localhost:3300", PW = "Komputy-Demo-2026", OWNER = "a.mugisha@kivubank.rw";
 const PGU = execFileSync("docker", ["exec", "ecl-web-pg", "printenv", "POSTGRES_USER"]).toString().trim();
 // E2E_DATABASE_URL (any reachable Postgres, e.g. Render external URL) or the local dev container.
 const sql = (q) => (process.env.E2E_DATABASE_URL ? execFileSync("psql", [process.env.E2E_DATABASE_URL, "-tAc", q]) : execFileSync("docker", ["exec", "ecl-web-pg", "psql", "-U", PGU, "-d", "ecl_db", "-tAc", q])).toString().trim();
@@ -70,7 +70,7 @@ await step("reviewer approves setup in inbox", async () => {
 });
 await step("new lease wizard → submitted", async () => {
   await owner.goto(`${BASE}/leases/new/contract`, { timeout: 120000 }); await owner.waitForTimeout(1500);
-  await owner.locator("#nl-name").fill("HQ — Floor 4");
+  await owner.locator("#nl-name").fill("HQ, Floor 4");
   await owner.locator("#nl-cp").fill("Kigali Heights Properties");
   await owner.getByRole("button", { name: "Continue" }).click(); await owner.waitForURL(/terms/);
   await owner.locator("#nl-start").fill("2027-01-01"); await owner.locator("#nl-end").fill("2029-12-31");
@@ -91,7 +91,7 @@ await step("register + overview show the lease", async () => {
   const reg = await owner.locator("main").innerText();
   await owner.goto(`${BASE}/leases`, { timeout: 120000 }); await owner.waitForLoadState("networkidle");
   const ov = await owner.locator("main").innerText();
-  check("register + overview show the lease", reg.includes("HQ — Floor 4") && /[1-9][\d,]*\.\d{2}/.test(ov), "");
+  check("register + overview show the lease", reg.includes("HQ, Floor 4") && /[1-9][\d,]*\.\d{2}/.test(ov), "");
 });
 await step("lease detail: schedule + journals from the books", async () => {
   const code = sql(`select code from engine.leases where tenant_id='${tid}' limit 1`);

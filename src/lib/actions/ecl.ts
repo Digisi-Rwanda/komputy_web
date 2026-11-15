@@ -30,7 +30,7 @@ export async function createRun(input: { name: string; reportingPeriod?: string;
   });
 }
 
-/** W2–W4: direct-to-storage upload, step 1 (parts plan). The browser PUTs the parts itself. */
+/** W2-W4: direct-to-storage upload, step 1 (parts plan). The browser PUTs the parts itself. */
 export async function startUpload(runId: string, k: string, filename: string, size: number) {
   if (!id.safeParse(runId).success || !kind.safeParse(k).success || !(size > 0)) return { ok: false, error: "Invalid upload." } as const;
   return as<{ key: string; uploadId: string; partSize: number; urls: string[] }>("ecl.prepare", async (p) =>
@@ -51,7 +51,7 @@ export async function removeUpload(runId: string, uploadId: string) {
   return as<null>("ecl.prepare", async (p) => res(await call(p, (c) => c.DELETE("/api/v1/tenants/{tenant_id}/runs/{run_id}/uploads/{upload_id}", { params: path(p, { run_id: runId, upload_id: uploadId }) }))));
 }
 
-/** W5–W9: queue validation for one dataset; progress arrives over SSE, the result via getValidationJob. */
+/** W5-W9: queue validation for one dataset; progress arrives over SSE, the result via getValidationJob. */
 export async function startValidation(runId: string, scope: "pd" | "lgd" | "ead") {
   return as<{ jobId: string }>("ecl.prepare", async (p) => res(await call(p, (c) => c.POST("/api/v1/tenants/{tenant_id}/runs/{run_id}/validate", { params: { ...path(p, { run_id: runId }), query: { scope } }, body: { accepted_warning_ids: [] } }))));
 }
@@ -124,7 +124,7 @@ export async function saveSegment(input: { id?: string; name: string; active: bo
 
 export async function saveCollateral(input: { id?: string; name: string; haircutPct: number; months: number }) {
   const v = z.object({ id: id.optional(), name: z.string().trim().min(2).max(100), haircutPct: z.number().min(0).max(100), months: z.number().int().min(0).max(600) }).safeParse(input);
-  if (!v.success) return { ok: false, error: "Haircut must be 0–100 % and time to realise whole months." } as const;
+  if (!v.success) return { ok: false, error: "Haircut must be 0-100 % and time to realise whole months." } as const;
   return as<unknown>("ecl.review", async (p) => {
     const body = { name: v.data.name, haircut: v.data.haircutPct.toFixed(2), time_to_realize: v.data.months };
     const r = v.data.id

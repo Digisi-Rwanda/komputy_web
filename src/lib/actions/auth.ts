@@ -94,7 +94,7 @@ export async function signUp(_: FormState, f: FormData): Promise<FormState> {
   const [existing] = await db.select({ id: schema.users.id }).from(schema.users).where(and(eq(schema.users.email, email), isNull(schema.users.deletedAt)));
   if (existing) {
     // No account enumeration: same next screen; the owner of the address gets told instead.
-    await enqueueEmail(email, "Someone tried to sign up with your email", { preview: "Sign-up attempt", headline: "You already have an account", paragraphs: ["Someone tried to create a Ledgerline account with this email. If it was you, sign in instead.", "If it wasn't, you can ignore this email."], cta: { label: "Sign in", href: new URL("/sign-in", env.BETTER_AUTH_URL).toString() } });
+    await enqueueEmail(email, "Someone tried to sign up with your email", { preview: "Sign-up attempt", headline: "You already have an account", paragraphs: ["Someone tried to create a Komputy account with this email. If it was you, sign in instead.", "If it wasn't, you can ignore this email."], cta: { label: "Sign in", href: new URL("/sign-in", env.BETTER_AUTH_URL).toString() } });
     redirect(pending);
   }
   try {

@@ -28,7 +28,7 @@ export default async function LegalPage({ params }: PageProps<"/legal/[doc]">) {
         <div className="grid gap-12 lg:grid-cols-[220px_1fr]">
           <div className="print:hidden"><SectionNav numbered label="Contents" items={d.sections.map((s) => ({ id: s.id, label: s.title }))} /></div>
           <article className="flex max-w-3xl flex-col gap-10">
-            <Banner tone="warning" className="print:hidden">Draft — pending legal review before launch.</Banner>
+            <Banner tone="warning" className="print:hidden">Draft: pending legal review before launch.</Banner>
             <p className="text-body text-fg-muted">{d.intro}</p>
             {d.sections.map((s, i) => (
               <section key={s.id} className="flex flex-col gap-4">

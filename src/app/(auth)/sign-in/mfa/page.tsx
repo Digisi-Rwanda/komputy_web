@@ -12,7 +12,7 @@ async function Form({ searchParams }: { searchParams: PageProps<"/sign-in/mfa">[
 
 export default function MfaPage({ searchParams }: PageProps<"/sign-in/mfa">) {
   return (
-    <AuthCard icon="key" title="Enter your code" sub="Open your authenticator app for your Ledgerline account.">
+    <AuthCard icon="key" title="Enter your code" sub="Open your authenticator app for your Komputy account.">
       <Suspense fallback={<div className="skeleton h-48 rounded-card" />}><Form searchParams={searchParams} /></Suspense>
     </AuthCard>
   );

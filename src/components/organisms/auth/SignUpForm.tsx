@@ -72,9 +72,9 @@ export function SignUpForm({ preselect }: { preselect?: string }) {
         <h2 className="text-h4">Tell us about your company</h2>
         <Field label="Company name" id="su-company" required error={err.company}><Input name="company" autoComplete="organization" /></Field>
         <Field label="Country" id="su-country" required error={err.country}><Select name="country" defaultValue=""><option value="" disabled>Choose…</option>{COUNTRIES.map((c) => <option key={c}>{c}</option>)}</Select></Field>
-        <Field label="Reporting currency" id="su-currency"><Select name="currency" defaultValue="RWF">{CURRENCIES.map(([c, n]) => <option key={c} value={c}>{c} — {n}</option>)}</Select></Field>
+        <Field label="Reporting currency" id="su-currency"><Select name="currency" defaultValue="RWF">{CURRENCIES.map(([c, n]) => <option key={c} value={c}>{c} · {n}</option>)}</Select></Field>
         <Field label="Financial year end" id="su-fye"><Select name="fye" defaultValue="12">{["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((m, i) => <option key={m} value={i + 1}>{new Date(2026, i + 1, 0).getDate()} {m}</option>)}</Select></Field>
-        <div className="flex flex-col gap-1.5"><span className="text-small text-fg-body">Company size <span className="text-fg-muted">(optional)</span></span><input type="hidden" name="size" value={size} /><ToggleGroup label="Company size" value={size} onChange={setSize} options={["1–50", "51–250", "250+"].map((v) => ({ value: v, label: v }))} /></div>
+        <div className="flex flex-col gap-1.5"><span className="text-small text-fg-body">Company size <span className="text-fg-muted">(optional)</span></span><input type="hidden" name="size" value={size} /><ToggleGroup label="Company size" value={size} onChange={setSize} options={["1-50", "51-250", "250+"].map((v) => ({ value: v, label: v }))} /></div>
         <div className="flex justify-between"><Button variant="ghost" onClick={() => setStep(0)}>Back</Button><Button onClick={next}>Continue</Button></div>
       </div>
       <div className={`${hide(2)} flex-col gap-4`}>
@@ -85,7 +85,7 @@ export function SignUpForm({ preselect }: { preselect?: string }) {
           { value: "leases", title: "Lease Accounting", description: "IFRS 16", icon: <Icon name="leases" /> },
           { value: "tax", title: "Tax Provision", description: "IAS 12", icon: <Icon name="tax" />, badge: <Badge>Soon</Badge>, disabled: true },
         ]} />
-        <p className="text-micro text-fg-muted">Not sure? Pick one — you can add the other later.</p>
+        <p className="text-micro text-fg-muted">Not sure? Pick one. You can add the other later.</p>
         {err.service && <p role="alert" className="text-micro text-negative">{err.service}</p>}
         <Checkbox name="terms" label={<>I agree to the <Link href="/legal/terms" className="text-link underline" target="_blank">Terms</Link> and <Link href="/legal/privacy" className="text-link underline" target="_blank">Privacy Policy</Link></>} aria-invalid={Boolean(err.terms) || undefined} />
         {err.terms && <p role="alert" className="text-micro text-negative">{err.terms}</p>}

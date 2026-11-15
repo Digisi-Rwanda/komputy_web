@@ -39,7 +39,7 @@ export function QuotaGate({ used, limit, label = "New run", unit = "runs", child
   return (
     <div className="flex flex-col items-end gap-1">
       <Button disabled disabledReason={`Quota reached: ${used} of ${limit} ${unit} used`}>{label}</Button>
-      <RequestMoreDrawer used={used} limit={limit} unit={unit} trigger={<button type="button" className="text-micro text-warning hover:underline">Quota reached — Request more →</button>} />
+      <RequestMoreDrawer used={used} limit={limit} unit={unit} trigger={<button type="button" className="text-micro text-warning hover:underline">Quota reached · Request more →</button>} />
     </div>
   );
 }

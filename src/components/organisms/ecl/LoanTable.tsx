@@ -29,7 +29,7 @@ export function LoanTable({ rows, runId, total }: { rows: LoanRow[]; runId: stri
     { id: "pd", header: "PD (lifetime)", accessorFn: (r) => r.pd, meta: { align: "right" }, cell: ({ row: { original: r } }) => <PD value={r.pd} /> },
     { id: "lgd", header: "LGD", accessorFn: (r) => r.lgd, meta: { align: "right" }, cell: ({ row: { original: r } }) => `${(r.lgd * 100).toFixed(1)} %` },
     { id: "ecl", header: "ECL", accessorFn: (r) => r.ecl, meta: { align: "right" }, cell: ({ row: { original: r } }) => <span className="text-fg"><Money value={r.ecl} /></span> },
-    { id: "flags", header: "Flags", enableSorting: false, cell: ({ row: { original: r } }) => (r.capped ? <Badge tone="warning">Capped</Badge> : <span className="text-fg-subtle">—</span>) },
+    { id: "flags", header: "Flags", enableSorting: false, cell: ({ row: { original: r } }) => (r.capped ? <Badge tone="warning">Capped</Badge> : <span className="text-fg-subtle">-</span>) },
     { id: "open", header: () => <span className="sr-only">Open</span>, enableSorting: false, cell: ({ row: { original: r } }) => <Link href={`/ecl/results?segment=${r.segment}&loan=${r.id}&run=${runId}`} aria-label={`Open loan ${r.id}`} className="inline-flex items-center gap-1 text-micro text-link hover:underline">Open<ArrowRight className="size-3" /></Link> },
   ];
   return (

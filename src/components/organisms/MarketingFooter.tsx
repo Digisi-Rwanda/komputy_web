@@ -14,9 +14,9 @@ const XIcon = ({ className }: { className?: string }) => (
   <svg aria-hidden viewBox="0 0 24 24" className={className} fill="currentColor"><path d="M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.83-6.32L5.47 21H2.4l7.17-8.2L2 3h6.33l4.37 5.78L17.75 3Zm-1.08 16.2h1.7L7.4 4.73H5.58L16.67 19.2Z" /></svg>
 );
 const SOCIAL = [
-  ["Ledgerline on LinkedIn", "https://www.linkedin.com", Linkedin],
-  ["Ledgerline on X", "https://x.com", XIcon],
-  ["Ledgerline on YouTube", "https://www.youtube.com", Youtube],
+  ["Komputy on LinkedIn", "https://www.linkedin.com", Linkedin],
+  ["Komputy on X", "https://x.com", XIcon],
+  ["Komputy on YouTube", "https://www.youtube.com", Youtube],
 ] as const;
 
 /** Marketing footer: newsletter band on the blueprint grid, 4 columns, status line. */
@@ -47,7 +47,7 @@ export function MarketingFooter() {
         ))}
       </div>
       <div className="mx-auto flex max-w-site flex-wrap justify-between gap-4 border-t border-line px-4 py-6 text-micro text-fg-muted lg:px-6">
-        <span>© 2026 Ledgerline. All rights reserved.</span>
+        <span>© 2026 Komputy. All rights reserved.</span>
         <span className="flex items-center gap-2 font-mono">v1.3.0 · All systems normal <LiveDot /></span>
       </div>
     </footer>

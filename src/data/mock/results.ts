@@ -1,4 +1,4 @@
-// Results data for RUN-0142 (R1–R14). Figures tie to the run headline (12,846,210.55).
+// Results data for RUN-0142 (R1-R14). Figures tie to the run headline (12,846,210.55).
 import type { Exception, LoanRow } from "@/types/domain";
 
 
@@ -20,7 +20,7 @@ export const loans: LoanRow[] = [
 export const TOTAL_LOANS = 48312;
 
 /** ECL distribution by loan size (USD). */
-export const sizeBuckets = [{ bucket: "< 50k", ecl: 1.31e6 }, { bucket: "50k – 250k", ecl: 1.62e6 }, { bucket: "250k – 1M", ecl: 3.04e6 }, { bucket: "1M – 5M", ecl: 4.12e6 }, { bucket: "> 5M", ecl: 2.756e6 }];
+export const sizeBuckets = [{ bucket: "< 50k", ecl: 1.31e6 }, { bucket: "50k to 250k", ecl: 1.62e6 }, { bucket: "250k to 1M", ecl: 3.04e6 }, { bucket: "1M to 5M", ecl: 4.12e6 }, { bucket: "> 5M", ecl: 2.756e6 }];
 
 export const exceptions: Exception[] = [
   { id: "x1", category: "Input validation", loan: "LN-118802", rule: "EA-11", detail: "Reporting date 31 Aug 2026 ≠ run 30 Sep 2026", impact: "Excluded", amount: 0, ack: "Eric Uwase: “Legacy loans, see ticket FIN-221”", input: [["Reporting Date", "2026-08-31"], ["Outstanding Amount", "4,210.00"], ["Stage", "1"]] },
@@ -57,7 +57,7 @@ export const outputs = [
 export const runAudit = [
   { at: "2026-09-30T09:12:00Z", actor: "Eric Uwase", initials: "EU", action: "Created the run", object: "RUN-0142", service: "ECL" },
   { at: "2026-09-30T09:40:00Z", actor: "Eric Uwase", initials: "EU", action: "Uploaded PD_Jan-Sep_2026.xlsx", object: "SHA 9f2c…a71", service: "ECL" },
-  { at: "2026-09-30T10:42:00Z", actor: "Eric Uwase", initials: "EU", action: "Accepted PD with 2 warnings — “Missing months are loans sold to Lakeshore MFI in July.”", object: "PD", service: "ECL" },
+  { at: "2026-09-30T10:42:00Z", actor: "Eric Uwase", initials: "EU", action: "Accepted PD with 2 warnings: “Missing months are loans sold to Lakeshore MFI in July.”", object: "PD", service: "ECL" },
   { at: "2026-09-30T10:51:00Z", actor: "Eric Uwase", initials: "EU", action: "Accepted LGD", object: "LGD", service: "ECL" },
   { at: "2026-09-30T11:03:00Z", actor: "Eric Uwase", initials: "EU", action: "Accepted EAD", object: "EAD", service: "ECL" },
   { at: "2026-09-30T11:05:00Z", actor: "Eric Uwase", initials: "EU", action: "Started compute", object: "job_01HF7K", service: "ECL" },

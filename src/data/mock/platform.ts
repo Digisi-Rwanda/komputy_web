@@ -1,4 +1,4 @@
-// Platform (staff console) mock data, PA1–PA9. Staff see counts and metadata only.
+// Platform (staff console) mock data, PA1-PA9. Staff see counts and metadata only.
 import type { Lead, LeadStage as Stage, PWorkspace } from "@/types/domain";
 export type { Lead, PWorkspace, Stage };
 
@@ -29,7 +29,7 @@ export const AMS = ["M. Achieng", "J. Kamau", "T. Bizimana"];
 export const leads: Lead[] = [
   { id: "REQ-0231", stage: "new", type: "Quote", company: "Coastal Credit Ltd", services: ["ECL"], size: "40k loans/run", source: "From pricing calculator", age: "3 d", contact: "Amina Said · a.said@coastalcredit.tz", message: "We report quarterly to the Bank of Tanzania and need IFRS 9 staging." },
   { id: "REQ-0233", stage: "new", type: "Forwarded", company: "Grace Ineza (Kivu)", services: ["Tax Provision"], size: "Member-forwarded", source: "Kivu admin", age: "1 d", workspace: "ws-kivu" },
-  { id: "REQ-0234", stage: "new", type: "Waitlist", company: "Waitlist — 4 sign-ups", services: ["Document Intelligence"], size: "4 workspaces", source: "Locked screens", age: "2 d" },
+  { id: "REQ-0234", stage: "new", type: "Waitlist", company: "Waitlist: 4 sign-ups", services: ["Document Intelligence"], size: "4 workspaces", source: "Locked screens", age: "2 d" },
   { id: "REQ-0219", stage: "contacted", type: "Full access", company: "Kivu Commercial Bank", services: ["Leases"], size: "250 leases", source: "Trial banner", age: "4 d", assignee: "M. Achieng", workspace: "ws-kivu", contact: "Aline Mugisha · a.mugisha@kivubank.rw · +250 788 000 114", message: "We'd like to move Lease Accounting to full access before our December close." },
   { id: "REQ-0214", stage: "negotiating", type: "Activate", company: "Northgate Leasing", services: ["Leases"], size: "3 entities", source: "Sales call", age: "9 d", assignee: "M. Achieng", workspace: "ws-northgate" },
   { id: "REQ-0205", stage: "won", type: "More capacity", company: "Lakeshore Microfinance", services: ["ECL"], size: "10 → 20 runs", source: "Request more drawer", age: "6 d", assignee: "J. Kamau", workspace: "ws-lakeshore" },
@@ -48,11 +48,11 @@ export const people = [
   { name: "Claude Mugabo", email: "c.mugabo@highland.rw", ws: ["Highland SACCO · Owner"], mfa: false, last: "41 days ago", status: "active" },
   { name: "Divine Mukamana", email: "d.mukamana@kivubank.rw", ws: ["Kivu Commercial Bank · Member"], mfa: true, last: "12 Oct", status: "disabled" },
 ];
-export const staff = [["J. Kamau", "j.kamau@ledgerline.app", "admin"], ["M. Achieng", "m.achieng@ledgerline.app", "sales"], ["T. Bizimana", "t.bizimana@ledgerline.app", "support"]] as [string, string, string][];
+export const staff = [["J. Kamau", "j.kamau@komputy.com", "admin"], ["M. Achieng", "m.achieng@komputy.com", "sales"], ["T. Bizimana", "t.bizimana@komputy.com", "support"]] as [string, string, string][];
 export const STAFF_ROLES = [["admin", "Platform admin"], ["sales", "Sales (can propose, not activate)"], ["support", "Support (read-only)"]];
 
 export const engines = [
-  { svc: "ECL", v: "v1.3.0", status: "Default", released: "2 Oct 2026", ws: 112, notes: ["Lifetime PD term structure for Stage 2", "Faster collateral haircut lookups (–38 %)", "Fix: rounding in segment totals"] },
+  { svc: "ECL", v: "v1.3.0", status: "Default", released: "2 Oct 2026", ws: 112, notes: ["Lifetime PD term structure for Stage 2", "Faster collateral haircut lookups (-38 %)", "Fix: rounding in segment totals"] },
   { svc: "ECL", v: "v1.2.4", status: "Pinned", released: "14 Jun 2026", ws: 9, notes: ["Security patch"] },
   { svc: "ECL", v: "v1.3.1-rc", status: "Candidate", released: "6 Nov 2026", ws: 0, notes: ["Macro overlay scenarios up to 5", "Fix: Stage 3 cure period edge case"] },
   { svc: "Leases", v: "leases-1.0.0", status: "Default", released: "1 Sep 2026", ws: 41, notes: ["First release: IFRS 16 lessee model"] },

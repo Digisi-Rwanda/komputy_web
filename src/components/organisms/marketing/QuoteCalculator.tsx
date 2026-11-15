@@ -65,7 +65,7 @@ export function QuoteCalculator() {
       <div className="ring-inner flex flex-col gap-6 rounded-panel border border-line bg-raised p-6">
         <p className="text-h4 text-fg">Indicative range</p>
         <p aria-live="polite" className="text-[34px] font-medium leading-tight tracking-[-0.03em] text-fg tabular-nums">
-          {q ? <>USD {fmt(q.low)} – {fmt(q.high)} <span className="text-body font-normal text-fg-muted">/ month</span></> : <span className="text-h4 text-fg-muted">Pick at least one service</span>}
+          {q ? <>USD {fmt(q.low)} to {fmt(q.high)} <span className="text-body font-normal text-fg-muted">/ month</span></> : <span className="text-h4 text-fg-muted">Pick at least one service</span>}
         </p>
         <Button size="lg" disabled={!q} onClick={request}>Request this quote</Button>
         <p className="flex gap-3 text-small text-fg-muted"><Info aria-hidden className="mt-0.5 size-4 shrink-0" />Final pricing is agreed with you. Nothing is charged online.</p>

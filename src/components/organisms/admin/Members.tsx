@@ -23,15 +23,15 @@ import type { ActionResult } from "@/server/mutate";
 import type { EclRole, LeasesRole, Member } from "@/types/domain";
 
 const DOMAIN = "kivubank.rw";
-export const ECL_ROLES: [EclRole, string][] = [["none", "No access"], ["viewer", "Viewer — read results and reports"], ["analyst", "Analyst — prepare runs and upload data"], ["reviewer", "Reviewer — approve and sign off runs"]];
-export const LEASE_ROLES: [LeasesRole, string][] = [["none", "No access"], ["viewer", "Viewer — read only"], ["preparer", "Preparer — create and edit leases"], ["reviewer", "Reviewer — approve leases and close"], ["poster", "Poster — mark journals as posted"]];
+export const ECL_ROLES: [EclRole, string][] = [["none", "No access"], ["viewer", "Viewer: read results and reports"], ["analyst", "Analyst: prepare runs and upload data"], ["reviewer", "Reviewer: approve and sign off runs"]];
+export const LEASE_ROLES: [LeasesRole, string][] = [["none", "No access"], ["viewer", "Viewer: read only"], ["preparer", "Preparer: create and edit leases"], ["reviewer", "Reviewer: approve leases and close"], ["poster", "Poster: mark journals as posted"]];
 const label = (r: string) => (r === "none" ? "No access" : r === "preparer" ? "Preparer" : r[0].toUpperCase() + r.slice(1));
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function RoleCell({ m, svc, onChange }: { m: Member; svc: "ecl" | "leases"; onChange: (v: string) => void }) {
   const [edit, setEdit] = useState(false);
   const v = m[svc];
-  if (m.status === "invited" && svc === "leases" && v === "none") return <span className="text-fg-subtle">—</span>;
+  if (m.status === "invited" && svc === "leases" && v === "none") return <span className="text-fg-subtle">-</span>;
   if (edit) return <Select autoFocus aria-label={`${svc === "ecl" ? "ECL" : "Leases"} role for ${m.name}`} value={v} wrapperClassName="w-44" onBlur={() => setEdit(false)} onChange={(e) => { onChange(e.target.value); setEdit(false); }}>{(svc === "ecl" ? ECL_ROLES : LEASE_ROLES).map(([k, d]) => <option key={k} value={k}>{d}</option>)}</Select>;
   const text = <button type="button" disabled={m.status !== "active"} onClick={() => setEdit(true)} className={cn("rounded-full px-2 py-0.5 text-left hover:bg-surface", v === "none" ? "text-fg-subtle" : "text-fg-body")}>{label(v)}</button>;
   return v === "reviewer" ? <Tooltip content="Can't approve their own submissions">{text}</Tooltip> : text;
@@ -66,7 +66,7 @@ export function Members({ initial }: { initial: Member[] }) {
   const invite = async (emails: string[], ecl: EclRole, leases: LeasesRole, admin: boolean, message?: string) => {
     const r = await inviteMembers({ emails, workspaceRole: admin ? "admin" : "member", roles: { ecl, leases }, message });
     if (!r.ok) { toast.error(r.error); return false; }
-    toast.success(`${r.data.sent} invite${r.data.sent > 1 ? "s" : ""} sent — they expire in 7 days`, r.data.skipped ? { description: `${r.data.skipped} already in the workspace` } : undefined);
+    toast.success(`${r.data.sent} invite${r.data.sent > 1 ? "s" : ""} sent. They expire in 7 days`, r.data.skipped ? { description: `${r.data.skipped} already in the workspace` } : undefined);
     setFresh(emails.map((e) => e.toLowerCase()));
     router.refresh();
     return true;
@@ -88,8 +88,8 @@ export function Members({ initial }: { initial: Member[] }) {
                 <td className="px-4">{m.status === "invited" ? <StatusPill tone="info">Invited</StatusPill> : m.status === "disabled" ? <StatusPill tone="neutral">Disabled</StatusPill> : m.workspaceRole === "member" ? <span className="text-fg-body">Member</span> : <StatusPill tone={m.workspaceRole === "owner" ? "positive" : "neutral"}>{label(m.workspaceRole)}</StatusPill>}</td>
                 <td className="px-4"><RoleCell m={m} svc="ecl" onChange={(v) => act(setServiceRole({ membershipId: m.id, service: "ecl", role: v }), `${m.name}: ECL role → ${label(v)}`, () => set(m.id, { ecl: v as EclRole }))} /></td>
                 <td className="px-4"><RoleCell m={m} svc="leases" onChange={(v) => act(setServiceRole({ membershipId: m.id, service: "leases", role: v }), `${m.name}: Leases role → ${label(v)}`, () => set(m.id, { leases: v as LeasesRole }))} /></td>
-                <td className="px-4">{m.status === "invited" ? <span className="text-fg-subtle">—</span> : m.mfa ? <span className="inline-flex items-center gap-1 text-positive"><Check className="size-3.5" />On</span> : <StatusPill tone="warning">Off</StatusPill>}</td>
-                <td className="px-4 text-fg-muted">{m.status === "invited" ? <span className="flex flex-wrap items-center gap-2"><span>{m.lastActive === "—" ? "Expires tomorrow" : m.lastActive}</span><button type="button" className="text-link hover:underline" onClick={() => act(resendInvite({ invitationId: m.id.slice(4) }), `Invite resent to ${m.email}`)}>Resend</button>·<button type="button" className="text-link hover:underline" onClick={() => act(revokeInvite({ invitationId: m.id.slice(4) }), `Invite to ${m.email} revoked`, () => setRows((r) => r.filter((x) => x.id !== m.id)))}>Revoke</button></span> : m.lastActive}</td>
+                <td className="px-4">{m.status === "invited" ? <span className="text-fg-subtle">-</span> : m.mfa ? <span className="inline-flex items-center gap-1 text-positive"><Check className="size-3.5" />On</span> : <StatusPill tone="warning">Off</StatusPill>}</td>
+                <td className="px-4 text-fg-muted">{m.status === "invited" ? <span className="flex flex-wrap items-center gap-2"><span>{m.lastActive === "-" ? "Expires tomorrow" : m.lastActive}</span><button type="button" className="text-link hover:underline" onClick={() => act(resendInvite({ invitationId: m.id.slice(4) }), `Invite resent to ${m.email}`)}>Resend</button>·<button type="button" className="text-link hover:underline" onClick={() => act(revokeInvite({ invitationId: m.id.slice(4) }), `Invite to ${m.email} revoked`, () => setRows((r) => r.filter((x) => x.id !== m.id)))}>Revoke</button></span> : m.lastActive}</td>
                 <td className="px-2 text-right">{m.workspaceRole === "owner" ? <Tooltip content="The owner can't be removed"><span className="inline-flex size-8 items-center justify-center text-fg-subtle"><Icon name="lock" className="size-4" /></span></Tooltip> : (
                   <DropdownMenu trigger={<IconButton label={`Actions for ${m.name}`} size="sm"><Icon name="more" /></IconButton>} items={[
                     { label: m.workspaceRole === "admin" ? "Make member" : "Make administrator", disabled: m.status !== "active" || (m.workspaceRole === "admin" && admins <= 1), onSelect: () => act(setWorkspaceRole({ membershipId: m.id, role: m.workspaceRole === "admin" ? "member" : "admin" }), `${m.name} is now ${m.workspaceRole === "admin" ? "a member" : "an administrator"}`, () => set(m.id, { workspaceRole: m.workspaceRole === "admin" ? "member" : "admin" })) },
@@ -133,7 +133,7 @@ function InviteModal({ onSend, existing, defaultOpen = false }: { onSend: (e: st
           <MultiEmailInput id="invite-emails" value={emails} onChange={setEmails} allowedDomains={[DOMAIN]} placeholder={`name@${DOMAIN}`} />
           {badDomain.length > 0 && <p role="alert" className="text-micro text-negative">Only @{DOMAIN} addresses are allowed (workspace security policy).</p>}
           {dupes.length > 0 && <p role="alert" className="text-micro text-warning">{dupes.join(", ")} {dupes.length > 1 ? "are" : "is"} already in this workspace.</p>}
-          <p className="text-micro text-fg-muted">People who already have a Ledgerline account join with their existing login.</p></div>
+          <p className="text-micro text-fg-muted">People who already have a Komputy account join with their existing login.</p></div>
         <div className="flex flex-col gap-1.5"><span className="text-small text-fg-body">Workspace role</span><ToggleGroup label="Workspace role" value={role} onChange={setRole} options={[{ value: "member", label: "Member" }, { value: "admin", label: "Admin" }]} /></div>
         <div className="flex flex-col gap-2"><span className="text-small text-fg-body">Service access</span>
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-line px-4 py-2.5"><span className="text-small text-fg">Expected Credit Loss</span><Select aria-label="ECL role" value={ecl} onChange={(e) => setEcl(e.target.value as EclRole)} wrapperClassName="w-60">{ECL_ROLES.map(([k, d]) => <option key={k} value={k}>{d}</option>)}</Select></div>

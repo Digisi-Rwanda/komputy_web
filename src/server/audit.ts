@@ -7,7 +7,7 @@ import { ulid } from "@/server/ids";
 
 const h = (v: string | null) => (v ? createHash("sha256").update(env.IP_HASH_SALT + v).digest("hex").slice(0, 32) : null);
 
-/** Request fingerprint stored with audit rows: hashed, never the raw IP (same approach as ECL-Server). */
+/** Request fingerprint stored with audit rows: hashed, never the raw IP (same approach as the previous engine). */
 export async function requestMeta() {
   const hd = await headers();
   const ip = hd.get("x-forwarded-for")?.split(",")[0]?.trim() ?? hd.get("x-real-ip");
@@ -16,7 +16,7 @@ export async function requestMeta() {
 
 export interface AuditEvent { event: string; userId: string | null; tenantId: string | null; details?: Record<string, unknown>; status?: "success" | "failure"; errorCode?: string }
 
-/** Insert-only audit trail shared with ECL-Server (same table). Call inside the mutation's transaction. */
+/** Insert-only audit trail shared with the previous engine (same table). Call inside the mutation's transaction. */
 export async function audit(e: AuditEvent, tx?: Tx) {
   const m = await requestMeta().catch(() => ({ ipHash: null, uaHash: null }));
   await (tx ?? db).insert(schema.auditLogs).values({

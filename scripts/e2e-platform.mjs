@@ -5,7 +5,7 @@ import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 const require = createRequire(process.env.PLAYWRIGHT_DIR ?? "/home/moses/.npm/_npx/361ceb562f3b3235/node_modules/");
 const { chromium } = require("playwright");
-const BASE = process.env.E2E_BASE ?? "http://localhost:3300", PW = "Ledgerline-Demo-2026", OWNER = "a.mugisha@kivubank.rw", ADMIN = "j.kamau@ledgerline.app";
+const BASE = process.env.E2E_BASE ?? "http://localhost:3300", PW = "Komputy-Demo-2026", OWNER = "a.mugisha@kivubank.rw", ADMIN = "j.kamau@komputy.com";
 const PGU = execFileSync("docker", ["exec", "ecl-web-pg", "printenv", "POSTGRES_USER"]).toString().trim();
 // E2E_DATABASE_URL (any reachable Postgres, e.g. Render external URL) or the local dev container.
 const sql = (q) => (process.env.E2E_DATABASE_URL ? execFileSync("psql", [process.env.E2E_DATABASE_URL, "-tAc", q]) : execFileSync("docker", ["exec", "ecl-web-pg", "psql", "-U", PGU, "-d", "ecl_db", "-tAc", q])).toString().trim();
@@ -54,6 +54,7 @@ await step("checklist auto-done + persisted", async () => {
   check("checklist auto-done + persisted", invite === "true" && meta.includes("ecl-collateral") && after === 1, `invite=${invite} meta=${meta.slice(0, 70)}`);
 });
 await step("command palette real data", async () => {
+  await page.waitForLoadState("networkidle"); // shortcut handler attaches on hydration
   await page.keyboard.press("Control+k"); await page.waitForSelector("[cmdk-input]"); await page.waitForTimeout(2000);
   const groups = await page.locator("[cmdk-group-heading]").allTextContents();
   check("command palette real data", groups.includes("People") && !groups.includes("Runs"), `groups=${groups.join("/")}`);
@@ -73,10 +74,10 @@ await step("photo upload persists", async () => {
   check("photo upload persists", img.startsWith("/api/avatar/") && res?.headers()["content-type"] === "image/webp", `image=${img}`);
 });
 await step("password change emails", async () => {
-  const before = outbox("Your Ledgerline password was changed", OWNER);
+  const before = outbox("Your Komputy password was changed", OWNER);
   const a = await page.request.post(`${BASE}/api/auth/change-password`, { data: { currentPassword: PW, newPassword: PW + "!x" }, headers: { origin: BASE } });
   const b = await page.request.post(`${BASE}/api/auth/change-password`, { data: { currentPassword: PW + "!x", newPassword: PW }, headers: { origin: BASE } });
-  check("password change emails", a.ok() && b.ok() && outbox("Your Ledgerline password was changed", OWNER) === before + 2, `${a.status()}/${b.status()}`);
+  check("password change emails", a.ok() && b.ok() && outbox("Your Komputy password was changed", OWNER) === before + 2, `${a.status()}/${b.status()}`);
 });
 await step("idle sign-out", async () => {
   const c2 = await browser.newContext(); await c2.addCookies(await oc.cookies()); const p2 = await c2.newPage();

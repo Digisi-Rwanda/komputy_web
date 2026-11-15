@@ -38,7 +38,7 @@ export function StepReview() {
         <table className="w-full min-w-[680px] text-small"><caption className="px-5 pt-4 text-left text-h4 text-fg">Inputs</caption>
           <thead><tr className="border-b border-line text-fg-muted">{["File", "Rows", "Hash", "Validation", "Accepted"].map((h) => <th key={h} scope="col" className="px-5 py-2 text-left font-normal">{h}</th>)}</tr></thead>
           <tbody>{DS.map((k) => { const f = d.files[k], w = (f.criteria ?? []).filter((c) => c.status === "warning").length; return (
-            <tr key={k} className="border-b border-line last:border-0"><td className="px-5 py-3 text-fg">{f.name ?? "—"}</td><td className="px-5 text-fg-body">{f.rows ? f.rows.toLocaleString("en-US") : "—"}</td><td className="px-5 font-mono text-micro">{f.sha ? `${f.sha.slice(0, 4)}…${f.sha.slice(-3)}` : "—"}</td><td className="px-5"><Badge tone={f.outcome === "warnings" || w ? "warning" : "positive"}>{f.outcome === "warnings" ? `Passed with ${w || "some"} warning${w === 1 ? "" : "s"}` : "Passed"}</Badge></td><td className="px-5 text-micro text-fg-muted">{f.status === "accepted" ? (f.acceptedAt ? `${date(f.acceptedAt.slice(0, 10))} ${f.acceptedAt.slice(11, 16)}` : "Yes") : "—"}</td></tr>
+            <tr key={k} className="border-b border-line last:border-0"><td className="px-5 py-3 text-fg">{f.name ?? "-"}</td><td className="px-5 text-fg-body">{f.rows ? f.rows.toLocaleString("en-US") : "-"}</td><td className="px-5 font-mono text-micro">{f.sha ? `${f.sha.slice(0, 4)}…${f.sha.slice(-3)}` : "-"}</td><td className="px-5"><Badge tone={f.outcome === "warnings" || w ? "warning" : "positive"}>{f.outcome === "warnings" ? `Passed with ${w || "some"} warning${w === 1 ? "" : "s"}` : "Passed"}</Badge></td><td className="px-5 text-micro text-fg-muted">{f.status === "accepted" ? (f.acceptedAt ? `${date(f.acceptedAt.slice(0, 10))} ${f.acceptedAt.slice(11, 16)}` : "Yes") : "-"}</td></tr>
           ); })}</tbody>
         </table>
       </section>
@@ -111,7 +111,7 @@ export function StepCompute() {
   );
 }
 
-/** W13–W15: review happens on the run itself (maker-checker, engine-enforced); this step hands over to it. */
+/** W13-W15: review happens on the run itself (maker-checker, engine-enforced); this step hands over to it. */
 export function StepSignOff() {
   const d = useDraft(), router = useRouter();
   useEffect(() => { if (d.runId && d.phase !== "draft" && d.phase !== "computing") router.replace(`/ecl/runs/${d.runId}/summary`); }, [d.runId, d.phase, router]);

@@ -12,7 +12,7 @@ import { eclTrend, leases as mockLeases, run as getRun } from "@/data/mock/data"
 import { cn } from "@/lib/cn";
 
 const SCREENS = ["ecl", "leases"] as const;
-const URLS = { ecl: "app.ledgerline.com/ecl/runs/RUN-0142", leases: "app.ledgerline.com/leases/register/LSE-0087" };
+const URLS = { ecl: "komputy.com/ecl/runs/RUN-0142", leases: "komputy.com/leases/register/LSE-0087" };
 
 /** Stacked area of ECL by stage (decorative mini chart inside the product window). */
 function MiniArea() {
@@ -111,7 +111,7 @@ export function ProductWindow() {
         style={reduce ? undefined : { rotateX, scale, transformOrigin: "center bottom" }}
         className="ring-inner overflow-hidden rounded-t-panel border border-b-0 border-line-strong bg-canvas/95 backdrop-blur"
         role="img"
-        aria-label={screen === "ecl" ? "Ledgerline ECL run Q3 2026 provisioning, signed off, total ECL USD 12,846,210.55" : "Ledgerline lease LSE-0087 Kigali Heights, approved, liability USD 24,868.52"}
+        aria-label={screen === "ecl" ? "Komputy ECL run Q3 2026 provisioning, signed off, total ECL USD 12,846,210.55" : "Komputy lease LSE-0087 Kigali Heights, approved, liability USD 24,868.52"}
       >
         <div className="flex items-center gap-3 border-b border-line px-4 py-3">
           <span aria-hidden className="flex gap-1.5">{[0, 1, 2].map((d) => <span key={d} className="size-2.5 rounded-full bg-surface-active" />)}</span>

@@ -40,7 +40,7 @@ export function LeaseDetail({ lease, tab, view }: { lease: Lease; tab: string; v
   const docs: { id: string; name: string; size: number; uploadedBy: string; uploadedAt: string; kind: string }[] = L.docs ?? [];
   const rows = (period === "annual" ? view?.annual : view?.monthly) ?? [];
   const first = view?.monthly?.[0], nextPay = view?.monthly?.find((r) => r.month > b.period && n(r.payments) > 0);
-  const who = (id?: string) => b.members.find((m) => m.id === id)?.name ?? "—";
+  const who = (id?: string) => b.members.find((m) => m.id === id)?.name ?? "-";
   const audit = b.details[lease.id]?.audit ?? [];
   const exportSchedule = () => download(`${lease.id}-schedule.csv`, toCsv([["Period", "Liability opening", "Interest", "Payments", "Liability closing", "Depreciation", "ROU closing"], ...rows.map((r) => [String(r.month), String(r.liabOpening), String(r.interest), String(r.payments), String(r.liabClosing), String(r.depreciation), String(r.rouClosing)])]));
   const upload = (f: File) => start(async () => {
@@ -64,20 +64,20 @@ export function LeaseDetail({ lease, tab, view }: { lease: Lease; tab: string; v
         </>}
         tabs={<SegmentedTabs label="Lease sections" active={`/leases/register/${lease.id}/${tab}`} items={TABS.map(([t, l]) => ({ label: l, href: `/leases/register/${lease.id}/${t}`, count: t === "events" ? versions.length || undefined : t === "documents" ? docs.length || undefined : undefined }))} />} />
 
-      {pending && pending !== current && <Banner tone="warning" action={<Button asChild size="sm" variant="secondary"><Link href="/leases/inbox">Open inbox</Link></Button>}>v{pending.n} ({pending.event}) is {pending.status.replace("_", " ")}{pending.status === "in_review" ? " — a reviewer approves it in the Inbox" : ""}.</Banner>}
-      {view?.exempt && <Banner tone="info">Exempt ({lease.exempt ?? "short-term / low-value"}) — payments are expensed; no ROU asset or liability on the balance sheet.</Banner>}
+      {pending && pending !== current && <Banner tone="warning" action={<Button asChild size="sm" variant="secondary"><Link href="/leases/inbox">Open inbox</Link></Button>}>v{pending.n} ({pending.event}) is {pending.status.replace("_", " ")}{pending.status === "in_review" ? ". A reviewer approves it in the Inbox" : ""}.</Banner>}
+      {view?.exempt && <Banner tone="info">Exempt ({lease.exempt ?? "short-term / low-value"}): payments are expensed; no ROU asset or liability on the balance sheet.</Banner>}
 
       {tab === "summary" && <>
         <HeroMetric label={`Lease liability · ${b.period}`} currency={L.currency ?? b.currency} value={<Money value={lease.liability ?? 0} />} sub={lease.start && lease.start > `${b.period}-31` ? `Commences ${date(lease.start)}` : lease.end ? `Ends ${date(lease.end)}` : undefined} />
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard label="ROU asset" value={money(lease.rouAsset ?? 0)} />
-          <StatCard label="Rate" value={lease.rate ? `${(lease.rate * 100).toFixed(2)} %` : "—"} meta={current?.rate?.source === "override" ? "Override · justified" : "Curve rate"} />
-          <StatCard label="Term" value={view?.monthly?.length ? `${view.monthly.length} months` : "—"} meta={lease.end ? `Ends ${date(lease.end)}` : undefined} />
-          <StatCard label="Next payment" value={nextPay ? money(n(nextPay.payments)) : "—"} meta={nextPay ? `${nextPay.month}` : undefined} />
+          <StatCard label="Rate" value={lease.rate ? `${(lease.rate * 100).toFixed(2)} %` : "-"} meta={current?.rate?.source === "override" ? "Override · justified" : "Curve rate"} />
+          <StatCard label="Term" value={view?.monthly?.length ? `${view.monthly.length} months` : "-"} meta={lease.end ? `Ends ${date(lease.end)}` : undefined} />
+          <StatCard label="Next payment" value={nextPay ? money(n(nextPay.payments)) : "-"} meta={nextPay ? `${nextPay.month}` : undefined} />
         </div>
         <div className="grid gap-4 lg:grid-cols-2">
-          <section className="rounded-panel border border-line p-5"><h3 className="mb-4 text-h4">Contract</h3><KeyValue columns={2} items={[["Counterparty", view?.counterparty ?? lease.counterparty], ["Cost centre / ref", L.costCentre || "—"], ["Location", L.location || "—"], ["Commencement", lease.start ? date(lease.start) : "—"], ["Initial liability", first ? money(n(first.liabOpening) + n(first.additions)) : "—"]]} /></section>
-          <section className="rounded-panel border border-line p-5"><h3 className="mb-4 text-h4">Approval</h3><KeyValue columns={1} items={[["Prepared", current ? `${who(current.createdBy)} · ${current.createdAt?.slice(0, 10)}` : "—"], ["Decision", current?.decidedBy ? `${who(current.decidedBy)} · ${current.decidedAt?.slice(0, 10)}` : "Pending"], ["Comment", current?.comments?.at(-1)?.text ?? "—"]]} /></section>
+          <section className="rounded-panel border border-line p-5"><h3 className="mb-4 text-h4">Contract</h3><KeyValue columns={2} items={[["Counterparty", view?.counterparty ?? lease.counterparty], ["Cost centre / ref", L.costCentre || "-"], ["Location", L.location || "-"], ["Commencement", lease.start ? date(lease.start) : "-"], ["Initial liability", first ? money(n(first.liabOpening) + n(first.additions)) : "-"]]} /></section>
+          <section className="rounded-panel border border-line p-5"><h3 className="mb-4 text-h4">Approval</h3><KeyValue columns={1} items={[["Prepared", current ? `${who(current.createdBy)} · ${current.createdAt?.slice(0, 10)}` : "-"], ["Decision", current?.decidedBy ? `${who(current.decidedBy)} · ${current.decidedAt?.slice(0, 10)}` : "Pending"], ["Comment", current?.comments?.at(-1)?.text ?? "-"]]} /></section>
         </div>
       </>}
 
@@ -88,14 +88,14 @@ export function LeaseDetail({ lease, tab, view }: { lease: Lease; tab: string; v
           <thead className="sticky top-0 bg-canvas"><tr className="border-b border-line text-fg-muted">{["Period", "Opening", "Interest", "Payments", "Closing", "Depreciation", "ROU carrying"].map((h, i) => <th key={h} scope="col" className={`px-4 py-2 font-normal ${i ? "text-right" : "text-left"}`}>{h}</th>)}</tr></thead>
           <tbody>{rows.map((r) => <tr key={String(r.month)} className={`border-b border-line ${r.hasEvent ? "bg-warning-tint/40" : ""}`}><td className="px-4 py-2">{String(r.month)}{r.hasEvent && <Badge tone="warning" className="ml-2">event</Badge>}</td>{[r.liabOpening, r.interest, r.payments, r.liabClosing, r.depreciation, r.rouClosing].map((x, j) => <td key={j} className="px-4 text-right">{money(n(x))}</td>)}</tr>)}</tbody></table></div>
         <p className="font-mono text-micro text-fg-muted">Calculated by {view?.engineVersion ?? "the engine"} · {view?.computedAt?.slice(0, 10)} · last period absorbs rounding</p>
-      </> : <Banner tone="info">No schedule yet — {lease.status === "draft" || lease.status === "submitted" ? "it's created when the lease is approved" : "exempt lease"}.</Banner>)}
+      </> : <Banner tone="info">No schedule yet: {lease.status === "draft" || lease.status === "submitted" ? "it's created when the lease is approved" : "exempt lease"}.</Banner>)}
 
       {tab === "journals" && ((view?.journals ?? []).length ? <>
         <div className="relative max-h-[60vh] overflow-auto rounded-panel border border-line"><table className="w-full min-w-[680px] text-small tabular-nums"><caption className="sr-only">Journal entries</caption>
           <thead className="sticky top-0 bg-canvas"><tr className="border-b border-line text-fg-muted">{["Date", "Entry", "Account", "Debit", "Credit"].map((h, i) => <th key={h} scope="col" className={`px-4 py-2 font-normal ${i > 2 ? "text-right" : "text-left"}`}>{h}</th>)}</tr></thead>
           <tbody>{(view!.journals as { date: string; memo: string; kind: string; account: string; debit: string; credit: string }[]).map((l, i, all) => {
             const first = i === 0 || all[i - 1].date !== l.date || all[i - 1].kind !== l.kind;
-            return <tr key={i} className={`border-b border-line last:border-0 ${first ? "" : "text-fg-body"}`}><td className="px-4 py-2">{first ? l.date : ""}</td><td className="px-4 text-fg-body">{first ? l.memo : ""}</td><td className="px-4 font-mono text-micro">{l.account}</td><td className="px-4 text-right">{n(l.debit) ? money(n(l.debit)) : "—"}</td><td className="px-4 text-right">{n(l.credit) ? money(n(l.credit)) : "—"}</td></tr>;
+            return <tr key={i} className={`border-b border-line last:border-0 ${first ? "" : "text-fg-body"}`}><td className="px-4 py-2">{first ? l.date : ""}</td><td className="px-4 text-fg-body">{first ? l.memo : ""}</td><td className="px-4 font-mono text-micro">{l.account}</td><td className="px-4 text-right">{n(l.debit) ? money(n(l.debit)) : "-"}</td><td className="px-4 text-right">{n(l.credit) ? money(n(l.credit)) : "-"}</td></tr>;
           })}</tbody></table></div>
         <Badge tone="positive" className="w-fit">Every entry balances (engine-checked)</Badge>
       </> : <Banner tone="info">No journals for this lease yet.</Banner>)}

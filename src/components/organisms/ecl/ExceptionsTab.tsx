@@ -45,7 +45,7 @@ export function ExceptionsTab({ rows, runId }: { rows: Exception[]; runId: strin
         {open && <div className="flex flex-col gap-5">
           <KeyValue columns={1} items={[["Category", open.category], ["Loan", open.loan], ["Rule", open.rule], ["Detail", open.detail], ["Impact", open.impact]]} />
           {open.input && <div><p className="mb-2 text-micro text-fg-muted">Input row</p><KeyValue columns={2} items={open.input} /></div>}
-          <div><p className="mb-1 text-micro text-fg-muted">Acknowledgement</p><p className="text-small text-fg-body">{open.ack ?? "Not acknowledged — included in the exceptions register."}</p></div>
+          <div><p className="mb-1 text-micro text-fg-muted">Acknowledgement</p><p className="text-small text-fg-body">{open.ack ?? "Not acknowledged: included in the exceptions register."}</p></div>
         </div>}
       </Sheet>
     </div>

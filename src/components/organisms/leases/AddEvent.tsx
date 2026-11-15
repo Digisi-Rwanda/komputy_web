@@ -72,7 +72,7 @@ export function AddEvent({ leaseId, rev, currency }: { leaseId: string; rev: num
             <p className="text-small tabular-nums text-fg-body">Liability before {money(Number(seg.liabBefore ?? 0))} → after <span className="text-fg">{money(Number(seg.L0 ?? 0))}</span> · Δ {money(Number(seg.liabAdj ?? 0))}</p>
             <p className="text-small tabular-nums text-fg-body">ROU before {money(Number(seg.rouBefore ?? 0))} → after <span className="text-fg">{money(Number(seg.R0 ?? 0))}</span>{Number(seg.gainLoss ?? 0) ? ` · gain/loss ${money(Number(seg.gainLoss))}` : ""}</p>
             <ul className="flex flex-col gap-1 rounded-md bg-surface px-3 py-2 font-mono text-micro text-fg-body">{preview.journals.slice(0, 8).map((j, i) => <li key={i}>{Number(j.debit) ? `Dr ${j.account} ${money(Number(j.debit))}` : `Cr ${j.account} ${money(Number(j.credit))}`}</li>)}</ul>
-            <p className="font-mono text-micro text-fg-muted">Preview by the engine — nothing changes until approved.</p>
+            <p className="font-mono text-micro text-fg-muted">Preview by the engine. Nothing changes until approved.</p>
           </section>
         ) : <Banner tone="info">Preview the impact to see the remeasurement and journals before submitting.</Banner>}
       </div>

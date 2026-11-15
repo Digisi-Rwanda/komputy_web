@@ -38,10 +38,10 @@ export async function submitContact(_: ContactState, form: FormData): Promise<Co
       details: { title: `${input.company} · ${TYPE[input.topic] ?? "Quote"}`, type: TYPE[input.topic] ?? "Quote", company: input.company.trim(), country: input.country, services: names, size: input.size, message: input.message.trim() || undefined, time: input.time || undefined, contact: `${input.name.trim()} · ${input.email.trim()}`, email: input.email.trim() } });
     await tx.insert(schema.requestEvents).values({ id: ulid(), requestId: id, actorId: null, kind: "created", note: `Website form (${input.topic || "contact"})` });
     await enqueueEmail(input.email.trim(), `We got your request · ${code(id)}`, {
-      preview: "Thanks — we'll be in touch within one business day", headline: `Thanks, ${first}`,
+      preview: "Thanks, we'll be in touch within one business day", headline: `Thanks, ${first}`,
       paragraphs: ["We received your request and an account manager will reply within one business day.", "Reply to this email if you want to add anything."],
       details: [["Reference", code(id)], ["Company", input.company.trim()], ["Services", names.join(", ")], ...(input.time ? [["Best time", input.time] as [string, string]] : [])],
-      footer: "You're receiving this because you contacted Ledgerline.",
+      footer: "You're receiving this because you contacted Komputy.",
     }, tx);
     await audit({ event: "lead.created", userId: null, tenantId: null, details: { requestId: id, topic: input.topic } }, tx);
   });
@@ -75,7 +75,7 @@ export async function joinWaitlist(_: SimpleState, form: FormData): Promise<Simp
   await db.transaction(async (tx) => {
     await tx.insert(schema.accessRequests).values({ id, code: code(id), kind: "waitlist", scope: "platform", status: "new", service, source: "Website waitlist", details: { title: `${domain} · Waitlist`, type: "Waitlist", company: domain, services: [name], size: "", contact: email, email } });
     await tx.insert(schema.requestEvents).values({ id: ulid(), requestId: id, actorId: null, kind: "created", note: `Joined the ${name} waitlist` });
-    await enqueueEmail(email, `You're on the ${name} waitlist`, { preview: "We'll email you when it opens", headline: "You're on the list", paragraphs: [`We'll email you as soon as ${name} opens. No other emails.`], footer: "You're receiving this because you joined a Ledgerline waitlist." }, tx);
+    await enqueueEmail(email, `You're on the ${name} waitlist`, { preview: "We'll email you when it opens", headline: "You're on the list", paragraphs: [`We'll email you as soon as ${name} opens. No other emails.`], footer: "You're receiving this because you joined a Komputy waitlist." }, tx);
   });
   return { ok: true, email };
 }

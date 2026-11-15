@@ -36,7 +36,7 @@ export function MarketingHeader() {
   return (
     <header className="glass sticky top-0 z-[var(--z-sticky)] border-b border-line">
       <div className="mx-auto flex h-marketing-bar max-w-site items-center gap-8 px-4 lg:px-6">
-        <Link href="/" aria-label="Ledgerline home"><Logo /></Link>
+        <Link href="/" aria-label="Komputy home"><Logo /></Link>
         <nav aria-label="Main" className="hidden flex-1 items-center justify-center gap-8 md:flex">
           <Popover align="center" trigger={<button type="button" className={`${link} inline-flex items-center gap-1 data-[state=open]:text-fg`}>Services <ChevronDown className="size-3.5" /></button>}>
             <ServicesMenu />

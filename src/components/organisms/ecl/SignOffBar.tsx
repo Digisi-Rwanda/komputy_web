@@ -8,7 +8,7 @@ import { toast } from "@/components/organisms/Toaster";
 import { reviewRun } from "@/lib/actions/ecl";
 
 /**
- * LM3.2–3.4: sticky review bar. needs-review → reviewers Return / Approve & sign off (never their own run);
+ * LM3.2-3.4: sticky review bar. needs-review → reviewers Return / Approve & sign off (never their own run);
  * returned → the preparer resubmits. The engine enforces the same rules; this only mirrors them in the UI.
  */
 export function SignOffBar({ id, name, status, preparer, preparerId, me, canReview, canPrepare }: {

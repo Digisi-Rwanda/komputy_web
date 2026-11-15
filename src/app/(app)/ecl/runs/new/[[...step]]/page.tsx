@@ -8,7 +8,7 @@ import { requireMember } from "@/server/session";
 
 export const metadata: Metadata = { title: "New run" };
 
-// New run wizard (blueprint §11.4, W1–W17). Params are read inside Suspense so navigation stays instant.
+// New run wizard (blueprint §11.4, W1-W17). Params are read inside Suspense so navigation stays instant.
 export default function NewRunPage({ params }: PageProps<"/ecl/runs/new/[[...step]]">) {
   return <Suspense fallback={<div className="skeleton h-[480px] rounded-panel" />}><Load params={params} /></Suspense>;
 }

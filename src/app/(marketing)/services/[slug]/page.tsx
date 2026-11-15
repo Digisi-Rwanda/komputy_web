@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PageProps<"/services/[slug]">
   const p = SERVICE_PAGES[slug as ServiceId];
   if (!p) return {};
   const name = service(p.id).name;
-  return { title: name, description: p.sub, alternates: { canonical: `/services/${slug}` }, openGraph: { title: `${name} · Ledgerline`, description: p.sub, images: ["/brand/og-landing.jpg"] } };
+  return { title: name, description: p.sub, alternates: { canonical: `/services/${slug}` }, openGraph: { title: `${name} · Komputy`, description: p.sub, siteName: "Komputy", images: ["/opengraph-image"] } };
 }
 
 const crumbs = (id: ServiceId) => [{ label: "Services", href: "/#services" }, { label: service(id).name }];
@@ -46,12 +46,12 @@ function Live({ p }: { p: LiveServicePage }) {
       />
       <Frame id="who" label="Who it's for"><SectionHeading label="Who it's for" title="Built for the teams that sign the numbers." /><div className="mt-10"><FeatureGrid items={p.audiences} /></div></Frame>
       <Frame id="workflow" label="Workflow"><SectionHeading label="Workflow" title="A streamlined workflow." /><div className="mt-12"><WorkflowSteps steps={p.workflow} /></div></Frame>
-      <Frame id="inputs" label="Inputs"><SectionHeading label="Inputs" title="Know exactly what to upload." sub="Download the templates — no sign-up needed." /><div className="mt-10"><InputsTable files={p.inputs} /></div></Frame>
+      <Frame id="inputs" label="Inputs"><SectionHeading label="Inputs" title="Know exactly what to upload." sub="Download the templates, no sign-up needed." /><div className="mt-10"><InputsTable files={p.inputs} /></div></Frame>
       <Frame id="outputs" label="Outputs"><SectionHeading label="Outputs" title="Comprehensive outputs." /><div className="mt-10"><FeatureGrid items={p.outputs} /></div></Frame>
       <Frame id="controls" label="Controls"><SectionHeading label="Controls" title="Robust controls." /><div className="mt-10"><FeatureGrid items={p.controls} /></div></Frame>
       <Frame id="pricing" label="Pricing">
         <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-center">
-          <SectionHeading label="Pricing" title={`${s.name}, ${p.priceFrom.toLowerCase()}.`} sub="Start with a free trial. Paid plans are agreed with you — nothing is charged online." />
+          <SectionHeading label="Pricing" title={`${s.name}, ${p.priceFrom.toLowerCase()}.`} sub="Start with a free trial. Paid plans are agreed with you. Nothing is charged online." />
           <div className="ring-inner flex flex-col gap-5 rounded-panel border border-fg bg-raised p-6">
             <Badge tone="info" className="w-fit">Most common entry</Badge>
             <p className="text-h3 text-fg">{p.priceFrom}</p>
@@ -66,7 +66,7 @@ function Live({ p }: { p: LiveServicePage }) {
       <Faq items={p.faq} title="Frequently asked questions" label="FAQ" />
       <Frame id="other" label="Other services"><SectionHeading title="Other services" /><div className="mt-8"><OtherServices exclude={p.id} /></div></Frame>
       <Cta title={p.cta.title} sub={p.cta.sub} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([{ "@context": "https://schema.org", "@type": "Product", name: `Ledgerline ${s.name}`, description: p.sub, offers: { "@type": "Offer", priceCurrency: "USD", price: "1200", description: p.priceFrom } }, faqJsonLd(p.faq)]) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([{ "@context": "https://schema.org", "@type": "Product", name: `Komputy ${s.name}`, description: p.sub, offers: { "@type": "Offer", priceCurrency: "USD", price: "1200", description: p.priceFrom } }, faqJsonLd(p.faq)]) }} />
     </>
   );
 }
@@ -82,7 +82,7 @@ function Soon({ p }: { p: SoonServicePage }) {
       <Frame id="design-partner" label="Design partner">
         <div className="flex flex-wrap items-center gap-6 rounded-panel border border-line bg-raised p-8">
           <Icon name="users" size={28} className="text-fg" />
-          <div className="flex-1"><p className="text-h3 text-fg">Help shape it — 30-minute call, early access.</p><p className="mt-1 text-small text-fg-muted">Be a design partner for {s.name}.</p></div>
+          <div className="flex-1"><p className="text-h3 text-fg">Help shape it: 30-minute call, early access.</p><p className="mt-1 text-small text-fg-muted">Be a design partner for {s.name}.</p></div>
           <Button asChild><Link href={`/contact?topic=design-partner&services=${p.id}`}>Book a call</Link></Button>
         </div>
       </Frame>

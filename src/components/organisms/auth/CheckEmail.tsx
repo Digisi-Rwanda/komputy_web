@@ -22,7 +22,7 @@ export function CheckEmail({ email }: { email: string }) {
         {state?.ok && <p role="status" className="flex items-center gap-1.5 text-micro text-positive"><CheckCircle2 className="size-3.5" />{state.message}</p>}
       </form>
       <Link href="/sign-up" className="text-small text-link hover:underline">Change email</Link>
-      <p className="mt-2 rounded-card border border-line px-4 py-3 text-center text-micro text-fg-muted">You can look around in <Link href="/home?tour=1" className="text-link hover:underline">read-only mode</Link> meanwhile — uploads unlock once you verify.</p>
+      <p className="mt-2 rounded-card border border-line px-4 py-3 text-center text-micro text-fg-muted">You can look around in <Link href="/home?tour=1" className="text-link hover:underline">read-only mode</Link> meanwhile. Uploads unlock once you verify.</p>
     </div>
   );
 }
@@ -34,7 +34,7 @@ export function Verified() {
   useEffect(() => { if (n === 0) { router.push("/onboarding"); return; } const t = setTimeout(() => setN(n - 1), 1000); return () => clearTimeout(t); }, [n, router]);
   return (
     <div className="flex flex-col items-center gap-3">
-      <Button asChild size="lg" className="w-full"><Link href="/onboarding">Continue to Ledgerline</Link></Button>
+      <Button asChild size="lg" className="w-full"><Link href="/onboarding">Continue to Komputy</Link></Button>
       <p aria-live="polite" className="text-micro text-fg-muted">Redirecting in {n}…</p>
     </div>
   );

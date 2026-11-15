@@ -35,9 +35,9 @@ export function Register({ leases, view }: { leases: Lease[]; view: string }) {
     { id: "lease", header: "Lease", accessorFn: (l) => l.name, cell: ({ row: { original: l } }) => <Link href={`/leases/register/${l.id}/summary`} className="hover:underline"><TwoLine title={l.name} meta={<span className="font-mono">{l.id}</span>} /></Link> },
     { id: "cp", header: "Counterparty", accessorFn: (l) => l.counterparty, cell: ({ row: { original: l } }) => <span className="text-fg-body">{l.counterparty}</span> },
     { id: "cls", header: "Asset class", accessorFn: (l) => l.assetClass, cell: ({ row: { original: l } }) => l.exempt ? <Badge>Exempt (low value)</Badge> : l.assetClass },
-    { id: "start", header: "Commencement", accessorFn: (l) => l.start ?? "", cell: ({ row: { original: l } }) => (l.start ? date(l.start) : "—") },
-    { id: "end", header: "End", accessorFn: (l) => l.end ?? "", cell: ({ row: { original: l } }) => (l.end ? date(l.end) : "—") },
-    { id: "liab", header: "Liability", accessorFn: (l) => l.liability ?? 0, meta: { align: "right" }, cell: ({ row: { original: l } }) => (l.liability != null ? <Money value={l.liability} /> : "—") },
+    { id: "start", header: "Commencement", accessorFn: (l) => l.start ?? "", cell: ({ row: { original: l } }) => (l.start ? date(l.start) : "-") },
+    { id: "end", header: "End", accessorFn: (l) => l.end ?? "", cell: ({ row: { original: l } }) => (l.end ? date(l.end) : "-") },
+    { id: "liab", header: "Liability", accessorFn: (l) => l.liability ?? 0, meta: { align: "right" }, cell: ({ row: { original: l } }) => (l.liability != null ? <Money value={l.liability} /> : "-") },
     { id: "status", header: "Status", accessorFn: (l) => l.status, cell: ({ row: { original: l } }) => <StatusPill tone={LEASE_STATUS[l.status][0]}>{LEASE_STATUS[l.status][1]}</StatusPill> },
   ];
   const exportRows = (list: Lease[]) => download("lease-register.csv", toCsv([["Lease ID", "Name", "Counterparty", "Asset class", "Commencement", "End", "Liability", "Status"], ...list.map((l) => [l.id, l.name, l.counterparty, l.assetClass, l.start ?? "", l.end ?? "", l.liability ?? "", LEASE_STATUS[l.status][1]])]));

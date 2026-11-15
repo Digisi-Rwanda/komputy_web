@@ -57,9 +57,9 @@ export const States = {
       <ProgressBar value={used} max={limit} label={unit} tone="warning" showValue />
     </StateView>
   ),
-  ReadOnly: () => <StateView icon="lock" tone="negative" title="Read-only — this workspace is suspended" description="You can still view and export everything." action={<Button variant="secondary" icon={<Icon name="download" />}>Export all data</Button>} />,
+  ReadOnly: () => <StateView icon="lock" tone="negative" title="Read-only: this workspace is suspended" description="You can still view and export everything." action={<Button variant="secondary" icon={<Icon name="download" />}>Export all data</Button>} />,
   NotFound: () => (
     <StateView title="This page doesn't exist" art={<span aria-hidden className="font-serif text-[120px] leading-none text-line-strong">404</span>} action={<Button asChild><Link href="/">Go home</Link></Button>} />
   ),
-  Maintenance: () => <StateView icon="clock" title={<span className="inline-flex items-center gap-2"><LiveDot tone="warning" pulse />Ledgerline is updating</span>} description="Back in about 10 minutes. Uploads are paused, everything else is read-only." secondary={linkBtn("/status", "Status page")} />,
+  Maintenance: () => <StateView icon="clock" title={<span className="inline-flex items-center gap-2"><LiveDot tone="warning" pulse />Komputy is updating</span>} description="Back in about 10 minutes. Uploads are paused, everything else is read-only." secondary={linkBtn("/status", "Status page")} />,
 };

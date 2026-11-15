@@ -63,7 +63,7 @@ export function Checklist({ workspace, states, progress }: { workspace: string; 
                         {isDone && <Check className="size-3" strokeWidth={3} />}
                       </button>
                       <span className={cn("min-w-0 flex-1 text-small", isDone ? "text-fg-muted line-through" : "text-fg-body")}>
-                        {t.label}{t.hint && <span className="text-fg-muted"> — {t.hint}</span>}
+                        {t.label}{t.hint && <span className="text-fg-muted">: {t.hint}</span>}
                         {isNext && <Badge tone="inverse" className="ml-2">Next</Badge>}
                       </span>
                       {!isDone && <Button asChild size="sm" variant={t.action.primary ? "primary" : "secondary"}><Link href={t.action.href} onClick={() => !t.action.primary && markDone(t.id)}>{t.action.label}</Link></Button>}

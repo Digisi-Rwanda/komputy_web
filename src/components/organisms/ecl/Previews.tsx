@@ -19,7 +19,7 @@ export function PdPreview() {
       <div className="flex flex-wrap items-center gap-3">
         <ToggleGroup label="Preview" value={view} onChange={setView} options={[{ value: "matrix", label: "Matrix" }, { value: "term", label: "Term structure" }]} />
         {view === "matrix" && <ToggleGroup label="Segment" value={seg} onChange={setSeg} options={Object.keys(PD_SEGMENTS).map((s) => ({ value: s, label: s }))} />}
-        <span className="ml-auto text-micro text-fg-muted">Pooled Jan–Nov 2026</span>
+        <span className="ml-auto text-micro text-fg-muted">Pooled Jan-Nov 2026</span>
       </div>
       {view === "matrix" ? (
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">

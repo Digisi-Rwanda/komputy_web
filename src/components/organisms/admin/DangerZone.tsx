@@ -48,7 +48,7 @@ export function DangerZone({ admins, name, closingOn }: { admins: Member[]; name
       <section className="flex flex-col gap-4 rounded-panel border border-negative/40 p-5">
         <div><h2 className="text-h4">Close workspace</h2><p className="text-small text-fg-muted">All runs, leases and files are deleted 30 days after closing. Export your data first.</p></div>
         <div className="flex flex-wrap gap-2">
-          {/* shortcut: full export bundles come from ECL-Server (plan Phase 5); enable then. */}
+          {/* shortcut: full export bundles come from the engine (plan Phase 5); enable then. */}
           <Button variant="secondary" icon={<Download />} disabled disabledReason="Full data export arrives with the engine connection">Export all data</Button>
           <Modal open={openC} onOpenChange={(v) => { setOpenC(v); if (!v) { setPw(""); setTyped(""); } }} title="Close workspace?" size="sm" description="Everything is deleted after 30 days. You can cancel until then."
             trigger={<Button variant="danger" disabled={Boolean(closingOn)} disabledReason={closingOn ? "Already scheduled to close" : undefined}>Close workspace</Button>}

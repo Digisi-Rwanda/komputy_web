@@ -23,7 +23,7 @@ import type { Entitlement } from "@/types/domain";
 
 export const metadata: Metadata = { title: "Home" };
 
-// Home (blueprint §10, HM1–HM4). `?scenario=trial` = ECL trial + Leases locked (HM2); `?scenario=new` = brand-new workspace (HM3).
+// Home (blueprint §10, HM1-HM4). `?scenario=trial` = ECL trial + Leases locked (HM2); `?scenario=new` = brand-new workspace (HM3).
 async function Body({ searchParams }: { searchParams: PageProps<"/home">["searchParams"] }) {
   const sp = await searchParams;
   const scenario = one(sp.scenario);

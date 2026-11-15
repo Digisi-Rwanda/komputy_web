@@ -81,7 +81,7 @@ async function ProfileTab() {
 
 const wait = (node: React.ReactNode) => <Suspense fallback={<div className="skeleton h-96 rounded-panel" />}>{node}</Suspense>;
 
-// Company admin CA1–CA9 (blueprint §14). Params are read inside Suspense so navigation stays instant.
+// Company admin CA1-CA9 (blueprint §14). Params are read inside Suspense so navigation stays instant.
 export default function WorkspaceAdminPage({ params, searchParams }: PageProps<"/admin/[tab]">) {
   return wait(<AdminTab params={params} searchParams={searchParams} />);
 }

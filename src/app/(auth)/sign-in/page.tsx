@@ -8,13 +8,13 @@ export const metadata: Metadata = { title: "Sign in", alternates: { canonical: "
 
 async function Form({ searchParams }: { searchParams: PageProps<"/sign-in">["searchParams"] }) {
   const sp = await searchParams;
-  const notice = one(sp["signed-out"]) ? "You've been signed out." : one(sp.expired) ? "Your session expired — sign in again to continue where you left off." : undefined;
+  const notice = one(sp["signed-out"]) ? "You've been signed out." : one(sp.expired) ? "Your session expired. Sign in again to continue where you left off." : undefined;
   return <SignInForm next={one(sp.next)} notice={notice} />;
 }
 
 export default function SignInPage({ searchParams }: PageProps<"/sign-in">) {
   return (
-    <AuthCard title="Sign in" sub="Welcome back to Ledgerline.">
+    <AuthCard title="Sign in" sub="Welcome back to Komputy.">
       <Suspense fallback={<div className="skeleton h-96 rounded-card" />}><Form searchParams={searchParams} /></Suspense>
     </AuthCard>
   );

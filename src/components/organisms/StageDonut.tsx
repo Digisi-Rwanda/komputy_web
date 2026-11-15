@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { ChartFrame } from "@/components/molecules/ChartFrame";
 
-/** Donut of IFRS 9 stage shares (0–1) with centre label. */
+/** Donut of IFRS 9 stage shares (0-1) with centre label. */
 export function StageDonut({ shares, center, size = 160, title = "Exposure by stage" }: { shares: [number, number, number]; center?: ReactNode; size?: number; title?: string }) {
   const r = 40, c = 2 * Math.PI * r, gap = 1.5;
   const starts = shares.map((_, i) => shares.slice(0, i).reduce((a, b) => a + b, 0) * c);

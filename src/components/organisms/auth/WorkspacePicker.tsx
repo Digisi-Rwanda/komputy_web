@@ -32,7 +32,7 @@ export function WorkspacePicker({ items, next = "/home" }: { items: PickerItem[]
             <span className="min-w-0 flex-1">
               <span className="flex flex-wrap items-center gap-2 text-small text-fg">{ws.name}<Badge>{role}</Badge></span>
               <span className="mt-1.5 flex flex-wrap items-center gap-1.5 text-micro text-fg-muted">
-                {suspended ? <Badge tone="negative">Suspended — read-only</Badge> : ws.entitlements.filter((e) => e.state !== "coming-soon").map((e) => (
+                {suspended ? <Badge tone="negative">Suspended · read-only</Badge> : ws.entitlements.filter((e) => e.state !== "coming-soon").map((e) => (
                   <Badge key={e.service} tone={e.state === "active" ? "positive" : e.state === "trial" ? "warning" : "neutral"}>{service(e.service).short} · {e.state === "trial" ? "Trial" : e.state === "active" ? "Active" : "Not active"}</Badge>
                 ))}
                 <span>· {lastOpened}</span>

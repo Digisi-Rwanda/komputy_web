@@ -8,7 +8,7 @@ import type { Tone } from "@/types/ui";
 export interface ServiceCard { id: "ecl" | "leases"; name: string; state: string; tone: Tone; dates: string; meters: [string, number, number][] }
 const NAME = { ecl: "Expected Credit Loss (IFRS 9)", leases: "Lease Accounting (IFRS 16)" } as const;
 const TONE: Record<string, Tone> = { active: "positive", trial: "warning", suspended: "negative", expired: "neutral", "trial-expired": "neutral", requested: "info" };
-const d = (x: Date | null) => (x ? x.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }) : "—");
+const d = (x: Date | null) => (x ? x.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }) : "-");
 
 /** CA4/CA1: entitlements as cards. shortcut: usage "used" is 0 until read from the engine (Phase 5). */
 export async function serviceCards(tenantId: string): Promise<ServiceCard[]> {
@@ -18,17 +18,17 @@ export async function serviceCards(tenantId: string): Promise<ServiceCard[]> {
     const days = e.trialEndsAt ? Math.ceil((e.trialEndsAt.getTime() - Date.now()) / 864e5) : null;
     return {
       id: svc, name: NAME[svc], state: e.state === "trial" ? "Trial" : e.state[0].toUpperCase() + e.state.slice(1), tone: TONE[e.state] ?? "neutral",
-      dates: e.state === "trial" ? `Trial ends ${d(e.trialEndsAt)}${days !== null ? ` (${Math.max(0, days)} days left)` : ""}` : `Contract ${d(e.startsAt)} – ${d(e.endsAt)}${e.contractRef ? ` · Ref ${e.contractRef}` : ""}`,
+      dates: e.state === "trial" ? `Trial ends ${d(e.trialEndsAt)}${days !== null ? ` (${Math.max(0, days)} days left)` : ""}` : `Contract ${d(e.startsAt)} to ${d(e.endsAt)}${e.contractRef ? ` · Ref ${e.contractRef}` : ""}`,
       meters: svc === "ecl" ? [["Runs this month", 0, lim.runs_month ?? 0], ["Loans per run limit", lim.loans_run ?? 0, 0]] : [["Active leases", 0, lim.active_leases ?? 0], ["Entities", 0, lim.entities ?? 0]],
     };
   });
 }
 
-/** CA4 request history: what this workspace asked Ledgerline for, with pipeline status. */
+/** CA4 request history: what this workspace asked Komputy for, with pipeline status. */
 export async function requestHistory(tenantId: string): Promise<[string, Tone, string, string][]> {
   const rows = await db.select().from(schema.accessRequests).where(and(eq(schema.accessRequests.tenantId, tenantId), eq(schema.accessRequests.scope, "platform"))).orderBy(desc(schema.accessRequests.createdAt)).limit(20);
   const STATUS: Record<string, [Tone, string]> = { new: ["info", "Sent"], contacted: ["info", "Contacted"], negotiating: ["warning", "Negotiating"], won: ["positive", "Won ✓"], lost: ["neutral", "Closed"] };
-  return rows.map((r) => { const det = r.details as Record<string, string>; return [det.title ?? `${det.type ?? r.kind} — ${r.service ?? ""}`, ...(STATUS[r.status] ?? ["neutral", r.status]), ago(r.createdAt)] as [string, Tone, string, string]; });
+  return rows.map((r) => { const det = r.details as Record<string, string>; return [det.title ?? `${det.type ?? r.kind}: ${r.service ?? ""}`, ...(STATUS[r.status] ?? ["neutral", r.status]), ago(r.createdAt)] as [string, Tone, string, string]; });
 }
 
 /** CA1 overview: state first, then what needs attention. */

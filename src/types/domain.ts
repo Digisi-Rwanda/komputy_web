@@ -71,7 +71,7 @@ export interface Run {
   reviewer?: string;
   signedOffAt?: string;
   updatedAt: string;
-  /** wizard step 1–7 for runs still in progress */
+  /** wizard step 1-7 for runs still in progress */
   step?: number;
   stepLabel?: string;
   failure?: { message: string; ref: string };

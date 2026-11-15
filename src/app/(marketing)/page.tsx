@@ -13,25 +13,25 @@ import { TrustStrip } from "@/components/organisms/marketing/TrustStrip";
 import { hero } from "@/data/content";
 
 export const metadata: Metadata = {
-  title: { absolute: "Ledgerline — IFRS 9 and IFRS 16 reporting, from upload to sign-off" },
+  title: { absolute: "Komputy · IFRS 9 and IFRS 16 reporting, from upload to sign-off" },
   description: hero.sub,
   alternates: { canonical: "/" },
-  openGraph: { title: "Ledgerline — IFRS reporting, from upload to sign-off", description: hero.sub, url: "/", type: "website", images: [{ url: "/brand/og-landing.jpg", width: 1200, height: 630 }] },
-  twitter: { card: "summary_large_image", title: "Ledgerline — IFRS reporting, from upload to sign-off", description: hero.sub, images: ["/brand/og-landing.jpg"] },
+  openGraph: { title: "Komputy · IFRS reporting, from upload to sign-off", description: hero.sub, url: "/", type: "website", siteName: "Komputy", images: ["/opengraph-image"] },
+  twitter: { card: "summary_large_image", title: "Komputy · IFRS reporting, from upload to sign-off", description: hero.sub, images: ["/twitter-image"] },
 };
 
 const orgJsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "Ledgerline",
+  name: "Komputy",
   applicationCategory: "FinanceApplication",
   operatingSystem: "Web",
   description: hero.sub,
   offers: { "@type": "AggregateOffer", priceCurrency: "USD", lowPrice: "1200", offerCount: 3 },
-  publisher: { "@type": "Organization", name: "Ledgerline", url: "https://komputy.com" },
+  publisher: { "@type": "Organization", name: "Komputy", url: "https://komputy.com" },
 };
 
-// Landing `/` — section order per REDESIGN_UX_BLUEPRINT §6.1, visuals per inspiration/to_build/phase-01-landing (L0–L9).
+// Landing `/`: section order per REDESIGN_UX_BLUEPRINT §6.1, visuals per inspiration/to_build/phase-01-landing (L0-L9).
 export default function LandingPage() {
   return (
     <>

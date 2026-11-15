@@ -26,7 +26,7 @@ export const members: Member[] = [
   { id: "u-jean", name: "Jean Habimana", initials: "JH", email: "j.habimana@kivubank.rw", workspaceRole: "admin", ecl: "reviewer", leases: "reviewer", mfa: true, status: "active", lastActive: "2 h ago" },
   { id: "u-eric", name: "Eric Uwase", initials: "EU", email: "e.uwase@kivubank.rw", workspaceRole: "member", ecl: "analyst", leases: "none", mfa: false, status: "active", lastActive: "Yesterday" },
   { id: "u-grace", name: "Grace Ineza", initials: "GI", email: "g.ineza@kivubank.rw", workspaceRole: "member", ecl: "viewer", leases: "preparer", mfa: false, status: "active", lastActive: "3 days ago" },
-  { id: "u-patrick", name: "Patrick Nkurunziza", initials: "PN", email: "p.nkurunziza@kivubank.rw", workspaceRole: "member", ecl: "viewer", leases: "none", mfa: false, status: "invited", lastActive: "—" },
+  { id: "u-patrick", name: "Patrick Nkurunziza", initials: "PN", email: "p.nkurunziza@kivubank.rw", workspaceRole: "member", ecl: "viewer", leases: "none", mfa: false, status: "invited", lastActive: "-" },
   { id: "u-divine", name: "Divine Mukamana", initials: "DM", email: "d.mukamana@kivubank.rw", workspaceRole: "member", ecl: "viewer", leases: "poster", mfa: true, status: "disabled", lastActive: "12 Oct" },
 ];
 
@@ -47,12 +47,12 @@ export const runs: Run[] = [
   { ...q3, ...inProgress, id: "RUN-0144", name: "Nov 2026 draft", reportingDate: "2026-11-30", status: "draft", engine: "v1.3.0", createdBy: "Eric Uwase", updatedAt: "2026-11-12T08:00:00Z", step: 1, stepLabel: "Setup" },
   { ...q3, ...inProgress, id: "RUN-0143", name: "Oct 2026 month-end", reportingDate: "2026-10-31", status: "validating", createdBy: "Eric Uwase", updatedAt: "2026-11-12T09:40:00Z", step: 4, stepLabel: "EAD validating" },
   q3,
-  { ...q3, id: "RUN-0141", name: "Q3 2026 — rerun with new LGD", status: "needs-review", totalEcl: 12912004.1, deltaVsPrior: 0.047, createdBy: "Jean Habimana", reviewer: "Aline Mugisha", signedOffAt: undefined, updatedAt: "2026-11-12T08:00:00Z" },
-  { ...q3, id: "RUN-0140", name: "Q3 2026 — collateral fix", totalEcl: 12870552.81, deltaVsPrior: 0.044, createdBy: "Eric Uwase", signedOffAt: "2026-10-01T15:00:00Z", updatedAt: "2026-10-01T15:00:00Z" },
-  { ...q3, ...inProgress, id: "RUN-0136", name: "Stress — SME downturn", status: "failed", createdBy: "Jean Habimana", updatedAt: "2026-09-20T11:00:00Z", step: 6, stepLabel: "Compute", failure: { message: "EAD step failed: 14 loans have Maturity Date before First Payment Date.", ref: "job_01HG4K…7Q" } },
+  { ...q3, id: "RUN-0141", name: "Q3 2026: rerun with new LGD", status: "needs-review", totalEcl: 12912004.1, deltaVsPrior: 0.047, createdBy: "Jean Habimana", reviewer: "Aline Mugisha", signedOffAt: undefined, updatedAt: "2026-11-12T08:00:00Z" },
+  { ...q3, id: "RUN-0140", name: "Q3 2026: collateral fix", totalEcl: 12870552.81, deltaVsPrior: 0.044, createdBy: "Eric Uwase", signedOffAt: "2026-10-01T15:00:00Z", updatedAt: "2026-10-01T15:00:00Z" },
+  { ...q3, ...inProgress, id: "RUN-0136", name: "Stress: SME downturn", status: "failed", createdBy: "Jean Habimana", updatedAt: "2026-09-20T11:00:00Z", step: 6, stepLabel: "Compute", failure: { message: "EAD step failed: 14 loans have Maturity Date before First Payment Date.", ref: "job_01HG4K…7Q" } },
   { ...q3, id: "RUN-0137", name: "Aug 2026 month-end", reportingDate: "2026-08-31", engine: "v1.2.4", loans: 47905, totalEcl: 12331870.44, deltaVsPrior: 0.019, exposure: 548900000, coverage: 0.0225, signedOffAt: "2026-09-03T10:00:00Z", updatedAt: "2026-09-03T10:00:00Z" },
   { ...q3, id: "RUN-0134", name: "Jul 2026 month-end", reportingDate: "2026-07-31", engine: "v1.2.4", loans: 47410, totalEcl: 12104330.02, deltaVsPrior: 0.012, signedOffAt: "2026-08-04T10:00:00Z", updatedAt: "2026-08-04T10:00:00Z" },
-  { ...q3, id: "RUN-0131", name: "Q2 2026 — reviewer edits", reportingDate: "2026-06-30", status: "needs-review", engine: "v1.2.4", loans: 46220, totalEcl: 11990120.33, deltaVsPrior: 0.008, createdBy: "Jean Habimana", signedOffAt: undefined, updatedAt: "2026-07-07T10:00:00Z" },
+  { ...q3, id: "RUN-0131", name: "Q2 2026: reviewer edits", reportingDate: "2026-06-30", status: "needs-review", engine: "v1.2.4", loans: 46220, totalEcl: 11990120.33, deltaVsPrior: 0.008, createdBy: "Jean Habimana", signedOffAt: undefined, updatedAt: "2026-07-07T10:00:00Z" },
   { ...q3, id: "RUN-0128", name: "Q2 2026 provisioning", reportingDate: "2026-06-30", engine: "v1.2.4", loans: 46220, totalEcl: 11893450.12, deltaVsPrior: 0.006, signedOffAt: "2026-07-03T10:00:00Z", updatedAt: "2026-07-03T10:00:00Z" },
   { ...q3, id: "RUN-0120", name: "Q1 2026 provisioning", reportingDate: "2026-03-31", status: "archived", engine: "v1.2.0", loans: 44870, totalEcl: 11520330.4, deltaVsPrior: 0.01, signedOffAt: "2026-04-04T10:00:00Z", updatedAt: "2026-04-04T10:00:00Z" },
 ];
@@ -90,7 +90,7 @@ export const movement = [
   { label: "Sep ECL", value: 12846210.55, kind: "total" as const },
 ];
 
-/** Pooled transition matrix, Retail, Jan–Sep 2026 */
+/** Pooled transition matrix, Retail, Jan-Sep 2026 */
 export const pdMatrix = {
   rows: ["S1", "S2", "S3"],
   cols: ["S1", "S2", "S3", "Offbooks"],
@@ -126,14 +126,14 @@ export interface AttentionItem { id: string; service: "ecl" | "leases" | "worksp
 
 /** Unified inbox for Home (blueprint §10.4). */
 export const attention: AttentionItem[] = [
-  { id: "a1", service: "ecl", title: "RUN-0141 awaiting your sign-off", meta: "Q3 2026 — rerun with new LGD · submitted by Jean Habimana", status: ["warning", "Needs review"], age: "2 h", href: "/ecl/runs/RUN-0141/summary", action: "Review" },
+  { id: "a1", service: "ecl", title: "RUN-0141 awaiting your sign-off", meta: "Q3 2026: rerun with new LGD · submitted by Jean Habimana", status: ["warning", "Needs review"], age: "2 h", href: "/ecl/runs/RUN-0141/summary", action: "Review" },
   { id: "a2", service: "ecl", title: "LGD validation has 2 warnings", meta: "RUN-0143 · Oct 2026 month-end", status: ["warning", "Warning"], age: "5 h", href: "/ecl/runs/new/lgd", action: "Open" },
   { id: "a3", service: "leases", title: "Lease LSE-0142 awaiting approval", meta: "Butare branch · Eric Uwase", status: ["info", "Submitted"], age: "1 d", href: "/leases/inbox", action: "Review" },
   { id: "a4", service: "leases", title: "October close: confirm actual payments", meta: "Step 3 of 6 · due 3 Nov", status: ["neutral", "Due 3 Nov"], age: "2 d", href: "/leases/close", action: "Continue" },
   { id: "a5", service: "workspace", title: "Invite pending", meta: "p.nkurunziza@kivubank.rw · Analyst", status: ["neutral", "Pending"], age: "3 d", href: "/admin/members", action: "Resend" },
 ];
 
-// ECL Setup (E5–E8).
+// ECL Setup (E5-E8).
 export interface Segment { name: string; active: boolean; loans: number; source: "manual" | "data"; firstSeen?: string; updated: string }
 export const segmentsSetup: Segment[] = [
   { name: "Retail", active: true, loans: 31204, source: "manual", updated: "2026-03-12" },

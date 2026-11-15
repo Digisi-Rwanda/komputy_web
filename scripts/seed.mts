@@ -9,7 +9,7 @@ import * as mock from "@/data/mock/data";
 import * as admin from "@/data/mock/admin";
 import * as platform from "@/data/mock/platform";
 
-export const DEMO_PASSWORD = "Ledgerline-Demo-2026";
+export const DEMO_PASSWORD = "Komputy-Demo-2026";
 const days = (n: number) => new Date(Date.now() + n * 864e5);
 // Display names in the mocks → ServiceId used everywhere else (types/domain.ts).
 const SERVICE_ID: Record<string, string> = { ECL: "ecl", Leases: "leases", "Tax Provision": "tax", "Document Intelligence": "doc-intel", "Lease Planning": "lease-planning", "ERP Connect": "erp" };
@@ -31,7 +31,7 @@ await db.transaction(async (tx) => {
   await tx.delete(schema.users).where(inArray(schema.users.email, emails));
   await tx.delete(schema.catalog).where(inArray(schema.catalog.id, ["main"]));
 
-  // Users + credential accounts (argon2id, same params as ECL-Server)
+  // Users + credential accounts (argon2id, same params as the previous engine)
   const hash = await hashPassword(DEMO_PASSWORD);
   const uid = new Map<string, string>();
   for (const p of people) {
@@ -39,7 +39,7 @@ await db.transaction(async (tx) => {
     await tx.insert(schema.users).values({ id, name: p.name, email: p.email, title: p.title ?? null, isEmailVerified: true, platformRole: p.staff ?? null, isPlatformAdmin: p.staff === "admin", totpEnabled: false });
     await tx.insert(schema.authAccounts).values({ id: ulid(), userId: id, accountId: id, providerId: "credential", password: hash });
   }
-  const kamau = uid.get("j.kamau@ledgerline.app")!, achieng = uid.get("m.achieng@ledgerline.app")!;
+  const kamau = uid.get("j.kamau@komputy.com")!, achieng = uid.get("m.achieng@komputy.com")!;
 
   // Workspaces with entitlements
   for (const w of platform.workspaces) {
@@ -120,5 +120,5 @@ await db.transaction(async (tx) => {
 });
 
 console.log(`Seeded ${people.length} people, ${tenantIds.length} workspaces. Password for every demo account: ${DEMO_PASSWORD}`);
-console.log("Sign in as a.mugisha@kivubank.rw (workspace owner) or j.kamau@ledgerline.app (platform admin).");
+console.log("Sign in as a.mugisha@kivubank.rw (workspace owner) or j.kamau@komputy.com (platform admin).");
 process.exit(0);

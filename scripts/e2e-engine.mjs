@@ -4,7 +4,7 @@ import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 const require = createRequire(process.env.PLAYWRIGHT_DIR ?? "/home/moses/.npm/_npx/361ceb562f3b3235/node_modules/");
 const { chromium } = require("playwright");
-const BASE = process.env.E2E_BASE ?? "http://localhost:3300", PW = "Ledgerline-Demo-2026", OWNER = "a.mugisha@kivubank.rw";
+const BASE = process.env.E2E_BASE ?? "http://localhost:3300", PW = "Komputy-Demo-2026", OWNER = "a.mugisha@kivubank.rw";
 const WB = new URL("../../komputy_server/tests/fixtures/workbooks/", import.meta.url).pathname;
 const PGU = execFileSync("docker", ["exec", "ecl-web-pg", "printenv", "POSTGRES_USER"]).toString().trim();
 // E2E_DATABASE_URL (any reachable Postgres, e.g. Render external URL) or the local dev container.

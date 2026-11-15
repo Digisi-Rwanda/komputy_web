@@ -67,13 +67,13 @@ export function SegmentView({ run, seg, segments, explore }: { run: Run; seg: Se
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard label={`Exposure · ${run.currency}`} value={compact(seg.exposure)} /><StatCard label={`ECL · ${run.currency}`} value={money(seg.ecl)} /><StatCard label="Coverage" value={percent(seg.coverage)} />
-        <StatCard label="Loans" value={explore.loans.toLocaleString("en-US")} /><StatCard label="Cure rate" value={explore.cureRate != null ? explore.cureRate.toFixed(4) : "—"} />
+        <StatCard label="Loans" value={explore.loans.toLocaleString("en-US")} /><StatCard label="Cure rate" value={explore.cureRate != null ? explore.cureRate.toFixed(4) : "-"} />
       </div>
       <Section title="Stage split (exposure)">
         <div role="img" aria-label={explore.stages.map((s) => `Stage ${s.stage} ${(s.share * 100).toFixed(1)}%`).join(", ")} className="flex h-3 overflow-hidden rounded-full">{explore.stages.map((s) => <span key={s.stage} className={stageDot[s.stage]} style={{ width: `${s.share * 100}%` }} />)}</div>
         <p className="flex gap-4 text-micro text-fg-muted">{explore.stages.map((s) => <span key={s.stage}>Stage {s.stage} {(s.share * 100).toFixed(1)} %</span>)}</p>
       </Section>
-      <Section title="LGD summary"><KeyValue columns={2} className="rounded-panel border border-line p-5" items={[["Average LGD", explore.avgLgd != null ? percent(explore.avgLgd, 1) : "—"], ["ECL by loan size", explore.sizes.filter((b) => b.ecl).map((b) => `${b.bucket} ${compact(b.ecl)}`).join(" · ") || "—"]]} /></Section>
+      <Section title="LGD summary"><KeyValue columns={2} className="rounded-panel border border-line p-5" items={[["Average LGD", explore.avgLgd != null ? percent(explore.avgLgd, 1) : "-"], ["ECL by loan size", explore.sizes.filter((b) => b.ecl).map((b) => `${b.bucket} ${compact(b.ecl)}`).join(" · ") || "-"]]} /></Section>
       <Section title="Top contributors"><TopLoans run={run} rows={explore.top} segment={seg.segment} /></Section>
     </>
   );
@@ -91,7 +91,7 @@ export function LoanView({ run, loan: l }: { run: Run; loan: LoanDetail }) {
       </div>
       <div className="flex flex-wrap items-center gap-2"><h2 className="font-mono text-h3 text-fg">{l.id}</h2><Badge>{l.customer}</Badge><StagePill stage={l.stage} /><Badge>{l.segment}</Badge>{l.capped && <Badge tone="warning">Capped</Badge>}</div>
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <KeyValue columns={3} className="rounded-panel border border-line p-5" items={[["Outstanding", money(l.outstanding)], ["EIR", l.eir != null ? percent(l.eir, 2) : "—"], ["Reporting date", date(l.reportingDate)], ["Treatment", l.treatment ?? `Stage ${l.stage}`], ["PD rule", l.pdRule ?? "—"], ["Projection rows", String(l.schedule.length)]]} />
+        <KeyValue columns={3} className="rounded-panel border border-line p-5" items={[["Outstanding", money(l.outstanding)], ["EIR", l.eir != null ? percent(l.eir, 2) : "-"], ["Reporting date", date(l.reportingDate)], ["Treatment", l.treatment ?? `Stage ${l.stage}`], ["PD rule", l.pdRule ?? "-"], ["Projection rows", String(l.schedule.length)]]} />
         <div className="flex flex-col gap-2 rounded-panel border border-line p-5"><p className="text-small text-fg">Collateral</p><p className="text-small tabular-nums text-fg-body">Discounted collateral <span className="text-fg">{money(l.discountedCollateral)}</span></p></div>
       </div>
       <Section title="ECL build-up">

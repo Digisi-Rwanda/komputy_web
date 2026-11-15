@@ -16,7 +16,7 @@ const OUTPUT_LABEL: Record<string, [string, string]> = {
   PD_CALCS: ["PD calculations.xlsx", "Transition matrices and term structures"], LGD: ["LGD.xlsx", "Collateral allocation and discounting"],
   RUNDOWN: ["EAD rundown.xlsx", "Month-by-month projections"], ECL_SUMMARY: ["ECL summary.xlsx", "Headline figures"],
 };
-const fmt = (v: unknown) => (typeof v === "number" ? v.toLocaleString("en-US", { maximumFractionDigits: 2 }) : String(v ?? "—"));
+const fmt = (v: unknown) => (typeof v === "number" ? v.toLocaleString("en-US", { maximumFractionDigits: 2 }) : String(v ?? "-"));
 
 /** R4 reconciliation: 7 checks, expandable calculations, example failed-check style. */
 export function ReconciliationTab({ run, checks }: { run: Run; checks: ReconCheck[] }) {
@@ -59,9 +59,9 @@ export function InputsTab({ run, files }: { run: Run; files: InputFile[] }) {
 }
 
 const FORMULAS = [
-  ["PD — Markov transition matrix", "Money-weighted matrix per segment, pooled and row-normalised; cure rate; S1 → S3 folded into S1 → S2; S3 absorbing; term structure Mⁿ for n = 1…299; marginal PD = (S3(n) − S3(n − 1)) / (1 − S3(n − 1))."],
-  ["LGD — Collateral discounting", "Allocated = share × collateral; Discounted = Allocated × (1 − haircut) × (1 + EIR)^−years; LGW = max(0, 1 − discounted / EAD); LGD = LGW × (1 − cure rate)."],
-  ["EAD — Projection", "Level payment PMT; balance = max(0, bal × (1 + r/12) − pmt); EAD includes up to 3 missed payments; Stage 1 12 months, Stage 2 to maturity, Stage 3 single row."],
+  ["PD: Markov transition matrix", "Money-weighted matrix per segment, pooled and row-normalised; cure rate; S1 → S3 folded into S1 → S2; S3 absorbing; term structure Mⁿ for n = 1…299; marginal PD = (S3(n) − S3(n − 1)) / (1 − S3(n − 1))."],
+  ["LGD: Collateral discounting", "Allocated = share × collateral; Discounted = Allocated × (1 − haircut) × (1 + EIR)^−years; LGW = max(0, 1 − discounted / EAD); LGD = LGW × (1 − cure rate)."],
+  ["EAD: Projection", "Level payment PMT; balance = max(0, bal × (1 + r/12) − pmt); EAD includes up to 3 missed payments; Stage 1 12 months, Stage 2 to maturity, Stage 3 single row."],
   ["ECL", "Σ EAD × PD × LGD × (1 + EIR/12)^−t, capped at outstanding."],
   ["Known limitations", "Stages come from the input file (no SICR model); no macroeconomic scenarios in v1.3.0."],
 ];

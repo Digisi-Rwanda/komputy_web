@@ -16,7 +16,7 @@ async function Body() {
 export default function Page() {
   return (
     <>
-      <PageHeader crumbs={[{ label: "Platform", href: "/platform" }, { label: "Users" }]} title="Users" description="Everyone with a Ledgerline login, and our own staff." />
+      <PageHeader crumbs={[{ label: "Platform", href: "/platform" }, { label: "Users" }]} title="Users" description="Everyone with a Komputy login, and our own staff." />
       <Suspense fallback={<div className="skeleton h-96 rounded-panel" />}><Body /></Suspense>
     </>
   );

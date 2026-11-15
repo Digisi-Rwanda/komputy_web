@@ -1,5 +1,5 @@
-// Phase 2.5: move existing ECL-Server accounts onto Better Auth (plan §3.3). Idempotent; `--dry-run` writes nothing.
-// Run: TOTP_ENCRYPTION_KEY=<ECL-Server Fernet key> npx tsx --conditions=react-server --env-file=.env.local scripts/migrate-users.mts [--dry-run]
+// Phase 2.5: move existing the previous engine accounts onto Better Auth (plan §3.3). Idempotent; `--dry-run` writes nothing.
+// Run: TOTP_ENCRYPTION_KEY=<the previous engine Fernet key> npx tsx --conditions=react-server --env-file=.env.local scripts/migrate-users.mts [--dry-run]
 import { symmetricEncrypt } from "better-auth/crypto";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { db, schema } from "@/server/db/client";

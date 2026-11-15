@@ -20,7 +20,7 @@ export interface Principal {
   services: { ecl: EclRole; leases: LeasesRole };
   /** Active workspace requires MFA and this person hasn't set it up (CA7). */
   mfaPending?: boolean;
-  /** Active workspace was suspended by Ledgerline (members can't open it). */
+  /** Active workspace was suspended by Komputy (members can't open it). */
   suspended?: boolean;
   /** Sign out after 30 idle minutes (workspace security policy). */
   idleSignout?: boolean;
@@ -43,7 +43,7 @@ const RULES = {
   "leases.view": (p: Principal) => atLeast(p, "admin") || (p.workspaceRole !== null && p.services.leases !== "none"),
   "leases.prepare": (p: Principal) => atLeast(p, "admin") || (p.workspaceRole !== null && ["preparer", "reviewer", "poster"].includes(p.services.leases)),
   "leases.review": (p: Principal) => atLeast(p, "admin") || (p.workspaceRole !== null && (p.services.leases === "reviewer" || p.services.leases === "poster")),
-  // workspace administrators (CA1–CA8)
+  // workspace administrators (CA1-CA8)
   "workspace.update": (p: Principal) => atLeast(p, "admin"),
   "members.view": (p: Principal) => atLeast(p, "admin"),
   "members.manage": (p: Principal) => atLeast(p, "admin"),
@@ -56,7 +56,7 @@ const RULES = {
   // owner only (CA9)
   "ownership.transfer": (p: Principal) => atLeast(p, "owner"),
   "workspace.close": (p: Principal) => atLeast(p, "owner"),
-  // platform staff (PA1–PA9)
+  // platform staff (PA1-PA9)
   "platform.view": (p: Principal) => p.staff !== null,
   "pipeline.manage": (p: Principal) => p.staff === "admin" || p.staff === "sales",
   "entitlements.propose": (p: Principal) => p.staff === "admin" || p.staff === "sales",

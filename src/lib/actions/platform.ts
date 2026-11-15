@@ -104,7 +104,7 @@ export const setWorkspaceStatus = mutate({
     if (owner) await enqueueEmail(owner.email, input.suspend ? `${t.name} was suspended` : `${t.name} is active again`, {
       preview: input.suspend ? "Workspace suspended" : "Workspace reactivated", headline: input.suspend ? `${t.name} was suspended` : `${t.name} is active again`,
       paragraphs: input.suspend ? ["Members can't open the workspace for now. Your data is kept safely.", "Contact your account manager to restore access."] : ["Everyone can sign in and work as before."],
-      cta: { label: "Open Ledgerline", href: link("/select-workspace") },
+      cta: { label: "Open Komputy", href: link("/select-workspace") },
     }, tx);
     await staffAudit(tx, p.userId, t.id, input.suspend ? "workspace_suspended" : "workspace_reactivated", { reason: input.reason, before: t.status });
     return { status };
@@ -120,7 +120,7 @@ export const createWorkspace = mutate({
     const slug = `${input.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 30)}-${id.slice(-5).toLowerCase()}`;
     await tx.insert(schema.tenants).values({ id, name: input.name, slug, legalName: input.name, country: input.country, plan: "trial", status: "trial", allowedDomains: [email.split("@")[1]] });
     await tx.insert(schema.invitations).values({ id: invId, tenantId: id, email, invitedByUserId: p.userId, role: "administrator", workspaceRole: "owner", serviceRoles: { ecl: "reviewer", leases: "reviewer" }, status: "pending", expiresAt: new Date(Date.now() + 14 * 864e5) });
-    await enqueueEmail(email, `Your Ledgerline workspace for ${input.name} is ready`, { preview: "Your workspace is ready", headline: "Your workspace is ready", paragraphs: [`${p.name} at Ledgerline created ${input.name} for you. Accept to become its owner. The link works for 14 days.`], cta: { label: "Open your workspace", href: link(`/invite/${invId}`) } }, tx);
+    await enqueueEmail(email, `Your Komputy workspace for ${input.name} is ready`, { preview: "Your workspace is ready", headline: "Your workspace is ready", paragraphs: [`${p.name} at Komputy created ${input.name} for you. Accept to become its owner. The link works for 14 days.`], cta: { label: "Open your workspace", href: link(`/invite/${invId}`) } }, tx);
     await staffAudit(tx, p.userId, id, "workspace_created", { detail: input.name, reason: `Owner invite to ${email}` });
     return { id };
   },
@@ -130,7 +130,7 @@ export const setAccountManager = mutate({
   action: "pipeline.manage",
   schema: z.object({ tenantId: id, userId: id.nullable() }),
   run: async ({ p, input, tx }) => {
-    if (input.userId) { const [s] = await tx.select({ r: schema.users.platformRole }).from(schema.users).where(eq(schema.users.id, input.userId)); if (!s?.r) throw new UserError("Account managers must be Ledgerline staff."); }
+    if (input.userId) { const [s] = await tx.select({ r: schema.users.platformRole }).from(schema.users).where(eq(schema.users.id, input.userId)); if (!s?.r) throw new UserError("Account managers must be Komputy staff."); }
     await tx.update(schema.tenants).set({ accountManagerId: input.userId, updatedAt: new Date() }).where(eq(schema.tenants.id, input.tenantId));
     await staffAudit(tx, p.userId, input.tenantId, "account_manager_set", { detail: input.userId ?? "unassigned" });
   },
@@ -222,8 +222,8 @@ export const requestSupport = mutate({
     const auto = t.supportPolicy === "auto" && input.minutes <= 60, now = new Date();
     await tx.insert(schema.supportSessions).values({ id: ulid(), tenantId: t.id, staffId: p.userId, reason: input.reason, minutes: input.minutes, status: auto ? "active" : "requested", ...(auto && { startsAt: now, endsAt: new Date(now.getTime() + input.minutes * 6e4), decidedAt: now }) });
     if (!auto) {
-      await notify(await workspaceAdmins(t.id, tx), { event: "support", kind: "security", tenantId: t.id, title: `${p.name} (Ledgerline Support) requests access`, body: `${input.reason} · ${input.minutes} min`, href: "/admin/security", action: "Review",
-        email: { subject: `Ledgerline Support asks to access ${t.name}`, message: { preview: "Support access request", headline: "Support asks for access", paragraphs: [`${p.name} from Ledgerline Support asks for ${input.minutes} minutes of read-only access to ${t.name}.`, `Reason: ${input.reason}`, "Nothing happens unless an administrator approves."], cta: { label: "Review request", href: link("/admin/security") } } } }, tx);
+      await notify(await workspaceAdmins(t.id, tx), { event: "support", kind: "security", tenantId: t.id, title: `${p.name} (Komputy Support) requests access`, body: `${input.reason} · ${input.minutes} min`, href: "/admin/security", action: "Review",
+        email: { subject: `Komputy Support asks to access ${t.name}`, message: { preview: "Support access request", headline: "Support asks for access", paragraphs: [`${p.name} from Komputy Support asks for ${input.minutes} minutes of read-only access to ${t.name}.`, `Reason: ${input.reason}`, "Nothing happens unless an administrator approves."], cta: { label: "Review request", href: link("/admin/security") } } } }, tx);
     }
     await staffAudit(tx, p.userId, t.id, "support_requested", { detail: `${input.minutes} min`, reason: input.reason, auto });
     return { status: auto ? "active" : "requested" };

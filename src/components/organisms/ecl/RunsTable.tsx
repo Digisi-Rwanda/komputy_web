@@ -22,7 +22,7 @@ import type { Run } from "@/types/domain";
 
 const STEP_SLUG = ["setup", "pd", "lgd", "ead", "review", "compute", "sign-off"];
 const ago = (iso: string, now = Date.parse("2026-11-12T10:00:00Z")) => { const h = Math.round((now - Date.parse(iso)) / 36e5); return h < 24 ? `${Math.max(1, h)} h ago` : date(iso.slice(0, 10)); };
-const exportRuns = (rows: Run[]) => download(`ledgerline-runs-${rows.length}.csv`, toCsv([["Run", "Name", "Reporting date", "Status", "Loans", "Total ECL USD", "Engine", "Created by"], ...rows.map((r) => [r.id, r.name, r.reportingDate, RUN_STATUS[r.status][1], r.loans, r.totalEcl ? r.totalEcl.toFixed(2) : "", r.engine, r.createdBy])]));
+const exportRuns = (rows: Run[]) => download(`komputy-runs-${rows.length}.csv`, toCsv([["Run", "Name", "Reporting date", "Status", "Loans", "Total ECL USD", "Engine", "Created by"], ...rows.map((r) => [r.id, r.name, r.reportingDate, RUN_STATUS[r.status][1], r.loans, r.totalEcl ? r.totalEcl.toFixed(2) : "", r.engine, r.createdBy])]));
 
 /** E3/E4 runs list: search, filters (status, year, creator), density, columns, export, bulk bar, row menu, failed-row details. */
 export function RunsTable({ runs, loading }: { runs: Run[]; loading?: boolean }) {
@@ -51,7 +51,7 @@ export function RunsTable({ runs, loading }: { runs: Run[]; loading?: boolean })
     { id: "date", header: "Reporting date", accessorFn: (r) => r.reportingDate, meta: { label: "Reporting date" }, cell: ({ row: { original: r } }) => date(r.reportingDate) },
     { id: "status", header: "Status", accessorFn: (r) => r.status, meta: { label: "Status" }, cell: ({ row: { original: r } }) => <span className="inline-flex items-center gap-2"><RunStatusPill status={r.status} />{r.step && r.status !== "failed" && <span className="text-micro text-fg-muted">Step {r.step}/7</span>}</span> },
     { id: "loans", header: "Loans", accessorFn: (r) => r.loans, meta: { align: "right", label: "Loans" }, cell: ({ row: { original: r } }) => r.loans.toLocaleString("en-US") },
-    { id: "ecl", header: "Total ECL · USD", accessorFn: (r) => r.totalEcl, meta: { align: "right", label: "Total ECL" }, cell: ({ row: { original: r } }) => (r.totalEcl ? <Money value={r.totalEcl} /> : <span className="text-fg-muted">—</span>) },
+    { id: "ecl", header: "Total ECL · USD", accessorFn: (r) => r.totalEcl, meta: { align: "right", label: "Total ECL" }, cell: ({ row: { original: r } }) => (r.totalEcl ? <Money value={r.totalEcl} /> : <span className="text-fg-muted">-</span>) },
     { id: "engine", header: "Engine", accessorFn: (r) => r.engine, meta: { label: "Engine" }, cell: ({ row: { original: r } }) => <MonoId>{r.engine}</MonoId> },
     { id: "updated", header: "Updated", accessorFn: (r) => r.updatedAt, meta: { label: "Updated" }, cell: ({ row: { original: r } }) => <span className="text-micro text-fg-muted">{ago(r.updatedAt)}</span> },
     { id: "actions", header: () => <span className="sr-only">Actions</span>, enableSorting: false, enableHiding: false, cell: ({ row: { original: r } }) => (
