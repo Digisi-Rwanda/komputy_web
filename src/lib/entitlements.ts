@@ -17,3 +17,6 @@ export function daysLeft(e: Entitlement, today = new Date()) {
   if (!e.trialEndsAt) return null;
   return Math.ceil((new Date(e.trialEndsAt).getTime() - today.getTime()) / 86_400_000);
 }
+
+/** A run has results once computed, whatever the amount (a portfolio can legitimately have zero ECL). */
+export const isComputed = (r: { status: string }) => ["needs-review", "returned", "signed-off", "archived"].includes(r.status);
