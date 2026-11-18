@@ -34,7 +34,7 @@ export function WorkspaceSwitcher({ current, workspaces, roles = ROLES, staff }:
       className="w-[340px] p-0"
       trigger={
         <button type="button" aria-label={`Workspace: ${current.name}. Switch workspace`} className="flex min-w-0 flex-1 items-center gap-2 rounded-full py-1 pl-1 pr-2 text-small text-fg transition-colors hover:bg-surface data-[state=open]:bg-surface">
-          <Avatar initials={current.initial} src={current.logo} size="sm" square className="bg-accent text-white" />
+          <Avatar initials={current.initial} src={current.logo} size="sm" square className="bg-accent text-fg-inverse" />
           <span className="flex-1 truncate text-left">{current.name}</span>
           <ChevronsUpDown aria-hidden className="size-3.5 shrink-0 text-fg-muted" />
         </button>
@@ -47,7 +47,7 @@ export function WorkspaceSwitcher({ current, workspaces, roles = ROLES, staff }:
           <Command.Group heading="Your workspaces" className="[&_[cmdk-group-heading]]:label-mono [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5">
             {workspaces.map((w) => (
               <Command.Item key={w.id} value={w.name} onSelect={() => pick(w)} className="flex cursor-pointer items-center gap-3 rounded-md px-2 py-2 data-[selected=true]:bg-surface">
-                <Avatar initials={w.initial} src={w.logo} size="sm" square className={w.id === current.id ? "bg-accent text-white" : undefined} />
+                <Avatar initials={w.initial} src={w.logo} size="sm" square className={w.id === current.id ? "bg-accent text-fg-inverse" : undefined} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-small text-fg">{w.name}</span>
                   <span className="mt-1 flex flex-wrap items-center gap-1">

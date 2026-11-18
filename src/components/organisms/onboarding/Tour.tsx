@@ -19,7 +19,7 @@ export function Tour() {
   const s = STEPS[tourStep], last = tourStep === STEPS.length - 1;
   const end = () => update({ tourStep: null });
   return (
-    <div role="dialog" aria-modal="false" aria-labelledby="tour-title" onKeyDown={(e) => e.key === "Escape" && end()} className="bg-raised ring-inner fixed bottom-6 left-4 z-[var(--z-toast)] w-[360px] max-w-[calc(100vw-2rem)] rounded-panel border border-line p-5 animate-slide-up lg:left-[280px]">
+    <div role="dialog" aria-modal="false" aria-labelledby="tour-title" onKeyDown={(e) => e.key === "Escape" && end()} className="bg-raised ring-1 ring-line shadow-overlay fixed bottom-6 left-4 z-[var(--z-toast)] w-[360px] max-w-[calc(100vw-2rem)] rounded-panel border border-line p-5 animate-slide-up lg:left-[280px]">
       <div className="flex items-start gap-3">
         <p className="label-mono flex-1">Step {tourStep + 1} of {STEPS.length}</p>
         <button type="button" aria-label="Skip tour" onClick={end} className="text-fg-muted hover:text-fg"><X className="size-4" /></button>

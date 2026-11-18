@@ -12,7 +12,7 @@ export function Toaster() {
       toastOptions={{
         unstyled: true,
         classNames: {
-          toast: "bg-raised ring-inner flex w-[360px] max-w-[calc(100vw-2rem)] items-start gap-3 rounded-card border border-line px-4 py-3 text-small text-fg",
+          toast: "bg-raised ring-1 ring-line shadow-overlay flex w-[360px] max-w-[calc(100vw-2rem)] items-start gap-3 rounded-card border border-line px-4 py-3 text-small text-fg",
           title: "text-fg",
           description: "text-micro text-fg-muted",
           actionButton: "ml-auto shrink-0 rounded-full bg-primary px-3 py-1 text-micro text-primary-fg",

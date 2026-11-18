@@ -9,7 +9,6 @@ import { RunStatusPill } from "@/components/atoms/StatusPill";
 import { useEffect, useState } from "react";
 import { paletteData } from "@/lib/actions/palette";
 import { switchWorkspace } from "@/lib/actions/workspace";
-import { toggleTheme } from "@/components/organisms/ThemeToggle";
 import { toast } from "@/components/organisms/Toaster";
 import type { RunStatus } from "@/types/domain";
 
@@ -25,7 +24,6 @@ export function buildCommands(d: Data | null, switchTo: (id: string, name: strin
     ...(ok("ecl") ? [{ group: "Actions", label: "New ECL run", href: "/ecl/runs/new", icon: "plus" as IconName }] : []),
     ...(ok("leases") ? [{ group: "Actions", label: "New lease", href: "/leases/new", icon: "plus" as IconName }] : []),
     ...(ok("admin") ? [{ group: "Actions", label: "Invite member", href: "/admin/members?invite=1", icon: "users" as IconName }] : []),
-    { group: "Actions", label: "Toggle theme", run: toggleTheme, icon: "eye" },
     ...PAGES.filter(([, , , k]) => ok(k)).map(([label, href, icon]) => ({ group: "Pages", label, href, icon })),
     ...(d?.people ?? []).map((m) => ({ group: "People", label: m.name, href: `/admin/members?q=${encodeURIComponent(m.email)}`, icon: "user" as IconName, meta: m.email })),
     ...(d?.workspaces ?? []).filter((w) => w.id !== d?.current).map((w) => ({ group: "Switch workspace", label: w.name, meta: w.role, run: () => switchTo(w.id, w.name), icon: "workspaces" as IconName })),
@@ -59,7 +57,7 @@ export function CommandPalette({ open, onOpenChange, commands: given }: { open: 
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[var(--z-modal)] bg-scrim data-[state=open]:animate-fade-in" />
-        <Dialog.Content className="bg-raised ring-inner fixed left-1/2 top-[14vh] z-[var(--z-modal)] w-[640px] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-hidden rounded-panel border border-line outline-none data-[state=open]:animate-scale-in">
+        <Dialog.Content className="bg-raised ring-1 ring-line shadow-overlay fixed left-1/2 top-[14vh] z-[var(--z-modal)] w-[640px] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-hidden rounded-panel border border-line outline-none data-[state=open]:animate-scale-in">
           <Dialog.Title className="sr-only">Command palette</Dialog.Title>
           <Dialog.Description className="sr-only">Search runs, leases, people and pages, or run an action</Dialog.Description>
           <Command loop onKeyDown={(e) => {

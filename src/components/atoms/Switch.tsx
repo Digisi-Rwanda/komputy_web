@@ -13,7 +13,7 @@ export function Switch({ label, description, className, id, ...rest }: R.SwitchP
         className="peer relative inline-flex h-6 w-10 shrink-0 items-center rounded-full bg-surface-active outline-none transition-colors duration-fast focus-visible:ring-4 focus-visible:ring-info-tint data-[state=checked]:bg-accent disabled:opacity-50"
         {...rest}
       >
-        <R.Thumb className="block size-4 translate-x-1 rounded-full bg-white transition-transform duration-fast data-[state=checked]:translate-x-5" />
+        <R.Thumb className="block size-4 translate-x-1 rounded-full bg-white shadow-panel ring-1 ring-line transition-transform duration-fast data-[state=checked]:translate-x-5" />
       </R.Root>
       {label && (
         <label htmlFor={sid} className="cursor-pointer text-small text-fg-body peer-disabled:cursor-not-allowed peer-disabled:opacity-50">

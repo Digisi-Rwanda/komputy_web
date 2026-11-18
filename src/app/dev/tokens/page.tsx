@@ -1,4 +1,3 @@
-import { ThemeToggle } from "@/components/organisms/ThemeToggle";
 import { Logo } from "@/components/atoms/Logo";
 
 export const metadata = { title: "Tokens" };
@@ -20,7 +19,7 @@ const RADII = ["input", "card", "panel", "pill"];
 export default function TokensPage() {
   return (
     <main id="main" className="mx-auto flex w-full max-w-site flex-col gap-12 px-4 py-10 lg:px-6">
-      <header className="flex items-center gap-4"><Logo /><span className="label-mono">DS1 · foundations</span><span className="ml-auto"><ThemeToggle /></span></header>
+      <header className="flex items-center gap-4"><Logo /><span className="label-mono">DS1 · foundations</span><span className="ml-auto"></span></header>
 
       {GROUPS.map(([title, names]) => (
         <section key={title} className="flex flex-col gap-4">

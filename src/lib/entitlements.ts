@@ -15,7 +15,8 @@ export function quotaLeft(e: Entitlement) {
 
 export function daysLeft(e: Entitlement, today = new Date()) {
   if (!e.trialEndsAt) return null;
-  return Math.ceil((new Date(e.trialEndsAt).getTime() - today.getTime()) / 86_400_000);
+  // Never negative: a trial whose end date has passed has 0 days left (the cron then moves it to trial-expired).
+  return Math.max(0, Math.ceil((new Date(e.trialEndsAt).getTime() - today.getTime()) / 86_400_000));
 }
 
 /** A run has results once computed, whatever the amount (a portfolio can legitimately have zero ECL). */

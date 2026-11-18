@@ -47,7 +47,7 @@ export function WizardShell({ step, children, footer, resetMarks = [] }: { step:
           {LABELS.map((label, i) => {
             const n = i + 1, on = n === step, reachable = n <= Math.max(reach, step) && !on;
             const warned = i >= 1 && i <= 3 && d.files[STEPS[i] as "pd"].status === "accepted" && d.files[STEPS[i] as "pd"].outcome === "warnings";
-            const circle = <span className={cn("relative inline-flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-micro", n < step || (n <= reach && n < 5 && i > 0 && d.files[STEPS[i] as "pd"]?.status === "accepted") ? "bg-accent text-white" : on ? "bg-fg text-fg-inverse ring-4 ring-ring-light" : "border border-line-strong text-fg-muted")}>
+            const circle = <span className={cn("relative inline-flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-micro", n < step || (n <= reach && n < 5 && i > 0 && d.files[STEPS[i] as "pd"]?.status === "accepted") ? "bg-accent text-fg-inverse" : on ? "bg-fg text-fg-inverse ring-4 ring-ring-light" : "border border-line-strong text-fg-muted")}>
               {n < step ? <Check className="size-3.5" /> : n}{warned && <span role="img" aria-label="accepted with warnings" className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-canvas bg-warning" />}</span>;
             return (
               <li key={label} className="flex min-w-24 flex-1 items-start last:flex-none">

@@ -148,7 +148,7 @@ export function DataTable<T>({ data, columns, getRowId, caption, loading, empty,
         <Pagination page={table.getState().pagination.pageIndex + 1} pageSize={pageSize} total={data.length} onPage={(p) => table.setPageIndex(p - 1)} />
       )}
       {selectable && selected.length > 0 && (
-        <div role="toolbar" aria-label="Selection actions" className="bg-raised ring-inner fixed bottom-6 left-1/2 z-[var(--z-sticky)] flex -translate-x-1/2 animate-slide-up items-center gap-3 rounded-full border border-line py-1.5 pl-4 pr-1.5 text-small text-fg">
+        <div role="toolbar" aria-label="Selection actions" className="bg-raised ring-1 ring-line shadow-overlay fixed bottom-6 left-1/2 z-[var(--z-sticky)] flex -translate-x-1/2 animate-slide-up items-center gap-3 rounded-full border border-line py-1.5 pl-4 pr-1.5 text-small text-fg">
           <span className="tabular-nums">{selected.length} selected</span>
           {selectionActions?.(selected, () => setRowSelection({}))}
           <Button variant="ghost" size="sm" onClick={() => setRowSelection({})}>Clear</Button>

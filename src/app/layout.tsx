@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image" },
 };
 
-// Applies saved appearance before first paint (no flash). Dark is the default; "system" follows the OS.
-const themeScript = `try{var d=document.documentElement,t=localStorage.getItem("theme");if(t==="light"||(t==="system"&&matchMedia("(prefers-color-scheme: light)").matches))d.dataset.theme="light";if(localStorage.getItem("density")==="compact")d.dataset.density="compact";if(localStorage.getItem("motion")==="reduce")d.dataset.motion="reduce"}catch(e){}`;
+// Applies saved density and motion before first paint (no flash). Komputy has one light theme.
+const themeScript = `try{var d=document.documentElement;localStorage.removeItem("theme");if(localStorage.getItem("density")==="compact")d.dataset.density="compact";if(localStorage.getItem("motion")==="reduce")d.dataset.motion="reduce"}catch(e){}`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   const fonts = [googleSans, googleSansCode, coustard].map((f) => f.variable).join(" ");

@@ -7,7 +7,7 @@ export interface Step { label: string; warn?: boolean; meta?: ReactNode; status?
 const circle = (done: boolean, on: boolean) =>
   cn(
     "relative inline-flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-micro transition-colors duration-base",
-    done && "bg-accent text-white",
+    done && "bg-accent text-fg-inverse",
     on && "bg-fg text-fg-inverse ring-4 ring-ring-light",
     !done && !on && "border border-line-strong text-fg-muted",
   );

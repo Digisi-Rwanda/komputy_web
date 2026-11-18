@@ -10,7 +10,7 @@ export function Slider({ className, label, ...rest }: R.SliderProps & { label: s
         <R.Range className="absolute h-full bg-accent" />
       </R.Track>
       {Array.from({ length: thumbs }, (_, i) => (
-        <R.Thumb key={i} aria-label={label} className="block size-4 rounded-full border-2 border-accent bg-white outline-none focus-visible:ring-4 focus-visible:ring-info-tint" />
+        <R.Thumb key={i} aria-label={label} className="block size-4 rounded-full border-2 border-accent bg-white shadow-panel outline-none focus-visible:ring-4 focus-visible:ring-info-tint" />
       ))}
     </R.Root>
   );

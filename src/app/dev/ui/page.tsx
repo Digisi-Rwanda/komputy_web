@@ -52,7 +52,6 @@ import { FilterBar, type FilterValues } from "@/components/organisms/FilterBar";
 import { NotificationsList } from "@/components/organisms/NotificationsList";
 import { PageHeader, Section } from "@/components/organisms/PageHeader";
 import { States } from "@/components/organisms/StateView";
-import { ThemeToggle } from "@/components/organisms/ThemeToggle";
 import { ValidationReport } from "@/components/organisms/ValidationReport";
 import { toast } from "@/components/organisms/Toaster";
 import { PdMatrix } from "@/components/organisms/PdMatrix";
@@ -112,7 +111,6 @@ export default function UiGallery() {
         <Logo />
         <span className="label-mono hidden sm:inline">Phase 0 · component gallery</span>
         <a href="/dev/tokens" className="ml-auto text-small text-link hover:underline">Tokens →</a>
-        <ThemeToggle />
       </header>
 
       <Block title="Buttons" board="DS2">

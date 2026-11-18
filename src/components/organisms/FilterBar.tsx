@@ -40,7 +40,7 @@ function FilterPicker({ def, selected, onChange }: { def: FilterDef; selected: s
             const on = selected.includes(o.value);
             return (
               <Command.Item key={o.value} value={o.label} onSelect={() => onChange(on ? selected.filter((x) => x !== o.value) : [...selected, o.value])} className="flex h-9 cursor-pointer items-center gap-2 rounded-md px-2 text-small text-fg-body data-[selected=true]:bg-surface data-[selected=true]:text-fg">
-                <span className={cn("inline-flex size-4 items-center justify-center rounded-[4px] border", on ? "border-accent bg-accent text-white" : "border-line-strong")}>{on && <Check className="size-3" strokeWidth={3} />}</span>
+                <span className={cn("inline-flex size-4 items-center justify-center rounded-[4px] border", on ? "border-accent bg-accent text-fg-inverse" : "border-line-strong")}>{on && <Check className="size-3" strokeWidth={3} />}</span>
                 <span className="flex-1">{o.label}</span>
                 {o.count != null && <span className="font-mono text-micro text-fg-muted">{o.count}</span>}
               </Command.Item>

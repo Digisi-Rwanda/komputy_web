@@ -37,6 +37,13 @@ jobs:
           if git grep -nIE '\bglass\b|backdrop-(blur|filter)|bg-(canvas|canvas-deep|surface|raised|overlay|sidebar)/[0-9]+' -- src; then
             echo "Panels must be solid: use bg-canvas, bg-raised or bg-surface-hover"; exit 1
           fi
+      - name: "Light only guard: no dark mode or theme switching (docs/LIGHT_ONLY_PLAN.md)"
+        run: |
+          if git grep -nIE 'data-theme|prefers-color-scheme|toggleTheme|ThemeToggle|color-scheme: ?dark' -- src; then
+            echo "Komputy has one light theme: remove the dark mode or theme switch code"; exit 1
+          fi
+      - name: "Contrast: every text and signal colour pair passes WCAG"
+        run: node scripts/contrast-check.mjs
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci

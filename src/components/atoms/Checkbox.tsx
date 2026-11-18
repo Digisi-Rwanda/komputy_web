@@ -22,7 +22,7 @@ export function Checkbox({ label, description, className, id, ...rest }: Props) 
       )}
       {...rest}
     >
-      <R.Indicator className="text-white">{rest.checked === "indeterminate" ? <Minus className="size-3" /> : <Check className="size-3" strokeWidth={3} />}</R.Indicator>
+      <R.Indicator className="text-fg-inverse">{rest.checked === "indeterminate" ? <Minus className="size-3" /> : <Check className="size-3" strokeWidth={3} />}</R.Indicator>
     </R.Root>
   );
   if (!label) return box;

@@ -121,7 +121,7 @@ export function ProductWindow() {
         </div>
         <div aria-hidden className="flex">
           <div className="hidden w-48 shrink-0 flex-col gap-1 border-r border-line bg-sidebar p-3 text-micro md:flex">
-            <span className="mb-2 inline-flex size-6 items-center justify-center rounded-md bg-accent text-[11px] text-white">K</span>
+            <span className="mb-2 inline-flex size-6 items-center justify-center rounded-md bg-accent text-[11px] text-fg-inverse">K</span>
             <span className="flex items-center gap-2 px-2 py-1.5 text-fg-muted"><Icon name="home" size={14} />Home</span>
             <span className={cn("flex items-center gap-2 rounded-full px-2 py-1.5", screen === "ecl" ? "text-fg" : "text-fg-muted")}><Icon name="ecl" size={14} />Expected Credit Loss</span>
             {screen === "ecl" && <span className="ml-5 rounded-full bg-surface px-2 py-1.5 text-fg">Runs</span>}

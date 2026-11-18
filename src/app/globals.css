@@ -2,84 +2,75 @@
 
 /* ===== Design tokens ===== */
 /* Komputy theme. Layer 1: raw palette (never used directly in components).
-   Layer 2: semantic tokens (what components use; swapped by [data-theme]).
+   Layer 2: semantic tokens (what components use).
    Layer 3: scales (type, radius, layout, motion, z-index). Source: DESIGN_LANGUAGE_INSPIRATION.md + LM1 board. */
 
+/* One theme: a soft light palette. The page is a light grey (no glaring white), panels sit a step lighter,
+   text is near black and greys carry the hierarchy. Signals are darkened so text on their tints passes AA. */
 :root {
   /* ---- Layer 1: raw palette ---- */
-  --gray-0: #000000;
-  --gray-50: #0b0b0b;
-  --gray-75: #0d0d0d;
-  --gray-100: #111111;
-  --gray-150: #1c1c1c;
-  --gray-200: #1f1f1f;
-  --gray-300: #292929;
-  --gray-500: #8a8a8a;
-  --gray-700: #b5b5b5;
-  --gray-900: #f0f0f0;
-  --gray-1000: #ffffff;
-  --light-50: #ffffff;
-  --light-75: #f5f5f5;
-  --light-100: #fafafa;
-  --light-150: #e6e6e6;
-  --light-200: #efefef;
-  --light-300: #e2e2e2;
-  --light-500: #6b6b6b;
-  --light-900: #1f1f1f;
-  --light-1000: #0b0b0b;
-  --blue-500: #0072f5;
-  --blue-400: #0099ff;
-  --green-400: #00f597;
-  --green-600: #00a866;
-  --amber-400: #ffca00;
-  --amber-600: #b38600;
-  --red-500: #ff0037;
-  --red-600: #d6002e;
+  --ink-900: #15171c;
+  --ink-800: #2b2f37;
+  --ink-600: #535965;
+  --ink-500: #5c626e;
+  --grey-50: #fbfbfc;
+  --grey-100: #f3f4f6;
+  --grey-150: #eef0f3;
+  --grey-200: #eceef1;
+  --grey-250: #e8eaee;
+  --grey-300: #e1e4e9;
+  --grey-350: #dfe2e7;
+  --grey-400: #d8dce3;
+  --grey-500: #c9ced6;
+  --blue-600: #0059c2;
+  --blue-500: #0062d6;
+  --blue-400: #0072f5;
+  --green-600: #007a4d;
+  --amber-600: #7a5d00;
+  --red-600: #c4002b;
   --violet-500: #6e3df5;
-  --warm-400: #f5c97a;
-  --pink-300: #f0a8d8;
 
-  /* ---- Layer 2: semantic (dark default) ---- */
-  --canvas: var(--gray-50);
-  --canvas-deep: var(--gray-0);
-  --raised: var(--gray-75);
-  --sidebar: var(--gray-100);
-  --surface: var(--gray-200);
-  --surface-hover: var(--gray-150);
-  --surface-active: var(--gray-300);
-  --overlay: var(--raised); /* solid panel surface (was 70 % see-through) */
-  --scrim: rgb(0 0 0 / 0.8); /* dims the page behind dialogs; no blur (D1) */
+  /* ---- Layer 2: semantic tokens (what components use) ---- */
+  --canvas: var(--grey-100);
+  --canvas-deep: var(--grey-200);
+  --raised: var(--grey-50);
+  --sidebar: var(--grey-150);
+  --surface: var(--grey-250);
+  --surface-hover: var(--grey-300);
+  --surface-active: var(--grey-400);
+  --overlay: var(--raised);
+  --scrim: rgb(21 23 28 / 0.45); /* dims the page behind dialogs; no blur */
 
-  --fg: var(--gray-1000);
-  --fg-body: var(--gray-900);
-  --fg-muted: var(--gray-500);
-  --fg-subtle: #7a7a7a; /* AA 4.6:1 on canvas; still a step below muted */
-  --fg-inverse: var(--gray-50);
+  --fg: var(--ink-900);
+  --fg-body: var(--ink-800);
+  --fg-muted: var(--ink-600);
+  --fg-subtle: var(--ink-500);
+  --fg-inverse: var(--grey-50);
 
-  --line: var(--gray-150);
-  --line-strong: var(--gray-300);
-  --hairline: #1a1a1a; /* solid: was rgb(255 255 255 / 0.06) on canvas */
-  --ring-light: #303030; /* solid: was rgb(255 255 255 / 0.15) on canvas */
+  --line: var(--grey-350);
+  --line-strong: var(--grey-500);
+  --hairline: #e7e9ed;
+  --ring-light: var(--grey-350);
   --focus: var(--blue-400);
 
-  --primary: var(--gray-1000);
-  --primary-fg: var(--gray-50);
-  --primary-hover: #e6e6e6;
-  --secondary: var(--gray-200);
-  --secondary-fg: var(--gray-1000);
-  --secondary-hover: var(--gray-300);
+  --primary: var(--ink-900);
+  --primary-fg: var(--grey-50);
+  --primary-hover: var(--ink-800);
+  --secondary: #e5e8ec;
+  --secondary-fg: var(--ink-900);
+  --secondary-hover: #dadee4;
   --accent: var(--blue-500);
-  --link: var(--blue-400);
+  --link: var(--blue-600);
 
-  --positive: var(--green-400);
-  --warning: var(--amber-400);
-  --negative: var(--red-500);
-  --info: var(--blue-500);
-  --positive-tint: #093a27; /* solid: was rgb(0 245 151 / 0.2) on canvas */
-  --warning-tint: #3c3109; /* solid: was rgb(255 202 0 / 0.2) on canvas */
-  --negative-tint: #2b0a11; /* solid: was rgb(255 0 55 / 0.13) on canvas */ /* keeps #FF0037 pill text at AA */
-  --info-tint: #09203a; /* solid: was rgb(0 114 245 / 0.2) on canvas */
-  --neutral-tint: #1a1a1a; /* solid: was rgb(255 255 255 / 0.06) on canvas */
+  --positive: var(--green-600);
+  --warning: var(--amber-600);
+  --negative: var(--red-600);
+  --info: var(--blue-600);
+  --positive-tint: #d9f5e8;
+  --warning-tint: #f8eecb;
+  --negative-tint: #f9dde3;
+  --info-tint: #dde9f8;
+  --neutral-tint: var(--grey-200);
 
   --stage-1: var(--positive);
   --stage-2: var(--warning);
@@ -90,84 +81,34 @@
 
   --svc-ecl: var(--positive);
   --svc-leases: var(--warning);
-  --svc-soon: var(--gray-500);
+  --svc-soon: var(--ink-500);
 
+  /* Chart series: at least 3:1 against the canvas */
   --chart-1: var(--blue-500);
-  --chart-2: var(--green-400);
-  --chart-3: var(--amber-400);
-  --chart-4: var(--red-500);
+  --chart-2: #00915c;
+  --chart-3: #b07d00;
+  --chart-4: #d4002f;
   --chart-5: var(--violet-500);
-  --chart-6: var(--gray-500);
-  --chart-grid: var(--gray-150);
-  --chart-area: rgb(0 114 245 / 0.2);
+  --chart-6: var(--ink-500);
+  --chart-grid: var(--grey-350);
+  --chart-area: rgb(0 98 214 / 0.14);
 
-  --grid-line: var(--gray-150);
-  --grain-opacity: 0.06;
+  --grid-line: #e4e7eb;
+  --grain-opacity: 0.025;
 
-  --chart-tooltip: #111111; /* solid: was rgb(17 17 17 / 0.92) on canvas */
-  --chart-crosshair: rgb(255 255 255 / 0.25);
-  --skeleton: var(--gray-150);
-  --skeleton-shine: var(--gray-300);
-  --selected: #0a1727; /* solid: was rgb(0 114 245 / 0.12) on canvas */
+  --chart-tooltip: var(--grey-50);
+  --chart-crosshair: rgb(21 23 28 / 0.25);
+  --skeleton: var(--grey-250);
+  --skeleton-shine: var(--grey-100);
+  --selected: #e3edfa;
+
+  /* Elevation: soft shadows give depth on a light page */
+  --elev-panel: 0 1px 2px rgb(21 23 28 / 0.05), 0 2px 8px rgb(21 23 28 / 0.04);
+  --elev-overlay: 0 4px 12px rgb(21 23 28 / 0.08), 0 16px 40px rgb(21 23 28 / 0.12);
 
   /* Density (NA5 appearance): compact tightens rows and controls */
   --row-h: 56px;
   --control-h: 40px;
-
-  color-scheme: dark;
-}
-
-/* Light: same structure, inverted neutrals; signals darkened for AA contrast on white (LM1 board). */
-[data-theme="light"] {
-  --canvas: var(--light-100);
-  --canvas-deep: var(--light-75);
-  --raised: var(--light-50);
-  --sidebar: var(--light-75);
-  --surface: var(--light-200);
-  --surface-hover: var(--light-150);
-  --surface-active: var(--light-300);
-  --overlay: var(--raised); /* solid panel surface (was 75 % see-through) */
-  --scrim: rgb(0 0 0 / 0.8); /* dims the page behind dialogs; no blur (D1) */
-
-  --fg: var(--light-1000);
-  --fg-body: var(--light-900);
-  --fg-muted: var(--light-500);
-  --fg-subtle: #707070; /* AA 4.8:1 on canvas */
-  --fg-inverse: var(--light-50);
-
-  --line: var(--light-150);
-  --line-strong: #d4d4d4;
-  --hairline: #ebebeb; /* solid: was rgb(0 0 0 / 0.06) on canvas */
-  --ring-light: #e6e6e6; /* solid: was rgb(0 0 0 / 0.08) on canvas */
-  --focus: var(--blue-500);
-
-  --primary: var(--light-1000);
-  --primary-fg: var(--light-50);
-  --primary-hover: #2a2a2a;
-  --secondary: var(--light-200);
-  --secondary-fg: var(--light-1000);
-  --secondary-hover: var(--light-300);
-
-  /* LM1: signals keep their hue; text uses darker solids so pills pass AA on their tints */
-  --positive: #007a4d;
-  --warning: #7a5d00;
-  --negative: #c4002b;
-  --info: #0059c2;
-  --link: #0059c2;
-  --positive-tint: #d4f9eb; /* solid: was rgb(0 245 151 / 0.15) on canvas */
-  --warning-tint: #fbf0c8; /* solid: was rgb(255 202 0 / 0.2) on canvas */
-  --negative-tint: #fbdae1; /* solid: was rgb(255 0 55 / 0.13) on canvas */
-  --info-tint: #dceaf9; /* solid: was rgb(0 114 245 / 0.12) on canvas */
-  --neutral-tint: #eeeeee; /* solid: was rgb(0 0 0 / 0.05) on canvas */
-
-  --chart-grid: var(--light-150);
-  --grid-line: var(--light-150);
-  --grain-opacity: 0.03;
-  --chart-tooltip: #ffffff; /* solid: was rgb(255 255 255 / 0.95) on canvas */
-  --chart-crosshair: rgb(0 0 0 / 0.2);
-  --skeleton: var(--light-150);
-  --skeleton-shine: var(--light-75);
-  --selected: #e6effa; /* solid: was rgb(0 114 245 / 0.08) on canvas */
 
   color-scheme: light;
 }
@@ -234,6 +175,8 @@
   --color-chart-tooltip: var(--chart-tooltip);
   --color-skeleton: var(--skeleton);
   --color-selected: var(--selected);
+  --shadow-panel: var(--elev-panel);
+  --shadow-overlay: var(--elev-overlay);
   --spacing-row: var(--row-h);
   --spacing-control: var(--control-h);
 }
@@ -349,8 +292,8 @@
 .fade-y { mask-image: linear-gradient(0deg, transparent 0%, #000 33.78%, #000 75.23%, transparent 100%); }
 .vignette { background: radial-gradient(50% 134%, transparent 54.05%, var(--canvas-deep) 100%); }
 
-/* Inner light ring used instead of shadows */
-.ring-inner { box-shadow: inset 0 0 0 1px var(--ring-light); }
+/* Panel edge: hairline ring plus a soft shadow (depth on a light page) */
+.ring-inner { box-shadow: inset 0 0 0 1px var(--ring-light), var(--elev-panel); }
 
 /* Skeleton shimmer */
 .skeleton {

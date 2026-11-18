@@ -42,7 +42,7 @@ export function Modal({ open, onOpenChange, trigger, title, description, icon, c
         {trigger && <Vaul.Trigger asChild>{trigger}</Vaul.Trigger>}
         <Vaul.Portal>
           <Vaul.Overlay className="fixed inset-0 z-[var(--z-modal)] bg-scrim" />
-          <Vaul.Content className="bg-raised fixed inset-x-0 bottom-0 z-[var(--z-modal)] flex max-h-[90dvh] flex-col rounded-t-panel border-t border-line outline-none">
+          <Vaul.Content className="bg-raised shadow-overlay fixed inset-x-0 bottom-0 z-[var(--z-modal)] flex max-h-[90dvh] flex-col rounded-t-panel border-t border-line outline-none">
             <div aria-hidden className="mx-auto mt-3 h-1 w-10 rounded-full bg-line-strong" />
             <div className="p-5 pb-0">{head(Vaul.Title as typeof Dialog.Title, Vaul.Description as typeof Dialog.Description)}</div>
             <div className="overflow-y-auto p-5">{children}</div>
@@ -58,7 +58,7 @@ export function Modal({ open, onOpenChange, trigger, title, description, icon, c
       {trigger && <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>}
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[var(--z-modal)] bg-scrim data-[state=open]:animate-fade-in" />
-        <Dialog.Content className={cn("bg-raised ring-inner fixed left-1/2 top-1/2 z-[var(--z-modal)] flex max-h-[85dvh] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-panel border border-line outline-none data-[state=open]:animate-scale-in", widths[size], className)}>
+        <Dialog.Content className={cn("bg-raised ring-1 ring-line shadow-overlay fixed left-1/2 top-1/2 z-[var(--z-modal)] flex max-h-[85dvh] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-panel border border-line outline-none data-[state=open]:animate-scale-in", widths[size], className)}>
           <div className="flex items-start gap-4 p-6 pb-0">
             <div className="flex-1">{head(Dialog.Title, Dialog.Description)}</div>
             <Dialog.Close aria-label="Close" className="rounded-full p-1 text-fg-muted transition-colors hover:bg-surface hover:text-fg"><X className="size-4" /></Dialog.Close>
@@ -78,7 +78,7 @@ export function Sheet({ open, onOpenChange, trigger, title, description, childre
       {trigger && <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>}
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[var(--z-drawer)] bg-scrim data-[state=open]:animate-fade-in" />
-        <Dialog.Content className={cn("bg-raised fixed inset-y-0 right-0 z-[var(--z-drawer)] flex max-w-full flex-col border-l border-line outline-none data-[state=open]:animate-slide-in-right", width)}>
+        <Dialog.Content className={cn("bg-raised shadow-overlay fixed inset-y-0 right-0 z-[var(--z-drawer)] flex max-w-full flex-col border-l border-line outline-none data-[state=open]:animate-slide-in-right", width)}>
           <div className="flex items-start gap-4 border-b border-line p-5">
             <div className="min-w-0 flex-1">
               <Dialog.Title className="text-h4 text-fg">{title}</Dialog.Title>

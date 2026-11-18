@@ -9,7 +9,7 @@ import { cn } from "@/lib/cn";
 import { Kbd } from "@/components/atoms/Kbd";
 
 export const floatingPanel =
-  "bg-raised ring-inner z-[var(--z-dropdown)] rounded-card border border-line text-small text-fg-body outline-none data-[side=bottom]:animate-slide-up-fade data-[side=top]:animate-slide-down-fade data-[side=left]:animate-fade-in data-[side=right]:animate-fade-in";
+  "bg-raised ring-1 ring-line shadow-overlay z-[var(--z-dropdown)] rounded-card border border-line text-small text-fg-body outline-none data-[side=bottom]:animate-slide-up-fade data-[side=top]:animate-slide-down-fade data-[side=left]:animate-fade-in data-[side=right]:animate-fade-in";
 
 export function Tooltip({ content, children, side = "top", shortcut }: { content: ReactNode; children: ReactNode; side?: "top" | "right" | "bottom" | "left"; shortcut?: string }) {
   if (!content) return <>{children}</>;

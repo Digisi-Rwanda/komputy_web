@@ -4,7 +4,6 @@ import { DropdownMenu } from "@/components/molecules/Overlays";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Icon } from "@/components/atoms/Icon";
 import { signOut } from "@/lib/actions/auth";
-import { toggleTheme } from "@/components/organisms/ThemeToggle";
 
 /** Account menu items shared by the sidebar footer and the top-bar avatar. */
 export const accountItems = () => [
@@ -12,7 +11,6 @@ export const accountItems = () => [
   { label: "Security", href: "/account/security", icon: <Icon name="security" /> },
   { label: "Notifications", href: "/account/notifications", icon: <Icon name="bell" /> },
   { label: "My workspaces", href: "/account/workspaces", icon: <Icon name="workspaces" /> },
-  { label: "Toggle theme", onSelect: toggleTheme, icon: <Icon name="eye" />, separatorBefore: true },
   { label: "Sign out", onSelect: () => void signOut(), icon: <Icon name="logout" />, separatorBefore: true },
 ];
 

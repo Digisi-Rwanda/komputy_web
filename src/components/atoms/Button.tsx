@@ -14,7 +14,7 @@ export const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-fg hover:bg-secondary-hover data-[state=open]:bg-secondary-hover",
         outline: "border border-line-strong text-fg hover:bg-surface data-[state=open]:bg-surface",
         ghost: "text-fg-muted hover:bg-surface hover:text-fg data-[state=open]:bg-surface data-[state=open]:text-fg",
-        danger: "bg-negative text-white hover:opacity-90 hover:ring-4 hover:ring-negative-tint",
+        danger: "bg-negative text-fg-inverse hover:opacity-90 hover:ring-4 hover:ring-negative-tint",
         "danger-outline": "border border-negative/40 text-negative hover:bg-negative-tint",
         link: "h-auto! px-0! text-link underline-offset-4 hover:underline",
       },
